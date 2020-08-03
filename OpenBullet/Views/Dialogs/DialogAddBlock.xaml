@@ -146,6 +146,13 @@
                         Content="SPEECH TO TEXT" />-->
 
                     <Button
+                        Grid.Row="3"
+                        Grid.Column="1"
+                        Background="#FFF5B200"
+                        Click="blockWS_Click"
+                        Content="WS" />
+
+                    <Button
                         x:Name="blockNavigateButton"
                         Grid.Row="4"
                         Grid.Column="0"

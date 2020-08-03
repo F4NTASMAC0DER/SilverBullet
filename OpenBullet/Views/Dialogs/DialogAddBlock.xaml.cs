@@ -107,6 +107,10 @@ namespace OpenBullet.Views.Dialogs
             SendBack(new BlockSpeechToText());
         }
 
+        private void blockWS_Click(object sender, RoutedEventArgs e)
+        {
+            SendBack(new BlockWebSocket());
+        }
 
         private void blockNavigateButton_Click(object sender, RoutedEventArgs e)
         {
@@ -150,6 +154,5 @@ namespace OpenBullet.Views.Dialogs
             pluginsSetLabel.Foreground = Utils.GetBrush("ForegroundMenuSelected");
             blockSetTabControl.SelectedIndex = 1;
         }
-
     }
 }
