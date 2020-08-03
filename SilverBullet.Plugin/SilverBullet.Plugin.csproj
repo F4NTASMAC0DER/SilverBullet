@@ -42,6 +42,9 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="SpiceRandomUserAgent">
+      <HintPath>C:\Users\MOHAMMAD\Desktop\SpiceRandomUserAgent.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -58,6 +61,7 @@
   <ItemGroup>
     <Compile Include="McDonaldsCapReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RandomUserAgent.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PluginFramework\PluginFramework.csproj">
@@ -78,11 +82,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetDir)SilverBullet.Plugin.dll" "$(SolutionDir)OpenBullet\bin\Debug\Plugins\SilverBullet.Plugin.dll"
-copy "$(TargetDir)SilverBullet.Plugin.pdb" "$(SolutionDir)OpenBullet\bin\Debug\Plugins\SilverBullet.Plugin.pdb"</PostBuildEvent>
+    <PostBuildEvent>copy "$(TargetDir)SilverBullet.Plugin.dll" "$(SolutionDir)OpenBullet\$(OutDir)Plugins\SilverBullet.Plugin.dll"
+copy "$(TargetDir)SilverBullet.Plugin.pdb" "$(SolutionDir)OpenBullet\$(OutDir)Plugins\SilverBullet.Plugin.pdb"</PostBuildEvent>
   </PropertyGroup>
 </Project>
