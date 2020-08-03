@@ -75,6 +75,8 @@ namespace RuriLib.LS
         private string otherScript = "";
         private ScriptingLanguage language = ScriptingLanguage.JavaScript;
 
+        private string jsFilePath;
+
         /// <summary>The current line being processed.</summary>
         public string CurrentLine { get; set; } = "";
         public int Line { get; set; }
@@ -368,6 +370,9 @@ TAKELINE:
                             {
                                 case "SCRIPT":
                                     language = (ScriptingLanguage)LineParser.ParseEnum(ref cfLine, "LANGUAGE", typeof(ScriptingLanguage));
+
+                                    try { jsFilePath = LineParser.ParseLiteral(ref cfLine, "PATH"); } catch { jsFilePath = string.Empty; }
+
                                     int end = 0;
                                     try
                                     {
@@ -393,7 +398,8 @@ TAKELINE:
 
                                     try
                                     {
-                                        if (otherScript != string.Empty) RunScript(otherScript, language, outputs, data);
+                                        if (otherScript != string.Empty ||
+                                            jsFilePath != string.Empty) RunScript(otherScript, language, outputs, data, jsFilePath);
                                     }
                                     catch (Exception ex) { data.LogBuffer.Add(new LogEntry($"The script failed to be executed: {ex.Message}", Colors.Tomato)); }
                                     break;
@@ -478,12 +484,19 @@ TAKELINE:
         /// <param name="language">The language of the script</param>
         /// <param name="outputs">The variables that should be extracted from the script's scope and set into the BotData local variables</param>
         /// <param name="data">The BotData needed for variable replacement</param>
-        private void RunScript(string script, ScriptingLanguage language, string outputs, BotData data)
+        private void RunScript(string script, ScriptingLanguage language, string outputs, BotData data, string jsFilePath = "")
         {
             // Set the console output to stringwriter
             var sw = new StringWriter();
             Console.SetOut(sw);
             Console.SetError(sw);
+
+            jsFilePath = BlockBase.ReplaceValues(jsFilePath, data);
+
+            if (jsFilePath != string.Empty && File.Exists(jsFilePath))
+            {
+                script += File.ReadAllText(jsFilePath);
+            }
 
             // Parse variables to get out
             List<string> outVarList = new List<string>();
@@ -502,7 +515,8 @@ TAKELINE:
                     case ScriptingLanguage.JavaScript:
 
                         // Redefine log() function
-                        var jsengine = new Engine().SetValue("log", new Action<object>(Console.WriteLine));
+                        var jsEngine = new Engine()
+                        .SetValue("log", new Action<object>(Console.WriteLine));
 
                         // Add in all the variables
                         foreach (var variable in data.Variables.All)
@@ -512,11 +526,11 @@ TAKELINE:
                                 switch (variable.Type)
                                 {
                                     case CVar.VarType.List:
-                                        jsengine.SetValue(variable.Name, (variable.Value as List<string>).ToArray());
+                                        jsEngine.SetValue(variable.Name, (variable.Value as List<string>).ToArray());
                                         break;
 
                                     default:
-                                        jsengine.SetValue(variable.Name, variable.Value.ToString());
+                                        jsEngine.SetValue(variable.Name, variable.Value.ToString());
                                         break;
                                 }
                             }
@@ -524,10 +538,10 @@ TAKELINE:
                         }
 
                         // Execute JS
-                        jsengine.Execute(script);
+                        jsEngine.Execute(script);
 
                         // Print results to log
-                        data.Log(new LogEntry($"DEBUG LOG: {sw.ToString()}", Colors.White));
+                        data.Log(new LogEntry($"DEBUG LOG: {sw}", Colors.White));
 
                         // Get variables out
                         data.Log(new LogEntry($"Parsing {outVarList.Count} variables", Colors.White));
@@ -536,18 +550,19 @@ TAKELINE:
                             try
                             {
                                 // Add it to the variables and print info
-                                var value = jsengine.Global.GetProperty(name).Value;
+                                var value = jsEngine.Global.GetProperty(name).Value;
                                 var isArray = value.IsArray();
                                 if (isArray) data.Variables.Set(new CVar(name, CVar.VarType.List, value.TryCast<List<string>>()));
                                 else data.Variables.Set(new CVar(name, CVar.VarType.Single, value.ToString()));
-                                data.Log(new LogEntry($"SET VARIABLE {name} WITH VALUE {value.ToString()}", Colors.Yellow));
+
+                                data.Log(new LogEntry($"SET VARIABLE {name} WITH VALUE {value}", Colors.Yellow));
                             }
                             catch { data.Log(new LogEntry($"COULD NOT FIND VARIABLE {name}", Colors.Tomato)); }
                         }
 
                         // Print other info
-                        if (jsengine.GetCompletionValue() != null)
-                            data.Log(new LogEntry($"Completion value: {jsengine.GetCompletionValue()}", Colors.White));
+                        if (jsEngine.GetCompletionValue() != null)
+                            data.Log(new LogEntry($"Completion value: {jsEngine.GetCompletionValue()}", Colors.White));
 
                         break;
 
