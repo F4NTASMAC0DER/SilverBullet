@@ -1561,7 +1561,7 @@ namespace ImageProcessor
         {
             if (ShouldProcess)
             {
-                var sharpen = new Sharpen();
+                var sharpen = new Sharpen() { DynamicParameter = value };
                 backupFormat.ApplyProcessor(sharpen.ProcessImage, this);
                 return this;
             }
