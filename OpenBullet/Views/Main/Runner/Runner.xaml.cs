@@ -388,6 +388,20 @@ namespace OpenBullet.Views.Main.Runner
             catch (Exception ex) { SB.Logger.LogError(Components.Runner, $"Exception while copying data - {ex.Message}"); }
         }
 
+        private void copySelectedCaptureOnly_Click(object sender, RoutedEventArgs e)
+        {
+            var clipboardText = "";
+            try
+            {
+                foreach (ValidData selected in GetCurrentListView().SelectedItems)
+                    clipboardText += selected.CapturedData + Environment.NewLine;
+
+                SB.Logger.LogInfo(Components.Runner, $"Copied {GetCurrentListView().SelectedItems.Count} data");
+                Clipboard.SetText(clipboardText);
+            }
+            catch (Exception ex) { SB.Logger.LogError(Components.Runner, $"Exception while copying data - {ex.Message}"); }
+        }
+
         private void copySelectedCapture_Click(object sender, RoutedEventArgs e)
         {
             var clipboardText = "";

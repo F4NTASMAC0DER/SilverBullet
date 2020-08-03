@@ -25,6 +25,14 @@
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem
+                x:Name="copySelectedCaptureOnly"
+                Click="copySelectedCaptureOnly_Click"
+                Header="Copy Selected Capture">
+                <MenuItem.Icon>
+                    <iconPacks:PackIconMaterial Kind="AccountDetails" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem
                 x:Name="copySelectedProxy"
                 Click="copySelectedProxy_Click"
                 Header="Copy Selected Proxy">
@@ -40,6 +48,7 @@
                     <iconPacks:PackIconMaterial Kind="CardAccountDetails" />
                 </MenuItem.Icon>
             </MenuItem>
+
             <MenuItem
                 x:Name="sendToDebugger"
                 Click="sendToDebugger_Click"
