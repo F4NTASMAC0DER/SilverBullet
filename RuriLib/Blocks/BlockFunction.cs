@@ -184,6 +184,12 @@ namespace RuriLib
             /// <summary>Retrieves the character at a given index in the input string.</summary>
             CharAt,
 
+            /// <summary>
+            ///Splits a string into substrings based on the strings in an array. You can specify
+            ///whether the substrings include empty array elements.
+            /// </summary>
+            Split,
+
             ///<summary></summary>
             Remove,
 
@@ -338,6 +344,30 @@ namespace RuriLib
         private string charIndex = "0";
         /// <summary>The index of the wanted character.</summary>
         public string CharIndex { get { return charIndex; } set { charIndex = value; OnPropertyChanged(); } }
+
+        private string separator;
+        public string Separator
+        {
+            get => separator;
+            set
+            {
+                separator = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int splitIndex = 1;
+        public int SplitIndex { get => splitIndex; set { splitIndex = value; OnPropertyChanged(); } }
+
+        private StringSplitOptions stringSplitOption;
+        public StringSplitOptions StringSplitOption
+        {
+            get => stringSplitOption;
+            set
+            {
+                stringSplitOption = value; OnPropertyChanged();
+            }
+        }
 
         // -- RemoveSIndex
 
@@ -532,6 +562,15 @@ namespace RuriLib
                     CharIndex = LineParser.ParseLiteral(ref input, "Index");
                     break;
 
+                case Function.Split:
+                    Separator = LineParser.ParseLiteral(ref input, nameof(Separator));
+                    SplitIndex = LineParser.ParseInt(ref input, "Split Index");
+                    if (input.StartsWith($"{nameof(StringSplitOptions.RemoveEmptyEntries)} \""))
+                    {
+                        try { StringSplitOption = LineParser.ParseEnum(ref input, "String Split Option", typeof(StringSplitOptions)); } catch { }
+                    }
+                    break;
+
                 case Function.Remove:
                     RemoveSIndex = LineParser.ParseLiteral(ref input, "SIndex");
                     RemoveCount = LineParser.ParseLiteral(ref input, "Count");
@@ -689,6 +728,18 @@ namespace RuriLib
 
                 case Function.CharAt:
                     writer.Literal(CharIndex);
+                    break;
+
+                case Function.Split:
+                    if (StringSplitOption == StringSplitOptions.None)
+                    {
+                        writer.Literal(Separator)
+                         .Integer(SplitIndex);
+                    }
+                    else
+                        writer.Literal(Separator)
+                            .Integer(SplitIndex)
+                            .Token(StringSplitOption, nameof(StringSplitOption));
                     break;
 
                 case Function.Remove:
@@ -1023,6 +1074,10 @@ namespace RuriLib
 
                     case Function.CharAt:
                         outputString = localInputString.ToCharArray()[int.Parse(ReplaceValues(charIndex, data))].ToString();
+                        break;
+
+                    case Function.Split:
+                        outputString = localInputString.Split(new[] { ReplaceValues(Separator, data) }, StringSplitOption)[int.Parse(ReplaceValues(SplitIndex.ToString(), data)) - 1];
                         break;
 
                     case Function.Remove:
