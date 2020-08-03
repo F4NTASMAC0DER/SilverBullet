@@ -205,6 +205,8 @@ END:
                 output = output.Replace("<BOTNUM>", data.BotNumber.ToString());
                 output = output.Replace("<RETRIES>", data.Data.Retries.ToString());
                 output = output.Replace("<OCRRATE>", data.OcrRate.ToString());
+                output = output.Replace("<BASEDIR>", AppDomain.CurrentDomain.BaseDirectory);
+
                 if (data.Proxy != null)
                     output = output.Replace("<PROXY>", data.Proxy.Proxy);
 
