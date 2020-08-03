@@ -144,6 +144,10 @@ namespace OpenBullet.Views.StackerBlocks
                     functionTabControl.SelectedIndex = 17;
                     break;
 
+                case BlockFunction.Function.Split:
+                    functionTabControl.SelectedIndex = 18;
+                    break;
+
             }
         }
 
