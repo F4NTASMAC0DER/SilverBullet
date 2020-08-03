@@ -71,11 +71,12 @@ namespace RuriLib.Functions.Requests
         /// <param name="acceptEncoding"></param>
         /// <param name="maxRedirects"></param>
         /// <returns></returns>
-        public Request Setup(RLSettingsViewModel settings, SecurityProtocol securityProtocol = SecurityProtocol.SystemDefault,
+        public Request Setup(RLSettingsViewModel settings = null, SecurityProtocol securityProtocol = SecurityProtocol.SystemDefault,
             bool autoRedirect = true, int maxRedirects = 8, bool acceptEncoding = true)
         {
             // Setup options
-            timeout = settings.General.RequestTimeout * 1000;
+            if (settings != null)
+                timeout = settings.General.RequestTimeout * 1000;
             request.IgnoreProtocolErrors = true;
             request.AllowAutoRedirect = autoRedirect;
             request.EnableEncodingContent = acceptEncoding;
@@ -176,7 +177,7 @@ namespace RuriLib.Functions.Requests
             var bdry = boundary != string.Empty ? boundary : GenerateMultipartBoundary();
             content = new Extreme.Net.MultipartContent(bdry);
             var mContent = content as Extreme.Net.MultipartContent;
-            
+
             if (log != null)
             {
                 log.Add(new LogEntry($"Content-Type: multipart/form-data; boundary={bdry}", Colors.MediumTurquoise));
@@ -196,7 +197,7 @@ namespace RuriLib.Functions.Requests
                     mContent.Add(new FileContent(c.Value), c.Name, c.Value, c.ContentType);
                     if (log != null) log.Add(new LogEntry($"Content-Disposition: form-data; name=\"{c.Name}\"; filename=\"{c.Value}\"{Environment.NewLine}Content-Type: {c.ContentType}{Environment.NewLine}{Environment.NewLine}[FILE CONTENT OMITTED]", Colors.MediumTurquoise));
                 }
-                
+
                 if (log != null) log.Add(new LogEntry(bdry, Colors.MediumTurquoise));
             }
 
@@ -290,7 +291,7 @@ namespace RuriLib.Functions.Requests
         /// <param name="acceptEncoding">Whether to set the Accept-Encoding header automatically</param>
         /// <param name="log">The log (if any)</param>
         /// <returns>The request itself</returns>
-        public static HttpRequest HttpReqSetHeaders(HttpRequest request,Dictionary<string, string> headers, 
+        public static HttpRequest HttpReqSetHeaders(HttpRequest request, Dictionary<string, string> headers,
             bool acceptEncoding = true, List<LogEntry> log = null)
         {
             // Set headers
@@ -375,7 +376,7 @@ namespace RuriLib.Functions.Requests
             catch (Exception ex)
             {
                 if (log != null) log.Add(new LogEntry(ex.Message, Colors.White));
-                
+
                 if (ex.GetType() == typeof(HttpException))
                 {
                     responseCode = ((HttpException)ex).HttpStatusCode.ToString();
