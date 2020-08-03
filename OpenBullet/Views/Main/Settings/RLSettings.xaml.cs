@@ -1,20 +1,8 @@
-﻿using OpenBullet.Views.Main.Settings.RL;
-using RuriLib;
-using RuriLib.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using OpenBullet.Views.Main.Settings.RL;
+using RuriLib;
 
 namespace OpenBullet.Views.Main.Settings
 {
@@ -28,6 +16,7 @@ namespace OpenBullet.Views.Main.Settings
         Captchas CaptchasPage = new Captchas();
         Selenium SeleniumPage = new Selenium();
         Ocr OcrPage = new Ocr();
+        RL.CefSharp cefSharpPage = new RL.CefSharp();
 
         public RLSettings()
         {
@@ -64,6 +53,12 @@ namespace OpenBullet.Views.Main.Settings
         {
             Main.Content = OcrPage;
             menuOptionSelected(menuOptionOcr);
+        }
+
+        private void menuOptionCefSharpBrw_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Main.Content = cefSharpPage;
+            menuOptionSelected(sender);
         }
 
         private void menuOptionSelected(object sender)
