@@ -430,6 +430,7 @@
                     <Button
                         x:Name="loliScriptButton"
                         Grid.Row="4"
+                        Margin="0,0,2,0"
                         Click="loliScriptButton_Click">
                         <StackPanel Orientation="Horizontal">
                             <Image
