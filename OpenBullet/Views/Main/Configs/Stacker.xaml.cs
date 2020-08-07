@@ -108,7 +108,9 @@ namespace OpenBullet.Views.Main.Configs
         {
             vm = SB.Stacker;
             DataContext = vm;
-            App.InitializeCefSharp(null);
+
+            if (!Cef.IsInitialized)
+                App.InitializeCefSharp(null);
 
             InitializeComponent();
 
