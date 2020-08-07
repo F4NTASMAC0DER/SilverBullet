@@ -113,6 +113,16 @@ namespace RuriLib
         /// <summary>The input string.</summary>
         public string Input { get { return input; } set { input = value; OnPropertyChanged(); } }
 
+        private string sUserAgent;
+        /// <summary>
+        /// Selenium useragent
+        /// </summary>
+        public string SUserAgent
+        {
+            get { return sUserAgent; }
+            set { sUserAgent = value; OnPropertyChanged(); }
+        }
+
         // Constructor
         /// <summary>
         /// Creates a BrowserAction block.
@@ -139,7 +149,12 @@ namespace RuriLib
 
             Action = (BrowserAction)LineParser.ParseEnum(ref input, "ACTION", typeof(BrowserAction));
 
-            if (input != string.Empty) Input = LineParser.ParseLiteral(ref input, "INPUT");
+            if (input != string.Empty && !input.StartsWith("USERAGENT \"")) Input = LineParser.ParseLiteral(ref input, "INPUT");
+
+            if (Action == BrowserAction.Open && input != string.Empty)
+            {
+                SUserAgent = LineParser.ParseLiteral(ref input, "USERAGENT");
+            }
 
             return this;
         }
@@ -153,6 +168,14 @@ namespace RuriLib
                 .Token("BROWSERACTION")
                 .Token(Action)
                 .Literal(Input, "Input");
+
+            if (Action == BrowserAction.Open && !string.IsNullOrEmpty(SUserAgent))
+            {
+                writer.Indent()
+                    .Token("USERAGENT")
+                    .Literal(SUserAgent);
+            }
+
             return writer.ToString();
         }
 
@@ -173,6 +196,7 @@ namespace RuriLib
             switch (action)
             {
                 case BrowserAction.Open:
+                    data.ConfigSettings.CustomUserAgent = ReplaceValues(SUserAgent, data);
                     OpenBrowser(data, replacedInput);
                     try { UpdateSeleniumData(data); } catch { }
                     break;
