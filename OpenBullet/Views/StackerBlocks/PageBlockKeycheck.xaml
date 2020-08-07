@@ -41,14 +41,14 @@
                     MouseDown="addKeychainImage_MouseDown"
                     MouseEnter="addKeychainImage_MouseEnter"
                     MouseLeave="addKeychainImage_MouseLeave">
-                    <iconPacks:PackIconMaterialDesign
+                    <iconPacks:PackIconMaterial
                         x:Name="addKeychainIcon"
-                        Width="18"
-                        Height="22"
+                        Width="16"
+                        Height="21"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         Foreground="White"
-                        Kind="AddCircleOutline" />
+                        Kind="PlusThick" />
                 </Grid>
             </DockPanel>
         </StackPanel>

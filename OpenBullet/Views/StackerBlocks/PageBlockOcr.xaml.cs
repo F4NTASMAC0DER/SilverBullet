@@ -317,6 +317,9 @@ namespace OpenBullet.Views.StackerBlocks
 
                     case "crop":
                         SetCropLayer(--seletedIndex, new[] { controlCropLayer.LeftTextBox.Text,
+                  controlCropLayer.TopTextBox.Text,
+                  controlCropLayer.RightTextBox.Text,
+                  controlCropLayer.BottomTextBox.Text, "Percentage" });
                         break;
 
                     case "morphology":

@@ -95,9 +95,17 @@
     <Keywords fontWeight="bold" foreground="#A4C6C5">
       <Word>SPEECHTOTEXT</Word>
     </Keywords>
+  
+    <Keywords fontWeight="bold" foreground="#F5B400">
+      <Word>WS</Word>
+    </Keywords>
 
     <Keywords fontWeight="bold" foreground="Wheat">
       <Word>UTILITY</Word>
+    </Keywords>
+    
+    <Keywords fontWeight="bold" foreground="#1FE0E0">
+      <Word>MESSAGE</Word>
     </Keywords>
 
     <Keywords fontWeight="bold" foreground="RoyalBlue">
@@ -141,11 +149,13 @@
       <Word>SET</Word>
       <Word>DELETE</Word>
       <Word>MOUSEACTION</Word>
+      <Word>JavaScript</Word>
     </Keywords>
 
     <Keywords foreground="Yellow">
       <Word>VAR</Word>
-      <Word>GVAR</Word>
+      <Word>GVAR</Word> 
+      <Word>VARS</Word>
     </Keywords>
 
     <Keywords foreground="Tomato">

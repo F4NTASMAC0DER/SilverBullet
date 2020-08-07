@@ -155,7 +155,7 @@ namespace OpenBullet.Views.StackerBlocks
         {
             try
             {
-                addKeychainIcon.Width = 20;
+                addKeychainIcon.Width = 16.5;
             }
             catch { }
         }
@@ -164,7 +164,7 @@ namespace OpenBullet.Views.StackerBlocks
         {
             try
             {
-                addKeychainIcon.Width = 18;
+                addKeychainIcon.Width = 16;
             }
             catch { }
         }
