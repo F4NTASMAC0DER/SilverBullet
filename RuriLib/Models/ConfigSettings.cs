@@ -155,6 +155,15 @@ namespace RuriLib
             set { evaluateMathOCR = value; OnPropertyChanged(); }
         }
 
+        private Functions.Requests.SecurityProtocol securityProtocol = Functions.Requests.SecurityProtocol.SystemDefault;
+        public Functions.Requests.SecurityProtocol SecurityProtocol
+        {
+            get => securityProtocol;
+            set
+            {
+                securityProtocol = value; OnPropertyChanged();
+            }
+        }
 
         #endregion OCR
 
