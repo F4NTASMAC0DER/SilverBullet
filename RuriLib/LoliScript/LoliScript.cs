@@ -1,17 +1,19 @@
-﻿using IronPython.Compiler;
-using IronPython.Hosting;
-using IronPython.Runtime;
-using Jint;
-using RuriLib.Functions.Conditions;
-using RuriLib.Functions.Formats;
-using RuriLib.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using IronPython.Compiler;
+using IronPython.Hosting;
+using IronPython.Runtime;
+using Noesis.Javascript;
+using RuriLib.Functions.Conditions;
+using RuriLib.Functions.Formats;
+using RuriLib.Models;
+using RuriLib.SB.JS;
 
 namespace RuriLib.LS
 {
@@ -514,55 +516,61 @@ TAKELINE:
                 {
                     case ScriptingLanguage.JavaScript:
 
-                        // Redefine log() function
-                        var jsEngine = new Engine()
-                        .SetValue("log", new Action<object>(Console.WriteLine));
-
-                        // Add in all the variables
-                        foreach (var variable in data.Variables.All)
+                        var taskExecuteJs = Task.Run(() =>
                         {
+                            object jsRetValue = null;
+                            bool disposeEngine = false;
+
+                            JavascriptContext context = null;
+
+                            if (disposeEngine = data.JsEngine == null)
+                            {
+                                context = new JavascriptContext();
+                                JsEngine.SetParameter(context, data);
+                            }
+                            else
+                                context = data.JsEngine.GetOrCreateEngine(data);
+
+                            // Execute JS
                             try
                             {
-                                switch (variable.Type)
+                                jsRetValue = context.Run(script);
+                            }
+                            catch (JavascriptException ex)
+                            {
+                                throw new Exception($"Executing js error {ex.Message}\nline: {ex.Line}\nStart column:{ex.StartColumn}");
+                            }
+
+                            // Print results to log
+                            data.Log(new LogEntry($"DEBUG LOG: {sw}", Colors.White));
+
+                            // Get variables out
+                            data.Log(new LogEntry($"Parsing {outVarList.Count} variables", Colors.White));
+                            foreach (var name in outVarList)
+                            {
+                                try
                                 {
-                                    case CVar.VarType.List:
-                                        jsEngine.SetValue(variable.Name, (variable.Value as List<string>).ToArray());
-                                        break;
+                                    //Add it to the variables and print info
+                                    var value = context.GetParameter(name);
+                                    var isArray = value.GetType().IsArray || value is string[] || value.GetType().Name.Contains("Dictionary");
+                                    if (isArray) try { data.Variables.Set(new CVar(name, CVar.VarType.List, (List<string>)value)); } catch (Exception ex) { data.Log(new LogEntry("[SET VARS] ERROR: " + ex.Message, Colors.Yellow)); }
+                                    else data.Variables.Set(new CVar(name, CVar.VarType.Single, value.ToString()));
 
-                                    default:
-                                        jsEngine.SetValue(variable.Name, variable.Value.ToString());
-                                        break;
+                                    data.Log(new LogEntry($"SET VARIABLE {name} WITH VALUE {value}", Colors.Yellow));
                                 }
+                                catch { data.Log(new LogEntry($"COULD NOT FIND VARIABLE {name}", Colors.Tomato)); }
                             }
-                            catch { }
-                        }
+                            if (disposeEngine)
+                                context.Dispose();
 
-                        // Execute JS
-                        jsEngine.Execute(script);
-
-                        // Print results to log
-                        data.Log(new LogEntry($"DEBUG LOG: {sw}", Colors.White));
-
-                        // Get variables out
-                        data.Log(new LogEntry($"Parsing {outVarList.Count} variables", Colors.White));
-                        foreach (var name in outVarList)
-                        {
-                            try
+                            //Print other info
+                            if (jsRetValue != null && !jsRetValue.GetType().Name.Contains("Dictionary"))
                             {
-                                // Add it to the variables and print info
-                                var value = jsEngine.Global.GetProperty(name).Value;
-                                var isArray = value.IsArray();
-                                if (isArray) data.Variables.Set(new CVar(name, CVar.VarType.List, value.TryCast<List<string>>()));
-                                else data.Variables.Set(new CVar(name, CVar.VarType.Single, value.ToString()));
-
-                                data.Log(new LogEntry($"SET VARIABLE {name} WITH VALUE {value}", Colors.Yellow));
+                                data.Log(new LogEntry($"Return value: {jsRetValue}", Colors.White));
                             }
-                            catch { data.Log(new LogEntry($"COULD NOT FIND VARIABLE {name}", Colors.Tomato)); }
-                        }
-
-                        // Print other info
-                        if (jsEngine.GetCompletionValue() != null)
-                            data.Log(new LogEntry($"Completion value: {jsEngine.GetCompletionValue()}", Colors.White));
+                        });
+                        taskExecuteJs.Wait();
+                        taskExecuteJs.Dispose();
 
                         break;
 
@@ -586,7 +594,7 @@ TAKELINE:
                         //var result = pyengine.Execute(script, scope);
 
                         // Print the logs
-                        data.Log(new LogEntry($"DEBUG LOG: {sw.ToString()}", Colors.White));
+                        data.Log(new LogEntry($"DEBUG LOG: {sw}", Colors.White));
 
                         // Get variables out
                         data.Log(new LogEntry($"Parsing {outVarList.Count} variables", Colors.White));
@@ -630,5 +638,20 @@ TAKELINE:
         }
 
         public event RoutedEventHandler SelectLine;
+    }
+    internal class SysConsole
+    {
+        public void log(string o)
+        {
+            Console.WriteLine(o);
+        }
+        public void Print(object o)
+        {
+            Console.WriteLine(o);
+        }
+        public void log(params object[] o)
+        {
+            Console.WriteLine(o);
+        }
     }
 }
