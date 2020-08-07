@@ -113,7 +113,9 @@
                     ItemsSource="{Binding VariableList}">
                     <ListBox.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Click="MenuItem_Click">Copy</MenuItem>
+                            <MenuItem
+                                Click="MenuItem_Click"
+                                Header="Copy" />
                         </ContextMenu>
                     </ListBox.ContextMenu>
                 </ListBox>
