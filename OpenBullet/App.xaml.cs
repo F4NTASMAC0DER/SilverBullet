@@ -45,8 +45,10 @@ namespace OpenBullet
             {
                 var settings = new CefSettings()
                 {
-                    IgnoreCertificateErrors = true,
+                    IgnoreCertificateErrors = SB.Settings.RLSettings.CefSharp.IgnoreCertificateErrors,
                     MultiThreadedMessageLoop = true,
+                    UserAgent = SB.Settings.RLSettings.CefSharp.UserAgent,
+                    PackLoadingDisabled = SB.Settings.RLSettings.CefSharp.PackLoadingDisabled,
                     BackgroundColor = Utils.GetBrush("BackgroundMain").Color.ColorToUInt()
                 };
 
@@ -57,14 +59,20 @@ namespace OpenBullet
 
                 // Make sure you set performDependencyCheck false
                 var initialized = Cef.Initialize(settings, performDependencyCheck: false, browserProcessHandler: null);
+
                 if (initialized && browser != null)
                 {
                     //Set up the new handler instance
+                    browser.BrowserSettings.Javascript = CefState.Enabled;
+                    browser.BrowserSettings.WebSecurity = CefState.Disabled;
                     browser.MenuHandler = new CustomMenuHandler();
                 }
                 return initialized;
             }
-            catch { return false; }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
 
         // Will attempt to load missing assembly from either x86 or x64 subdir
@@ -81,7 +89,6 @@ namespace OpenBullet
                            ? Assembly.LoadFile(archSpecificPath)
                            : null;
             }
-
             return null;
         }
 

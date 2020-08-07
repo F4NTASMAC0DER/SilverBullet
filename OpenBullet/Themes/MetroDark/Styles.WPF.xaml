@@ -645,6 +645,7 @@
         <Setter Property="SelectionBrush" Value="{StaticResource TextBoxFocusedBrush}" />
         <Setter Property="SelectionOpacity" Value="0.4" />
         <Setter Property="CaretBrush" Value="{DynamicResource ForegroundMain}" />
+        <Setter Property="ContextMenu" Value="{StaticResource MahApps.TextBox.ContextMenu}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TextBox}">

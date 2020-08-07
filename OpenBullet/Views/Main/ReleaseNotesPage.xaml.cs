@@ -11,6 +11,13 @@ namespace OpenBullet.Views.Main
         public ReleaseNotesPage()
         {
             InitializeComponent();
+            DataContext = this;
+            AppendNote(new[] {
+            "Added websocket block (ws)",
+            "Added send text message to telegram in utility block",
+            "Added set selenium user agent in browser action block",
+            "Fixed and updated js executor" ,
+            "Fixed color thresh and sharpen filters (ocr)"});
             AppendNote(new[] {
                "Supported drag drop wordlist,proxy,config",
                "Fixed maximum mainwindow",
@@ -67,5 +74,7 @@ namespace OpenBullet.Views.Main
             endPar.SetResourceReference(Paragraph.ForegroundProperty, "ForegroundMain");
             richTextBox.Document.Blocks.Add(endPar);
         }
+
+        public string App => $"Silver Bullet {SB.Version}";
     }
 }
