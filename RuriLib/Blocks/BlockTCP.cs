@@ -1,14 +1,11 @@
-﻿using RuriLib.LS;
-using RuriLib.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Media;
+using RuriLib.LS;
+using RuriLib.Models;
 
 namespace RuriLib
 {
@@ -128,7 +125,6 @@ namespace RuriLib
             // Parse the variable/capture name
             try { VariableName = LineParser.ParseToken(ref input, TokenType.Literal, true); }
             catch { throw new ArgumentException("Variable name not specified"); }
-
             return this;
         }
 
@@ -195,8 +191,8 @@ namespace RuriLib
 
                         if (UseSSL)
                         {
-                             ssl = new SslStream(net);
-                             ssl.AuthenticateAsClient(h);
+                            ssl = new SslStream(net);
+                            ssl.AuthenticateAsClient(h);
                         }
 
                         if (WaitForHello)
