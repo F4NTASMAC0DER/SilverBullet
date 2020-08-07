@@ -18,7 +18,7 @@ namespace ImageProcessor.Processors
             try
             {
                 // Make the result bitmap.
-                Bitmap bm = new Bitmap(image.Width, image.Height);
+                 newBmp = new Bitmap(image.Width, image.Height);
 
                 // Make the ImageAttributes object and set the threshold.
                 ImageAttributes attributes = new ImageAttributes();
@@ -34,7 +34,7 @@ namespace ImageProcessor.Processors
              };
                 Rectangle rect =
                     new Rectangle(0, 0, image.Width, image.Height);
-                using (Graphics gr = Graphics.FromImage(bm))
+                using (Graphics gr = Graphics.FromImage(newBmp))
                 {
                     gr.DrawImage(image, points, rect,
                         GraphicsUnit.Pixel, attributes);
