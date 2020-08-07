@@ -70,7 +70,7 @@ namespace OpenBullet
             titleLabel.Content = title;
 
             // Make sure all folders are there or recreate them
-            var folders = new string[] { "Captchas", "ChromeExtensions", "Configs", "DB", "Hits", "Plugins", "Screenshots", "Settings", "Sounds", "Wordlists" };
+            var folders = new string[] { "Captchas", "ChromeExtensions", "Configs", "DB", "Hits", "Plugins", "Screenshots", "Settings", "Sounds", "Wordlists", "Js" };
             foreach (var folder in folders.Select(f => Path.Combine(Directory.GetCurrentDirectory(), f)))
             {
                 if (!Directory.Exists(folder))
@@ -94,6 +94,29 @@ namespace OpenBullet
                 SB.Logger.LogError(Components.Main,
                     "At least one WordlistType and one CustomKeychain must be defined in the Environment Settings file.", true);
                 Environment.Exit(0);
+            }
+
+            try
+            {
+                var vcInstalledVersion = SilverBullet.RedistributableChecker.RedistributablePackage.GetInstalledVersion();
+
+                if (vcInstalledVersion.Length == 0)
+                {
+                    SB.Logger.LogError(Components.Main, "Visual C++ Redistributable 2015+ Not Installed\nInstall vc_redist.x64 AND vc_redist.x86\nDl Link: microsoft.com/en-us/download/details.aspx?id=48145");
+                }
+
+                else if (!vcInstalledVersion.Any(v => v.Contains("x86")))
+                {
+                    SB.Logger.LogError(Components.Main, "Visual C++ Redistributable 2015+ (x86) Not Installed\nDl Link: microsoft.com/en-us/download/details.aspx?id=48145");
+                }
+                else if (!vcInstalledVersion.Any(v => v.Contains("x64")))
+                {
+                    SB.Logger.LogError(Components.Main, "Visual C++ Redistributable 2015+ (x64) Not Installed\nDl Link: microsoft.com/en-us/download/details.aspx?id=48145");
+                }
+            }
+            catch
+            {
+                SB.Logger.LogError(Components.Main, "Error on check Visual C++ is installed");
             }
 
             // Initialize Settings
@@ -189,6 +212,7 @@ namespace OpenBullet
                 ( typeof(BlockRequest),         typeof(PageBlockRequest),           Colors.LimeGreen ),
                 ( typeof(BlockTCP),             typeof(PageBlockTCP),               Colors.MediumPurple ),
                 ( typeof(BlockOcr),             typeof(PageBlockOcr),               System.Windows.Media.Color.FromRgb(230, 230, 230)),
+                ( typeof(BlockWebSocket),       typeof(PageBlockWebSocket),         System.Windows.Media.Color.FromRgb(245, 180, 0)),
                 ( typeof(BlockSpeechToText),    typeof(PageBlockSpeechToText),      System.Windows.Media.Color.FromRgb(164, 198, 197)),
                 ( typeof(BlockUtility),         typeof(PageBlockUtility),           Colors.Wheat ),
                 ( typeof(SBlockBrowserAction),  typeof(PageSBlockBrowserAction),    Colors.Green ),
@@ -582,7 +606,7 @@ namespace OpenBullet
             if (e.ChangedButton == MouseButton.Left && e.ClickCount == 2)
             {
                 _canMaximize = true;
-                maximizePanel_MouseLeftButtonUp(sender,e);
+                maximizePanel_MouseLeftButtonUp(sender, e);
             }
         }
 
