@@ -15,6 +15,7 @@ using RuriLib.Interfaces;
 using RuriLib.LS;
 using RuriLib.Models;
 using RuriLib.Models.Stats;
+using RuriLib.SB.JS;
 using RuriLib.ViewModels;
 using SilverBullet.Tesseract;
 
@@ -225,7 +226,9 @@ namespace RuriLib.Runner
             }
         }
 
-        public OcrEngine _ocrEngine;
+        public OcrEngine ocrEngine;
+
+        public JsEngine jsEngine;
 
         #endregion
 
@@ -410,14 +413,15 @@ namespace RuriLib.Runner
         /// </summary>
         public void Stop()
         {
-            try { if (Config.OcrNeeded) _ocrEngine?.StopEngines(); } catch { }
+            try { if (Config.OcrNeeded) ocrEngine?.StopEngines(); } catch { }
             if (Master.IsBusy) Master.CancelAsync();
             RaiseMessageArrived(LogLevel.Info, "Sent cancellation request to Master Worker", false);
             Master.Status = WorkerStatus.Stopping;
             OnPropertyChanged("Busy");
             OnPropertyChanged("ControlsEnabled");
             RaiseWorkerStatusChanged();
-            try { if (Config.OcrNeeded) _ocrEngine?.DisposeEngines(); } catch { }
+            try { if (Config.OcrNeeded) ocrEngine?.DisposeEngines(); } catch { }
+            try { if (Config.JsNeeded) jsEngine?.DisposeEngines(); } catch { }
         }
 
         /// <summary>
@@ -425,7 +429,7 @@ namespace RuriLib.Runner
         /// </summary>
         public void ForceStop()
         {
-            _ocrEngine.StopEngines();
+            ocrEngine.StopEngines();
             AbortAllBots();
             Master.Abort();
             RaiseMessageArrived(LogLevel.Info, "Hard Aborted the Master Worker", false);
@@ -435,7 +439,8 @@ namespace RuriLib.Runner
             OnPropertyChanged("ControlsEnabled");
             RaiseWorkerStatusChanged();
             StartingPoint += TestedCount;
-            _ocrEngine.DisposeEngines();
+            ocrEngine.DisposeEngines();
+            jsEngine.DisposeEngines();
         }
         #endregion
 
@@ -493,9 +498,13 @@ namespace RuriLib.Runner
             FailedList.Clear();
             GlobalVariables = new VariableList();
             GlobalCookies = new CookieDictionary();
-            _ocrEngine?.DisposeEngines();
-            if (_ocrEngine == null && Config.OcrNeeded)
-                _ocrEngine = new OcrEngine();
+            ocrEngine?.DisposeEngines();
+            jsEngine?.DisposeEngines();
+            if (ocrEngine == null && Config.OcrNeeded)
+                ocrEngine = new OcrEngine();
+
+            if (jsEngine == null && Config.JsNeeded)
+                jsEngine = new JsEngine();
 
             // We need to dispatch this to the main thread because these change the observable collections, hence changing the UI
             RaiseDispatchAction(new Action(() =>
@@ -706,7 +715,8 @@ namespace RuriLib.Runner
             Timer.Stop();
             AbortAllBots();
             StartingPoint += TestedCount;
-            _ocrEngine?.DisposeEngines();
+            ocrEngine?.DisposeEngines();
+            jsEngine?.DisposeEngines();
         }
         #endregion
 
@@ -818,7 +828,8 @@ GETPROXY:
                     botData = new BotData(Settings, Config.Settings, currentData, currentProxy, UseProxies, random, bot.Id, false)
                     {
                         BotsAmount = BotsAmount,
-                        OcrEngine = _ocrEngine
+                        OcrEngine = ocrEngine,
+                        JsEngine = jsEngine
                     };
                 }
                 botData.Driver = bot.Driver;
