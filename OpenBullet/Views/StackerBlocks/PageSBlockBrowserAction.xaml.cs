@@ -27,6 +27,8 @@ namespace OpenBullet.Views.StackerBlocks
         private void actionCombobox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             vm.Action = (BrowserAction)((ComboBox)e.OriginalSource).SelectedIndex;
+            if (vm.Action == BrowserAction.Open) panelSUserAgent.Visibility = System.Windows.Visibility.Visible;
+            else panelSUserAgent.Visibility = System.Windows.Visibility.Collapsed;
             try { functionInfoTextblock.Text = infoDic[vm.Action.ToString()]; } catch { functionInfoTextblock.Text = "No additional information available for this function"; }
         }
 

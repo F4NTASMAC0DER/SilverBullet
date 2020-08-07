@@ -26,6 +26,15 @@
                 <Label Content="Input:" />
                 <TextBox Text="{Binding Input, UpdateSourceTrigger=PropertyChanged}" />
             </DockPanel>
+            <DockPanel
+                x:Name="panelSUserAgent"
+                Visibility="Collapsed">
+                <Label
+                    Padding="0"
+                    VerticalContentAlignment="Center"
+                    Content="UserAgent: " />
+                <TextBox Text="{Binding SUserAgent, UpdateSourceTrigger=PropertyChanged}" />
+            </DockPanel>
         </StackPanel>
 
         <TextBlock
