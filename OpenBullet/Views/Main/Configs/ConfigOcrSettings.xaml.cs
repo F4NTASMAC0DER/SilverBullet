@@ -5,7 +5,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using AngleSharp.Text;
-using ImageProcessor;
 using ImageProcessor.Imaging;
 using ImageProcessor.Imaging.MetaData;
 using Microsoft.Scripting.Utils;
@@ -908,7 +907,14 @@ namespace OpenBullet.Views.Main.Configs
             try
             {
                 if (filterLB.Items.Count == 0) return;
-                Clipboard.SetText(filterLB.SelectedItem.ToString());
+                var filters = string.Empty;
+                foreach (var item in filterLB.SelectedItems)
+                {
+                    filters += item;
+                    if (!item.Equals(filterLB.SelectedItems.OfType<string>().Last()))
+                        filters += "\n";
+                }
+                Clipboard.SetText(filters);
             }
             catch { }
         }
@@ -1019,7 +1025,7 @@ namespace OpenBullet.Views.Main.Configs
                     if (item.Contains(":")) item2 = item.Split(':')[0].Trim();
                     if (filterBox.Items.Contains(item2))
                     {
-                        GetSettings().FilterList.Add(item2);
+                        GetSettings().FilterList.Add(item);
                     }
                 }
                 catch { }
