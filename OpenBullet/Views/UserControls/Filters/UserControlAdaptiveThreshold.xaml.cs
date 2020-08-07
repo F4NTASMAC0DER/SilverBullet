@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Windows.Controls;
-using ImageMagick;
 using OpenCvSharp;
 
 namespace OpenBullet.Views.UserControls.Filters

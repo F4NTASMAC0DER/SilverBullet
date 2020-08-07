@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using ImageMagick;
 
 namespace OpenBullet.Views.UserControls.Filters
 {
@@ -24,8 +23,6 @@ namespace OpenBullet.Views.UserControls.Filters
         {
             try
             {
-                Enum.GetNames(typeof(Channels))
-                   .ToList().ForEach(c => ChannelsComboBox.Items.Add(c));
             }
             catch { }
         }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Windows.Controls;
-using ImageMagick;
 
 namespace OpenBullet.Views.UserControls.Filters
 {
@@ -38,11 +37,6 @@ namespace OpenBullet.Views.UserControls.Filters
 
         private void UserControl_Initialized(object sender, EventArgs e)
         {
-            try
-            {
-                Enum.GetNames(typeof(Channels)).ToList().ForEach(c => ChannelsComboBox.Items.Add(c));
-            }
-            catch { }
         }
     }
 }
