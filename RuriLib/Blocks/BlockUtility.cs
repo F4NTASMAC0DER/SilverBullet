@@ -1,16 +1,19 @@
-﻿using RuriLib.Functions.Conditions;
-using RuriLib.Functions.Conversions;
-using RuriLib.Functions.Files;
-using RuriLib.LS;
-using RuriLib.Models;
-using RuriLib.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Numerics;
+using System.Text;
+using System.Threading;
 using System.Windows.Media;
+using RuriLib.Functions.Conditions;
+using RuriLib.Functions.Conversions;
+using RuriLib.Functions.Files;
+using RuriLib.LS;
+using RuriLib.Models;
+using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
+using Encoding = RuriLib.Functions.Conversions.Encoding;
 
 namespace RuriLib
 {
@@ -32,7 +35,12 @@ namespace RuriLib
         File,
 
         /// <summary>The group of actions that interact with folders.</summary>
-        Folder
+        Folder,
+
+        /// <summary>
+        /// Social network
+        /// </summary>
+        Telegram,
     }
 
     /// <summary>
@@ -138,6 +146,15 @@ namespace RuriLib
 
         /// <summary>Deletes a folder.</summary>
         Delete
+    }
+
+    /// <summary></summary>
+    public enum TelegramAction
+    {
+        /// <summary>
+        /// Send text message to chat id
+        /// </summary>
+        SendMessage,
     }
 
     /// <summary>
@@ -247,6 +264,40 @@ namespace RuriLib
         /// <summary>The action to be performed on the folder.</summary>
         public FolderAction FolderAction { get { return folderAction; } set { folderAction = value; OnPropertyChanged(); } }
 
+        private TelegramAction telegramAction;
+        /// <summary></summary>
+        public TelegramAction TelegramAction
+        {
+            get { return telegramAction; }
+            set { telegramAction = value; OnPropertyChanged(); }
+        }
+
+        private ParseMode parseMode;
+        /// <summary>
+        /// Telegram parse mode for message
+        /// </summary>
+        public ParseMode ParseMode { get { return parseMode; } set { parseMode = value; OnPropertyChanged(); } }
+
+        private string botToken;
+        /// <summary>
+        /// Telegram BOT TOKEN
+        /// </summary>
+        public string BotToken { get { return botToken; } set { botToken = value; OnPropertyChanged(); } }
+
+        private string chatId;
+        /// <summary>
+        /// Telegram ChatID
+        /// </summary>
+        public string ChatId { get { return chatId; } set { chatId = value; OnPropertyChanged(); } }
+
+        private List<string> messages = new List<string>();
+        /// <summary>
+        /// Telegram message for send to chatID
+        /// </summary>
+        public List<string> Messages { get { return messages; } set { messages = value; OnPropertyChanged(); } }
+
+        private readonly object tlgLocker = new object();
+
         /// <summary>
         /// Creates a Utility block.
         /// </summary>
@@ -348,6 +399,26 @@ namespace RuriLib
                     FolderPath = LineParser.ParseLiteral(ref input, "Folder Name");
                     FolderAction = (FolderAction)LineParser.ParseEnum(ref input, "Folder Action", typeof(FolderAction));
                     break;
+
+                case UtilityGroup.Telegram:
+                    TelegramAction = LineParser.ParseEnum(ref input, "TELEGRAM ACTION", typeof(TelegramAction));
+                    BotToken = LineParser.ParseLiteral(ref input, "TOKEN");
+                    ChatId = LineParser.ParseLiteral(ref input, "CHAT ID");
+
+                    var tmp = input;
+                    try { ParseMode = LineParser.ParseEnum(ref input, "PARSE MODE", typeof(ParseMode)); } catch { input = tmp; }
+
+                    while (input != "" && LineParser.Lookahead(ref input) == TokenType.Parameter)
+                    {
+                        var parsed = LineParser.ParseToken(ref input, TokenType.Parameter, true).ToUpper();
+                        switch (parsed)
+                        {
+                            case "MESSAGE":
+                                Messages.Add(LineParser.ParseLiteral(ref input, "MESSAGE"));
+                                break;
+                        }
+                    }
+                    break;
             }
 
             // Try to parse the arrow, otherwise just return the block as is with default var name and var / cap choice
@@ -374,7 +445,7 @@ namespace RuriLib
         public override string ToLS(bool indent = true)
         {
             var writer = new BlockWriter(GetType(), indent, Disabled);
-            writer                
+            writer
                 .Label(Label)
                 .Token("UTILITY")
                 .Token(Group);
@@ -470,6 +541,23 @@ namespace RuriLib
                         .Literal(FolderPath)
                         .Token(FolderAction);
                     break;
+
+                case UtilityGroup.Telegram:
+                    writer.Token(TelegramAction)
+                        .Literal(BotToken)
+                        .Literal(ChatId);
+
+                    if (ParseMode != ParseMode.Default)
+                        writer.Token(ParseMode);
+
+                    foreach (var message in Messages)
+                    {
+                        writer.Indent()
+                        .Token("MESSAGE")
+                        .Literal(message);
+                    }
+
+                    break;
             }
 
             if (!writer.CheckDefault(VariableName, "VariableName"))
@@ -523,7 +611,7 @@ namespace RuriLib
                                 else
                                 {
                                     sorted.Sort();
-                                }                                
+                                }
                                 if (!Ascending) sorted.Reverse();
                                 data.Variables.Set(new CVar(variableName, sorted, isCapture));
                                 break;
@@ -705,11 +793,71 @@ namespace RuriLib
                         data.Log(new LogEntry($"Executed action {folderAction} on folder {folder}", isCapture ? Colors.Tomato : Colors.Yellow));
                         break;
 
+                    case UtilityGroup.Telegram:
+                        lock (tlgLocker)
+                        {
+                            var bot = new TelegramBotClient(BotToken);
+                            Telegram.Bot.Types.ChatId chatId = null;
+                            try
+                            {
+                                if (ChatId.StartsWith("@"))
+                                    chatId = new Telegram.Bot.Types.ChatId(ChatId);
+                                else
+                                    chatId = new Telegram.Bot.Types.ChatId(int.Parse(ChatId));
+                            }
+                            catch { data.Log(new LogEntry("Chat Id is invalid", Colors.Red)); }
+                            var s = 0;
+                            while (s < 20)
+                            {
+                                var result = bot.SendTextMessageAsync(chatId, ReplaceValues(string.Join("\n", Messages), data), ParseMode).Result;
+                                if (result == null)
+                                {
+                                    data.Log(new LogEntry("Message sent not successfully!!", Colors.Red));
+                                    data.Log(new LogEntry("Sleep 100ms", Colors.Yellow));
+                                    Thread.Sleep(100);
+                                    s++;
+                                    continue;
+                                }
+                                data.Log(new LogEntry("Message sent successfully!", Colors.LimeGreen));
+                                break;
+                            }
+                        }
+                        break;
+
                     default:
                         break;
                 }
             }
-            catch(Exception ex) { data.Log(new LogEntry(ex.Message, Colors.Tomato)); }
+            catch (Exception ex) { data.Log(new LogEntry(ex.Message, Colors.Tomato)); if (ex.InnerException != null) data.Log(new LogEntry(ex.InnerException.Message, Colors.Tomato)); }
         }
+
+        /// <summary>
+        /// Set message(s) for send to chatID
+        /// </summary>
+        /// <param name="messages"></param>
+        public void SetMessages(string[] messages)
+        {
+            Messages.Clear();
+            Messages.AddRange(messages);
+        }
+
+        /// <summary>
+        /// Get messages
+        /// </summary>
+        /// <returns></returns>
+        public string GetMessages()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var message in Messages)
+            {
+                if (!string.IsNullOrEmpty(message))
+                    sb.Append(message);
+                else
+                    sb.Append("".PadRight(1));
+                if (!message.Equals(messages.Last())) sb.Append(Environment.NewLine);
+            }
+            return sb.ToString();
+        }
+
     }
 }
