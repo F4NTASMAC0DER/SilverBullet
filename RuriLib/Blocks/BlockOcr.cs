@@ -21,6 +21,7 @@ using RuriLib.Functions.EvalString;
 using RuriLib.Functions.Requests;
 using RuriLib.LS;
 using RuriLib.Models;
+using Svg;
 using Tesseract;
 
 namespace RuriLib
@@ -157,11 +158,11 @@ namespace RuriLib
         /// </summary>
         public List<string> PixelFormats { get; set; } = new List<string>();
 
-        private string selectedPixelFormat = "Default";
-        public string SelectedPixelFormat
+        private string pixelFormat = "Default";
+        public string PixelFormat
         {
-            get { return selectedPixelFormat; }
-            set { selectedPixelFormat = value; OnPropertyChanged(); }
+            get { return pixelFormat; }
+            set { pixelFormat = value; OnPropertyChanged(); }
         }
 
         private string engine = "Default";
@@ -201,6 +202,19 @@ namespace RuriLib
             set { languages = value; OnPropertyChanged(); }
         }
 
+        private SecurityProtocol securityProtocol = SecurityProtocol.SystemDefault;
+        /// <summary>
+        /// The security protocol(s) to use for the HTTPS request.
+        /// </summary>
+        public SecurityProtocol SecurityProtocol
+        {
+            get => securityProtocol;
+            set
+            {
+                securityProtocol = value; OnPropertyChanged();
+            }
+        }
+
         /// <summary>
         /// original captcha
         /// </summary>
@@ -227,14 +241,14 @@ namespace RuriLib
             InsertVariable(data, IsCapture,
                 false, GetOcr(data),
                 VariableName);
-            if (data.IsDebug)
-                data.Log(new LogEntry($"OCR Rate: {data.OcrRate}%\n", Colors.LightGreen));
+            data.Log(new LogEntry($"OCR Rate: {data.OcrRate}%\n", Colors.LightGreen));
         }
 
         /// <summary>
         /// Get text from image
         /// </summary>
         /// <param name="data">bot data</param>
+        /// <param name="cap">captcha</param>
         /// <returns>return text from captcha</returns>
         public string[] GetOcr(BotData data, Pix cap = null)
         {
@@ -315,7 +329,7 @@ namespace RuriLib
             if (output.Contains("\n"))
                 return output.Split('\n').ToArray();
             else return new[] { output
-    };
+             };
         }
 
         /// <summary>
@@ -455,6 +469,7 @@ pixConverter:
                 }
                 try { ocr.Dispose(); } catch { }
             }
+
             return output.ToArray();
         }
 
@@ -512,6 +527,8 @@ pixConverter:
                     appliedCaptcha = ChangePixelFormat(appliedCaptcha);
 
                     pix = PixConverter.ToPix(appliedCaptcha);
+
+                    appliedCaptcha.Dispose();
                 }
             }
             else
@@ -519,7 +536,7 @@ pixConverter:
                 var request = new Request();
 
                 // Setup
-                request.Setup(data.GlobalSettings, maxRedirects: data.ConfigSettings.MaxRedirects);
+                request.Setup(data.GlobalSettings, securityProtocol: SecurityProtocol, maxRedirects: data.ConfigSettings.MaxRedirects);
 
                 data.Log(new LogEntry($"Calling URL: {inputs}", Colors.MediumTurquoise));
 
@@ -573,6 +590,27 @@ pixConverter:
                 {
                     captcha = (Bitmap)Image.FromStream(request.GetMemoryStream());
                 }
+                catch (ArgumentException argEx)
+                {
+                    if (argEx.Message == "Parameter is not valid")
+                        try
+                        {
+                            var ext = Path.GetExtension(inputs);
+                            if (ext == ".svg" || ext.StartsWith(".svg"))
+                            {
+                                using (var stream = request.GetMemoryStream())
+                                {
+                                    var svgDocument = SvgDocument.Open<SvgDocument>(stream);
+                                    captcha = svgDocument.Draw();
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            data.Status = BotStatus.ERROR;
+                            throw new Exception("[Set Captcha] " + ex.Message);
+                        }
+                }
                 catch (Exception ex)
                 {
                     data.Status = BotStatus.ERROR;
@@ -615,11 +653,11 @@ pixConverter:
 
         private Bitmap ChangePixelFormat(Bitmap bitmap)
         {
-            if (SelectedPixelFormat == "Default")
+            if (PixelFormat == "Default")
             {
                 return bitmap;
             }
-            return bitmap.ConvertPixelFormat(SelectedPixelFormat.ToEnum(System.Drawing.Imaging.PixelFormat.Format32bppArgb));
+            return bitmap.ConvertPixelFormat(PixelFormat.ToEnum(System.Drawing.Imaging.PixelFormat.Format32bppArgb));
         }
 
         /// <summary>
@@ -628,7 +666,7 @@ pixConverter:
         /// <returns></returns>
         public Bitmap GetOcrImage(bool applyFilter = true)
         {
-            Bitmap captcha;
+            Bitmap captcha = null;
             Bitmap appliedCaptcha;
 
             var inputs = Url;
@@ -651,6 +689,7 @@ pixConverter:
             else
             {
                 var request = new Request();
+                request.Setup(securityProtocol: SecurityProtocol);
 
                 // Perform the request
                 try
@@ -662,7 +701,35 @@ pixConverter:
                     throw;
                 }
 
-                captcha = (Bitmap)Image.FromStream(request.GetMemoryStream());
+                try
+                {
+                    captcha = (Bitmap)Image.FromStream(request.GetMemoryStream());
+                }
+                catch (ArgumentException argEx)
+                {
+                    if (argEx.Message == "Parameter is not valid.")
+                        try
+                        {
+                            var ext = Path.GetExtension(inputs);
+                            if (ext == ".svg" || ext.StartsWith(".svg"))
+                            {
+                                using (var stream = request.GetMemoryStream())
+                                {
+                                    var svgDocument = SvgDocument.Open<SvgDocument>(stream);
+                                    captcha = svgDocument.Draw();
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            throw;
+                        }
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+
                 OriginalImage = captcha;
                 appliedCaptcha = CreateNonIndexedImage(captcha);
 
@@ -793,12 +860,19 @@ pixConverter:
                     .Token(PageSeg, nameof(PageSeg));
             }
 
-            if (!string.IsNullOrWhiteSpace(SelectedPixelFormat) &&
-                SelectedPixelFormat != "Default")
+            if (!string.IsNullOrWhiteSpace(PixelFormat) &&
+                PixelFormat != "Default")
             {
                 writer.Indent()
                  .Token("PIXELFORMAT")
-                 .Token(SelectedPixelFormat, nameof(SelectedPixelFormat));
+                 .Token(PixelFormat, nameof(PixelFormat));
+            }
+
+            if (SecurityProtocol != SecurityProtocol.SystemDefault)
+            {
+                writer.Indent()
+                  .Token("SECPROTO")
+                  .Token(SecurityProtocol, nameof(SecurityProtocol));
             }
 
             writer.Indent();
@@ -832,8 +906,9 @@ pixConverter:
             while (LineParser.Lookahead(ref input) == TokenType.Boolean)
                 LineParser.SetBool(ref input, this);
 
-            if (LineParser.ParseToken(ref input, TokenType.Arrow, false) == "")
-                return this;
+
+            //if (LineParser.ParseToken(ref input, TokenType.Arrow, false) == string.Empty)
+            //    return this;
 
             //Parse the VAR / CAP
             try
@@ -863,7 +938,7 @@ pixConverter:
                         break;
                     case "PIXELFORMAT":
                         {
-                            SelectedPixelFormat = LineParser.ParseToken(ref input, TokenType.Parameter, false);
+                            PixelFormat = LineParser.ParseToken(ref input, TokenType.Parameter, false);
                         }
                         break;
                     case "ENGINE":
@@ -876,10 +951,16 @@ pixConverter:
                             PageSeg = LineParser.ParseToken(ref input, TokenType.Parameter, false);
                         }
                         break;
+                    case "SECPROTO":
+                        {
+                            SecurityProtocol = LineParser.ParseEnum(ref input, "Security Protocol", typeof(SecurityProtocol));
+                        }
+                        break;
                     default:
                         break;
                 }
             }
+
 
             return this;
         }
@@ -928,13 +1009,13 @@ pixConverter:
                     Directory.CreateDirectory("Captchas");
                 }
 
-                var format = OriginalImage.GetImageFormat();
+                var format = (OriginalImage ?? proc).GetImageFormat();
                 if (format != System.Drawing.Imaging.ImageFormat.Png)
                 {
-                    OriginalImage.Save($"Captchas\\Original ({text}).Png");
+                    OriginalImage?.Save($"Captchas\\Original ({text}).Png");
                     proc.Save($"Captchas\\Processed ({text}).Png");
                 }
-                OriginalImage.Save($"Captchas\\Original ({text}).{format}");
+                OriginalImage?.Save($"Captchas\\Original ({text}).{format}");
                 proc.Save($"Captchas\\Processed ({text}).{format}");
             }
             catch (Exception ex) { }
