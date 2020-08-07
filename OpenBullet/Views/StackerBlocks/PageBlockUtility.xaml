@@ -5,10 +5,32 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:OpenBullet.Views.StackerBlocks"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ruriLib="clr-namespace:RuriLib;assembly=RuriLib"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:tlgEnums="clr-namespace:Telegram.Bot.Types.Enums;assembly=Telegram.Bot"
     Title="PageBlockUtility"
     d:DesignHeight="500"
     d:DesignWidth="400"
     mc:Ignorable="d">
+
+    <Page.Resources>
+        <ObjectDataProvider
+            x:Key="ParseModes"
+            MethodName="GetValues"
+            ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="tlgEnums:ParseMode" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider
+            x:Key="TelegramActions"
+            MethodName="GetValues"
+            ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="ruriLib:TelegramAction" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </Page.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -262,6 +284,62 @@
                             Content="Path:"
                             DockPanel.Dock="Left" />
                         <TextBox Text="{Binding FolderPath, UpdateSourceTrigger=PropertyChanged}" />
+                    </DockPanel>
+                </StackPanel>
+            </TabItem>
+            <TabItem x:Name="telegramTab">
+                <StackPanel>
+                    <DockPanel>
+                        <Label
+                            Content="Action:"
+                            DockPanel.Dock="Left" />
+                        <ComboBox
+                            x:Name="telegramActionCombobox"
+                            ItemsSource="{Binding Source={StaticResource TelegramActions}}"
+                            SelectedIndex="0"
+                            SelectionChanged="TelegramActionComboBox_SelectionChanged" />
+                    </DockPanel>
+                    <DockPanel>
+                        <Label Content="Bot Token:" />
+                        <TextBox Text="{Binding BotToken}" />
+                    </DockPanel>
+                    <DockPanel>
+                        <Label Content="Chat Id:" />
+                        <TextBox
+                            Margin="20,0,0,0"
+                            Text="{Binding ChatId}" />
+                    </DockPanel>
+                    <DockPanel>
+                        <Label
+                            VerticalAlignment="Top"
+                            Content="Message:" />
+                        <RichTextBox
+                            x:Name="messageRTB"
+                            MaxHeight="203"
+                            Margin="12,0,0,0"
+                            Background="{DynamicResource BackgroundMain}"
+                            BorderBrush="{DynamicResource AccordionBorderBrush}"
+                            FontSize="12.5"
+                            Foreground="{DynamicResource ForegroundMain}"
+                            HorizontalScrollBarVisibility="Auto"
+                            LostFocus="messageRTB_LostFocus"
+                            VerticalScrollBarVisibility="Auto">
+                            <RichTextBox.Resources>
+                                <Style TargetType="{x:Type Paragraph}">
+                                    <Setter Property="Margin" Value="0,0,0,0" />
+                                    <Setter Property="Padding" Value="0,1,0,0" />
+                                </Style>
+                            </RichTextBox.Resources>
+                        </RichTextBox>
+                    </DockPanel>
+                    <DockPanel>
+                        <Label
+                            Margin="-1,0,0,0"
+                            Content="ParseMode:" />
+                        <ComboBox
+                            ItemsSource="{Binding Source={StaticResource ParseModes}}"
+                            SelectedIndex="0"
+                            SelectedItem="{Binding ParseMode}" />
                     </DockPanel>
                 </StackPanel>
             </TabItem>

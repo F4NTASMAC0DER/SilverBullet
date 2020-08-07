@@ -58,12 +58,14 @@ namespace OpenBullet.Views.StackerBlocks
                 removeComparerCombobox.Items.Add(c);
 
             removeComparerCombobox.SelectedIndex = (int)block.ListElementComparer;
+
+            messageRTB.AppendText(block.GetMessages());
         }
 
         private void groupCombobox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             block.Group = (UtilityGroup)((ComboBox)e.OriginalSource).SelectedIndex;
-
+            
             switch (block.Group)
             {
                 default:
@@ -89,6 +91,11 @@ namespace OpenBullet.Views.StackerBlocks
                 case UtilityGroup.Folder:
                     groupTabControl.SelectedIndex = 5;
                     break;
+
+                case UtilityGroup.Telegram:
+                    groupTabControl.SelectedIndex = 6;
+                    break;
+
             }
         }
 
@@ -172,6 +179,17 @@ namespace OpenBullet.Views.StackerBlocks
                     varActionTabControl.SelectedIndex = 1;
                     break;
             }
+        }
+
+        private void TelegramActionComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (null == block) return;
+            block.TelegramAction = (TelegramAction)((ComboBox)e.OriginalSource).SelectedIndex;
+        }
+
+        private void messageRTB_LostFocus(object sender, System.Windows.RoutedEventArgs e)
+        {
+            block.SetMessages(messageRTB.Lines());
         }
     }
 }
