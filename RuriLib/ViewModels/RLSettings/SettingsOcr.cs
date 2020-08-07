@@ -1,4 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Reflection;
 using Tesseract;
 
 namespace RuriLib.ViewModels
@@ -50,21 +52,6 @@ namespace RuriLib.ViewModels
     /// </summary>
     public class SettingsOcr : ViewModelBase
     {
-        //private EngineMode engineMode = EngineMode.Default;
-        ///// <summary>
-        ///// Tesseract engine mode
-        ///// </summary>
-        //public EngineMode EngineMode { get { return engineMode; } set { engineMode = value; OnPropertyChanged(); } }
-
-        //private PageSegMode pageSegmentMode = PageSegMode.Auto;
-        ///// <summary>
-        ///// Tesseract page segment mode
-        ///// </summary>
-        //public PageSegMode PageSegmentMode { get { return pageSegmentMode; } set { pageSegmentMode = value; OnPropertyChanged(); } }
-
-        //private PageIteratorLevel pageIteratorLevel = PageIteratorLevel.Block;
-        //public PageIteratorLevel PageIteratorLevel { get { return pageIteratorLevel; } set { pageIteratorLevel = value; OnPropertyChanged(); } }
-
         private bool saveImageToCaptchasFolder;
         /// <summary>
         /// Save image to captcha folder TRUE or FALSE
@@ -79,5 +66,20 @@ namespace RuriLib.ViewModels
         /// var list
         /// </summary>
         public ObservableCollection<TesseractVariable> VariableList { get { return variableList; } set { variableList = value; OnPropertyChanged(); } }
+
+        /// <summary>
+        /// Resets the properties to their default value.
+        /// </summary>
+        public void Reset()
+        {
+            SettingsOcr def = new SettingsOcr();
+            var props = new List<PropertyInfo>(typeof(SettingsOcr).GetProperties());
+
+            foreach (PropertyInfo prop in props)
+            {
+                prop.SetValue(this, prop.GetValue(def, null));
+            }
+        }
+
     }
 }
