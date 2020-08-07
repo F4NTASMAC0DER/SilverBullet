@@ -47,6 +47,11 @@ namespace RuriLib
         /// </summary>
         public bool OcrNeeded { get { return ScriptExtension.HasBlock(Script, "OCR"); } }
 
+        /// <summary>
+        /// Whether JavaScript is being used
+        /// </summary>
+        public bool JsNeeded { get { return ScriptExtension.HasScript(Script, "JavaScript") && Script.Contains("BEGIN SCRIPT") && Script.Contains("END SCRIPT"); } }
+
         /// <summary>The amount of blocks of the Config.</summary>
         public int BlocksAmount { get { return Script.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).Where(l => BlockParser.IsBlock(l)).Count(); } }
 

@@ -1,16 +1,13 @@
-﻿using Extreme.Net;
-using OpenQA.Selenium.Remote;
-using RuriLib.Enums;
-using RuriLib.Models;
-using RuriLib.ViewModels;
-using SilverBullet.Tesseract;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Security;
-using System.Net.Sockets;
-using System.Security;
 using System.Windows.Media;
+using Extreme.Net;
+using OpenQA.Selenium.Remote;
+using RuriLib.Models;
+using RuriLib.SB.JS;
+using RuriLib.ViewModels;
+using SilverBullet.Tesseract;
 
 namespace RuriLib
 {
@@ -165,6 +162,11 @@ namespace RuriLib
         /// Tesseract engine
         /// </summary>
         public OcrEngine OcrEngine { get; set; }
+
+        /// <summary>
+        /// JavaScript context
+        /// </summary>
+        public JsEngine JsEngine { get; set; }
 
         /// <summary>
         /// Creates a BotData object given some parameters.
