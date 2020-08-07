@@ -13,9 +13,10 @@
         public SettingsCaptchas Captchas { get; set; } = new SettingsCaptchas();
         /// <summary>The Selenium Settings of RuriLib.</summary>
         public SettingsSelenium Selenium { get; set; } = new SettingsSelenium();
-
         /// <summary>The OCR Settings of RuriLib.</summary>
         public SettingsOcr Ocr { get; set; } = new SettingsOcr();
+        /// <summary>The CefSharp Settings of RuriLib.</summary>
+        public SettingsCefSharp CefSharp { get; set; } = new SettingsCefSharp();
 
         /// <summary>
         /// Resets the properties to their default value.
@@ -26,6 +27,8 @@
             Proxies.Reset();
             Captchas.Reset();
             Selenium.Reset();
+            Ocr.Reset();
+            
         }
     }
 }
