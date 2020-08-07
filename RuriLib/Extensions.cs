@@ -4,11 +4,13 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security.Authentication;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 using RuriLib.Functions.Requests;
 using RuriLib.Models;
@@ -388,6 +390,33 @@ namespace RuriLib
         }
     }
 
+    public static class MethodInfoExtensions
+    {
+        public static Delegate CreateDelegate(this MethodInfo method)
+        {
+            if (method == null)
+            {
+                throw new ArgumentNullException("method");
+            }
+
+            if (!method.IsStatic)
+            {
+                throw new ArgumentException("The provided method must be static.", "method");
+            }
+
+            if (method.IsGenericMethod)
+            {
+                throw new ArgumentException("The provided method must not be generic.", "method");
+            }
+
+            return method.CreateDelegate(Expression.GetDelegateType(
+                (from parameter in method.GetParameters()
+                 select parameter.ParameterType)
+                .Concat(new[] { method.ReturnType })
+                .ToArray()));
+        }
+    }
+
     public static class ScriptExtension
     {
         /// <summary>
@@ -416,6 +445,27 @@ namespace RuriLib
             catch { }
             return false;
         }
+
+        public static bool HasScript(string script, string code, bool contains = false)
+        {
+            if (string.IsNullOrWhiteSpace(script) ||
+                string.IsNullOrWhiteSpace(code))
+                return false;
+            if (contains)
+            {
+                return script.Contains(code);
+            }
+
+            try
+            {
+                return script.Split(new char[] { '\n' },
+                   StringSplitOptions.RemoveEmptyEntries)
+                   .Any(s => s.TrySpaceSplit(s.StartsWith("#") ? 3 : 2) == code);
+            }
+            catch { }
+            return false;
+        }
+
     }
 
 
@@ -592,5 +642,44 @@ namespace RuriLib
                 temporary: wordlist.Temporary, subwordlists: wordlist.SubWordlists);
         }
     }
+    public static class TaskExtensions
+    {
+        /// <summary>
+        /// Blocks while condition is true or timeout occurs.
+        /// </summary>
+        /// <param name="condition">The condition that will perpetuate the block.</param>
+        /// <param name="frequency">The frequency at which the condition will be check, in milliseconds.</param>
+        /// <param name="timeout">Timeout in milliseconds.</param>
+        /// <exception cref="TimeoutException"></exception>
+        /// <returns></returns>
+        public static async Task WaitWhile(Func<bool> condition, int frequency = 25, int timeout = -1)
+        {
+            var waitTask = Task.Run(async () =>
+            {
+                while (condition()) await Task.Delay(frequency);
+            });
 
+            if (waitTask != await Task.WhenAny(waitTask, Task.Delay(timeout)))
+                throw new TimeoutException();
+        }
+
+        /// <summary>
+        /// Blocks until condition is true or timeout occurs.
+        /// </summary>
+        /// <param name="condition">The break condition.</param>
+        /// <param name="frequency">The frequency at which the condition will be checked.</param>
+        /// <param name="timeout">The timeout in milliseconds.</param>
+        /// <returns></returns>
+        public static async Task WaitUntil(Func<bool> condition, int frequency = 25, int timeout = -1)
+        {
+            var waitTask = Task.Run(async () =>
+            {
+                while (!condition()) await Task.Delay(frequency);
+            });
+
+            if (waitTask != await Task.WhenAny(waitTask,
+                    Task.Delay(timeout)))
+                throw new TimeoutException();
+        }
+    }
 }

@@ -294,6 +294,14 @@ namespace RuriLib.Functions.Requests
         public static HttpRequest HttpReqSetHeaders(HttpRequest request, Dictionary<string, string> headers,
             bool acceptEncoding = true, List<LogEntry> log = null)
         {
+            request.SslCertificateValidatorCallback +=
+            delegate (object sender, System.Security.Cryptography.X509Certificates.X509Certificate certificate,
+                        System.Security.Cryptography.X509Certificates.X509Chain chain,
+                        System.Net.Security.SslPolicyErrors sslPolicyErrors)
+            {
+                return true; //Always accept
+            };
+
             // Set headers
             foreach (var header in headers)
             {
