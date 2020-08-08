@@ -196,6 +196,7 @@ namespace RuriLib
             switch (action)
             {
                 case BrowserAction.Open:
+                    if(!string.IsNullOrEmpty(SUserAgent))
                     data.ConfigSettings.CustomUserAgent = ReplaceValues(SUserAgent, data);
                     OpenBrowser(data, replacedInput);
                     try { UpdateSeleniumData(data); } catch { }
