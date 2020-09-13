@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Globalization;
 using System.Numerics;
+using HashLib;
 
 namespace RuriLib.Functions.Crypto
 {
@@ -14,6 +15,9 @@ namespace RuriLib.Functions.Crypto
     /// </summary>
     public enum Hash
     {
+        /// <summary>The MD2 hashing function (128 bits digest).</summary>
+        MD2,
+
         /// <summary>The MD4 hashing function (128 bits digest).</summary>
         MD4,
 
@@ -31,6 +35,18 @@ namespace RuriLib.Functions.Crypto
 
         /// <summary>The SHA-512 hashing function (512 bits digest).</summary>
         SHA512,
+
+        /// <summary>The SHA3-224 hashing function (224 bits digest).</summary>
+        SHA3_224,
+
+        /// <summary>The SHA3-256 hashing function (256 bits digest).</summary>
+        SHA3_256,
+
+        /// <summary>The SHA3-384 hashing function (384 bits digest).</summary>
+        SHA3_384,
+
+        /// <summary>The SHA3-512 hashing function (512 bits digest).</summary>
+        SHA3_512
     }
 
     /// <summary>
@@ -39,51 +55,31 @@ namespace RuriLib.Functions.Crypto
     public static class Crypto
     {
         #region Hash and Hmac
+        /// <summary>
+        /// Hashes a byte array through MD2.
+        /// </summary>
+        /// <param name="input">The byte array for which to calculate the hash</param>
+        /// <returns>The MD2 digest.</returns>
+        public static byte[] MD2(byte[] input)
+        {
+            IHash hash = HashFactory.Crypto.CreateMD2();
+            HashResult res = hash.ComputeBytes(input);
+            return res.GetBytes();
+        }
+
 
         /// <summary>
         /// Hashes a byte array through MD4.
         /// </summary>
-        /// <param name="input">The byte array for which to calculate the hsh</param>
+        /// <param name="input">The byte array for which to calculate the hash</param>
         /// <returns>The MD4 digest.</returns>
         public static byte[] MD4(byte[] input)
         {
-            // get padded uints from bytes
-            var bytes = input.ToList();
-            uint bitCount = (uint)(bytes.Count) * 8;
-            bytes.Add(128);
-            while (bytes.Count % 64 != 56) bytes.Add(0);
-            var uints = new List<uint>();
-            for (int i = 0; i + 3 < bytes.Count; i += 4)
-                uints.Add(bytes[i] | (uint)bytes[i + 1] << 8 | (uint)bytes[i + 2] << 16 | (uint)bytes[i + 3] << 24);
-            uints.Add(bitCount);
-            uints.Add(0);
-
-            // run rounds
-            uint a = 0x67452301, b = 0xefcdab89, c = 0x98badcfe, d = 0x10325476;
-            Func<uint, uint, uint> rol = (x, y) => x << (int)y | x >> 32 - (int)y;
-            for (int q = 0; q + 15 < uints.Count; q += 16)
-            {
-                var chunk = uints.GetRange(q, 16);
-                uint aa = a, bb = b, cc = c, dd = d;
-                Action<Func<uint, uint, uint, uint>, uint[]> round = (f, y) =>
-                {
-                    foreach (uint i in new[] { y[0], y[1], y[2], y[3] })
-                    {
-                        a = rol(a + f(b, c, d) + chunk[(int)(i + y[4])] + y[12], y[8]);
-                        d = rol(d + f(a, b, c) + chunk[(int)(i + y[5])] + y[12], y[9]);
-                        c = rol(c + f(d, a, b) + chunk[(int)(i + y[6])] + y[12], y[10]);
-                        b = rol(b + f(c, d, a) + chunk[(int)(i + y[7])] + y[12], y[11]);
-                    }
-                };
-                round((x, y, z) => (x & y) | (~x & z), new uint[] { 0, 4, 8, 12, 0, 1, 2, 3, 3, 7, 11, 19, 0 });
-                round((x, y, z) => (x & y) | (x & z) | (y & z), new uint[] { 0, 1, 2, 3, 0, 4, 8, 12, 3, 5, 9, 13, 0x5a827999 });
-                round((x, y, z) => x ^ y ^ z, new uint[] { 0, 2, 1, 3, 0, 8, 4, 12, 3, 9, 11, 15, 0x6ed9eba1 });
-                a += aa; b += bb; c += cc; d += dd;
-            }
-
-            // return bytes
-            return new[] { a, b, c, d }.SelectMany(BitConverter.GetBytes).ToArray();
+            IHash hash = HashFactory.Crypto.CreateMD4();
+            HashResult res = hash.ComputeBytes(input);
+            return res.GetBytes();
         }
+
 
         /// <summary>
         /// Hashes a byte array through MD5.
@@ -219,6 +215,55 @@ namespace RuriLib.Functions.Crypto
                 return hmac.ComputeHash(input);
             }
         }
+
+        /// <summary>
+        /// Calculates a SHA3-224 hash signature.
+        /// </summary>
+        /// <param name="input">The byte array for which to calculate the hash</param>
+        /// <returns>The SHA3-224 digest.</returns>
+        public static byte[] SHA3_224(byte[] input)
+        {
+            IHash hash = HashFactory.Crypto.SHA3.CreateKeccak224();
+            HashResult res = hash.ComputeBytes(input);
+            return res.GetBytes();
+        }
+
+        /// <summary>
+        /// Calculates a SHA3-256 hash signature.
+        /// </summary>
+        /// <param name="input">The byte array for which to calculate the hash</param>
+        /// <returns>The SHA3-256 digest.</returns>
+        public static byte[] SHA3_256(byte[] input)
+        {
+            IHash hash = HashFactory.Crypto.SHA3.CreateKeccak256();
+            HashResult res = hash.ComputeBytes(input);
+            return res.GetBytes();
+        }
+
+        /// <summary>
+        /// Calculates a SHA3-384 hash signature.
+        /// </summary>
+        /// <param name="input">The byte array for which to calculate the hash</param>
+        /// <returns>The SHA3-384 digest.</returns>
+        public static byte[] SHA3_384(byte[] input)
+        {
+            IHash hash = HashFactory.Crypto.SHA3.CreateKeccak384();
+            HashResult res = hash.ComputeBytes(input);
+            return res.GetBytes();
+        }
+
+        /// <summary>
+        /// Calculates a SHA3-512 hash signature.
+        /// </summary>
+        /// <param name="input">The byte array for which to calculate the hash</param>
+        /// <returns>The SHA3-512 digest.</returns>
+        public static byte[] SHA3_512(byte[] input)
+        {
+            IHash hash = HashFactory.Crypto.SHA3.CreateKeccak512();
+            HashResult res = hash.ComputeBytes(input);
+            return res.GetBytes();
+        }
+
 
         /// <summary>
         /// Converts a byte array to a hexadecimal string.
