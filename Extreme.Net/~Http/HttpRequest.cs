@@ -184,7 +184,7 @@ namespace Extreme.Net
             //"Content-Type",
             //"Connection",
             "Proxy-Connection",
-            "Host"
+            //"Host"
         };
 
         #endregion
