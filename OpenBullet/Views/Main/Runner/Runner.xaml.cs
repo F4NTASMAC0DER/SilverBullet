@@ -48,7 +48,7 @@ namespace OpenBullet.Views.Main.Runner
             vm.SaveProgress += SaveProgressToDB;
             vm.AskCustomInputs += InitCustomInputs;
 
-            if (SB.OBSettings.General.ChangeRunnerInterface)
+            if (SB.SBSettings.General.ChangeRunnerInterface)
             {
                 SB.Logger.LogInfo(Components.About, "Changed the Runner interface");
                 Grid.SetColumn(rightGrid, 0);
@@ -132,7 +132,7 @@ namespace OpenBullet.Views.Main.Runner
 
         private void PlayHitSound(IRunnerMessaging sender, Hit hit)
         {
-            if (SB.OBSettings.Sounds.EnableSounds && hit.Type == "SUCCESS")
+            if (SB.SBSettings.Sounds.EnableSounds && hit.Type == "SUCCESS")
             {
                 try
                 {
@@ -148,7 +148,7 @@ namespace OpenBullet.Views.Main.Runner
 
         private void PlayReloadSound(IRunnerMessaging sender)
         {
-            if (SB.OBSettings.Sounds.EnableSounds)
+            if (SB.SBSettings.Sounds.EnableSounds)
             {
                 try
                 {
@@ -219,7 +219,7 @@ namespace OpenBullet.Views.Main.Runner
                     // Check if the required plugins are present
                     try
                     {
-                        OBIOManager.CheckRequiredPlugins(SB.BlockPlugins.Select(b => b.Name), vm.Config);
+                        SBIOManager.CheckRequiredPlugins(SB.BlockPlugins.Select(b => b.Name), vm.Config);
                     }
                     catch (Exception ex)
                     {
@@ -252,8 +252,8 @@ namespace OpenBullet.Views.Main.Runner
         #region Private Setup Methods
         private void SetupSoundPlayers()
         {
-            var hitSound = $"Sounds/{SB.OBSettings.Sounds.OnHitSound}";
-            var reloadSound = $"Sounds/{SB.OBSettings.Sounds.OnReloadSound}";
+            var hitSound = $"Sounds/{SB.SBSettings.Sounds.OnHitSound}";
+            var reloadSound = $"Sounds/{SB.SBSettings.Sounds.OnReloadSound}";
             if (File.Exists(hitSound)) hitPlayer = new SoundPlayer(hitSound);
             if (File.Exists(reloadSound)) reloadPlayer = new SoundPlayer(reloadSound);
             SB.Logger.LogInfo(Components.Runner, "Set up sound players");
@@ -263,7 +263,7 @@ namespace OpenBullet.Views.Main.Runner
         #region External Set Methods
         public void SetConfig(Config config)
         {
-            vm.SetConfig(config, SB.OBSettings.General.RecommendedBots);
+            vm.SetConfig(config, SB.SBSettings.General.RecommendedBots);
             RetrieveRecord();
         }
 

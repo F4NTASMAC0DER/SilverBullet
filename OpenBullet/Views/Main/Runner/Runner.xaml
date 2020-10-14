@@ -877,15 +877,16 @@
                         Margin="0,0,0,0"
                         FontWeight="Bold">
                         <DockPanel>
-                            <iconPacks:PackIconMaterial
+                            <iconPacks:PackIconUnicons
                                 Width="15"
                                 Margin="-4,1,0,0"
                                 VerticalAlignment="Center"
-                                Kind="ServerNetwork" />
+                                Kind="Dashboard" />
                             <TextBlock
                                 Margin="4,-1,0,0"
-                                VerticalAlignment="Center">
-                                PROXIES
+                                VerticalAlignment="Center"
+                                ToolTip="Proxies &amp; Performance">
+                                PROXIES &amp; PERF
                             </TextBlock>
                         </DockPanel>
                     </Label>
@@ -928,6 +929,15 @@
                             ToolTip="Remaining balance of your captcha solving service account" />
                         <Label
                             Content="{Binding BalanceString}"
+                            FontWeight="Bold" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label
+                            Content="Usage:"
+                            FontWeight="Bold"
+                            ToolTip="Cpu,Ram usaged" />
+                        <Label
+                            Content="{Binding Usage}"
                             FontWeight="Bold" />
                     </StackPanel>
                 </StackPanel>
