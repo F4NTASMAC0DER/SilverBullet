@@ -63,13 +63,13 @@ namespace OpenBullet.Views.Main.Settings
 
         private void saveButton_Click(object sender, RoutedEventArgs e)
         {
-            OBIOManager.SaveSettings(SB.obSettingsFile, SB.OBSettings);
+            SBIOManager.SaveSettings(SB.obSettingsFile, SB.SBSettings);
         }
 
         private void resetButton_Click(object sender, RoutedEventArgs e)
         {
             if (MessageBox.Show("Are you sure you want to reset all your OpenBullet settings?", "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-                SB.OBSettings.Reset();
+                SB.SBSettings.Reset();
         }
     }
 }
