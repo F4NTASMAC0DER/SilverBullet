@@ -476,7 +476,7 @@ TAKELINE:
             var second = "";
             if (Comparer != Comparer.Exists && Comparer != Comparer.DoesNotExist)
                 second = LineParser.ParseLiteral(ref cfLine, "STRING");
-            return (Condition.ReplaceAndVerify(first, Comparer, second, data));
+            return (Functions.Conditions.Condition.ReplaceAndVerify(first, Comparer, second, data));
         }
 
         /// <summary>
