@@ -26,7 +26,7 @@ namespace OpenBullet.Views.Main.Settings.OpenBullet
 
         public Sources()
         {
-            vm = SB.OBSettings.Sources;
+            vm = SB.SBSettings.Sources;
             DataContext = vm;
 
             InitializeComponent();

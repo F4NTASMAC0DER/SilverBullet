@@ -12,7 +12,7 @@ namespace OpenBullet.Views.Main.Settings.OpenBullet
         public Sounds()
         {
             InitializeComponent();
-            DataContext = SB.OBSettings.Sounds;
+            DataContext = SB.SBSettings.Sounds;
         }
     }
 }

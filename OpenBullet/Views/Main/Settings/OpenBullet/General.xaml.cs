@@ -12,7 +12,7 @@ namespace OpenBullet.Views.Main.Settings.OpenBullet
         public General()
         {
             InitializeComponent();
-            DataContext = SB.OBSettings.General;
+            DataContext = SB.SBSettings.General;
         }
     }
 }

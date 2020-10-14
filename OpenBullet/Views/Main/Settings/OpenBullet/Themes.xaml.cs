@@ -20,27 +20,27 @@ namespace OpenBullet.Views.Main.Settings.OpenBullet
         public Themes()
         {
             InitializeComponent();
-            DataContext = SB.OBSettings.Themes;
+            DataContext = SB.SBSettings.Themes;
             
             // Load all the saved colors
             SetColors();
             SetColorPreviews();
             SetImagePreviews();
-            SB.MainWindow.AllowsTransparency = SB.OBSettings.Themes.AllowTransparency;
+            SB.MainWindow.AllowsTransparency = SB.SBSettings.Themes.AllowTransparency;
         }
 
         public void SetColors()
         {
-            SetAppColor("BackgroundMain", SB.OBSettings.Themes.BackgroundMain);
-            SetAppColor("BackgroundSecondary", SB.OBSettings.Themes.BackgroundSecondary);
-            SetAppColor("ForegroundMain", SB.OBSettings.Themes.ForegroundMain);
-            SetAppColor("ForegroundGood", SB.OBSettings.Themes.ForegroundGood);
-            SetAppColor("ForegroundBad", SB.OBSettings.Themes.ForegroundBad);
-            SetAppColor("ForegroundCustom", SB.OBSettings.Themes.ForegroundCustom);
-            SetAppColor("ForegroundRetry", SB.OBSettings.Themes.ForegroundRetry);
-            SetAppColor("ForegroundToCheck", SB.OBSettings.Themes.ForegroundToCheck);
-            SetAppColor("ForegroundMenuSelected", SB.OBSettings.Themes.ForegroundMenuSelected);
-            SetAppColor(nameof(SB.OBSettings.Themes.ForegroundOcrRate), SB.OBSettings.Themes.ForegroundOcrRate);
+            SetAppColor("BackgroundMain", SB.SBSettings.Themes.BackgroundMain);
+            SetAppColor("BackgroundSecondary", SB.SBSettings.Themes.BackgroundSecondary);
+            SetAppColor("ForegroundMain", SB.SBSettings.Themes.ForegroundMain);
+            SetAppColor("ForegroundGood", SB.SBSettings.Themes.ForegroundGood);
+            SetAppColor("ForegroundBad", SB.SBSettings.Themes.ForegroundBad);
+            SetAppColor("ForegroundCustom", SB.SBSettings.Themes.ForegroundCustom);
+            SetAppColor("ForegroundRetry", SB.SBSettings.Themes.ForegroundRetry);
+            SetAppColor("ForegroundToCheck", SB.SBSettings.Themes.ForegroundToCheck);
+            SetAppColor("ForegroundMenuSelected", SB.SBSettings.Themes.ForegroundMenuSelected);
+            SetAppColor(nameof(SB.SBSettings.Themes.ForegroundOcrRate), SB.SBSettings.Themes.ForegroundOcrRate);
 
             // This sets the background for the mainwindow (alternatively solid or image)
             SB.MainWindow.SetStyle();
@@ -74,8 +74,8 @@ namespace OpenBullet.Views.Main.Settings.OpenBullet
         {
             try
             {
-                backgroundImagePreview.Source = GetImageBrush(SB.OBSettings.Themes.BackgroundImage);
-                backgroundLogoPreview.Source = GetImageBrush(SB.OBSettings.Themes.BackgroundLogo);
+                backgroundImagePreview.Source = GetImageBrush(SB.SBSettings.Themes.BackgroundImage);
+                backgroundLogoPreview.Source = GetImageBrush(SB.SBSettings.Themes.BackgroundLogo);
             }
             catch { }
         }
@@ -97,16 +97,16 @@ namespace OpenBullet.Views.Main.Settings.OpenBullet
 
         private void resetButton_Click(object sender, RoutedEventArgs e)
         {
-            SB.OBSettings.Themes.BackgroundMain = "#222";
-            SB.OBSettings.Themes.BackgroundSecondary = "#111";
-            SB.OBSettings.Themes.ForegroundMain = "#dcdcdc";
-            SB.OBSettings.Themes.ForegroundGood = "#adff2f";
-            SB.OBSettings.Themes.ForegroundBad = "#ff6347";
-            SB.OBSettings.Themes.ForegroundCustom = "#ff8c00";
-            SB.OBSettings.Themes.ForegroundRetry = "#ffff00";
-            SB.OBSettings.Themes.ForegroundToCheck = "#7fffd4";
-            SB.OBSettings.Themes.ForegroundMenuSelected = "#1e90ff";
-            SB.OBSettings.Themes.ForegroundOcrRate = "#ff8cc6ff";
+            SB.SBSettings.Themes.BackgroundMain = "#222";
+            SB.SBSettings.Themes.BackgroundSecondary = "#111";
+            SB.SBSettings.Themes.ForegroundMain = "#dcdcdc";
+            SB.SBSettings.Themes.ForegroundGood = "#adff2f";
+            SB.SBSettings.Themes.ForegroundBad = "#ff6347";
+            SB.SBSettings.Themes.ForegroundCustom = "#ff8c00";
+            SB.SBSettings.Themes.ForegroundRetry = "#ffff00";
+            SB.SBSettings.Themes.ForegroundToCheck = "#7fffd4";
+            SB.SBSettings.Themes.ForegroundMenuSelected = "#1e90ff";
+            SB.SBSettings.Themes.ForegroundOcrRate = "#ff8cc6ff";
 
             SetColors();
             SetColorPreviews();
@@ -120,7 +120,7 @@ namespace OpenBullet.Views.Main.Settings.OpenBullet
        + "All Graphics Types|*.bmp;*.jpg;*.jpeg;*.png;*.tif;*.tiff";
             ofd.FilterIndex = 4;
             ofd.ShowDialog();
-            SB.OBSettings.Themes.BackgroundImage = ofd.FileName;
+            SB.SBSettings.Themes.BackgroundImage = ofd.FileName;
 
             SetColors();
             SetImagePreviews();
@@ -133,7 +133,7 @@ namespace OpenBullet.Views.Main.Settings.OpenBullet
        + "All Graphics Types|*.bmp;*.jpg;*.jpeg;*.png;*.tif;*.tiff";
             ofd.FilterIndex = 4;
             ofd.ShowDialog();
-            SB.OBSettings.Themes.BackgroundLogo = ofd.FileName;
+            SB.SBSettings.Themes.BackgroundLogo = ofd.FileName;
 
             SetColors();
             SetImagePreviews();
@@ -142,7 +142,7 @@ namespace OpenBullet.Views.Main.Settings.OpenBullet
         private void ColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
         {
             if (e.NewValue.HasValue)
-                SB.OBSettings.Themes.GetType().GetProperty(((ColorPicker)sender).Name.ToString()).SetValue(SB.OBSettings.Themes, ColorToHtml(e.NewValue.Value), null);
+                SB.SBSettings.Themes.GetType().GetProperty(((ColorPicker)sender).Name.ToString()).SetValue(SB.SBSettings.Themes, ColorToHtml(e.NewValue.Value), null);
 
             SetColors();
         }
