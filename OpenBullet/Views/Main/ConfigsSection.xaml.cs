@@ -13,6 +13,7 @@ namespace OpenBullet.Views.Main
         public ConfigManager ConfigManagerPage;
         public Stacker StackerPage;
         public ConfigOtherOptions OtherOptionsPage;
+        public ConfigOcrSettings ConfigOcrSettings;
 
         public ConfigViewModel CurrentConfig => SB.ConfigManager.CurrentConfig;
 
@@ -68,7 +69,7 @@ namespace OpenBullet.Views.Main
             {
                 if (CurrentConfig != null)
                 {
-                    var ConfigOcrSettings = new ConfigOcrSettings();
+                    if (ConfigOcrSettings == null) ConfigOcrSettings = new ConfigOcrSettings();
                     Main.Content = ConfigOcrSettings;
                     menuOptionSelected(menuOptionOCRSettings);
                 }
