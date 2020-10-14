@@ -1,13 +1,15 @@
-﻿using RuriLib;
-using RuriLib.Interfaces;
-using RuriLib.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Media;
+using OpenBullet.Views.CustomMessageBox;
+using RuriLib;
+using RuriLib.Interfaces;
+using RuriLib.ViewModels;
 
 namespace OpenBullet
 {
@@ -27,7 +29,8 @@ namespace OpenBullet
         SeleniumTools,
         Database,
         About,
-        Unknown
+        Unknown,
+        OcrTesting
     }
 
     public class LoggerViewModel : ViewModelBase, ILogger
@@ -43,7 +46,7 @@ namespace OpenBullet
                 try
                 {
                     // The settings might be null
-                    return SB.OBSettings.General.EnableLogging;
+                    return SB.SBSettings.General.EnableLogging;
                 }
                 catch
                 {
@@ -59,7 +62,7 @@ namespace OpenBullet
                 try
                 {
                     // The settings might be null
-                    return SB.OBSettings.General.LogBufferSize;
+                    return SB.SBSettings.General.LogBufferSize;
                 }
                 catch
                 {
@@ -88,7 +91,7 @@ namespace OpenBullet
         #region Filters
         private bool onlyErrors = false;
         public bool OnlyErrors { get { return onlyErrors; } set { onlyErrors = value; OnPropertyChanged(); Refresh(); } }
-        
+
         private string searchString = "";
         public string SearchString { get { return searchString; } set { searchString = value; OnPropertyChanged(); } }
 
@@ -114,13 +117,19 @@ namespace OpenBullet
             Log(Components.Unknown, level, message, prompt, timeout);
         }
 
-        public void Log(Components component, LogLevel level, string message, bool prompt = false, int timeout = 0)
+        public MessageBoxResult Log(Components component, LogLevel level, string message, bool prompt = false, int timeout = 0, bool isCancelButtonVisible = false)
         {
             if (prompt)
             {
                 if (timeout == 0)
                 {
-                    MessageBox.Show(message, level.ToString());
+                    if (!isCancelButtonVisible)
+                    {
+                        CustomMsgBox.Show(message, level.ToString());
+                        return MessageBoxResult.OK;
+                    }
+                    else
+                        return CustomMsgBox.ShowWithCancel(message, level.ToString());
                 }
                 else
                 {
@@ -134,7 +143,7 @@ namespace OpenBullet
 
             if (!Enabled)
             {
-                return;
+                return MessageBoxResult.None;
             }
 
             App.Current.Dispatcher.Invoke(new Action(() =>
@@ -143,6 +152,7 @@ namespace OpenBullet
                 InsertEntry(entry);
                 LogToFile(entry);
             }));
+            return MessageBoxResult.None;
         }
 
         public void LogInfo(Components component, string message, bool prompt = false, int timeout = 0)
@@ -179,7 +189,7 @@ namespace OpenBullet
         {
             try
             {
-                if (SB.OBSettings.General.LogToFile)
+                if (SB.SBSettings.General.LogToFile)
                 {
                     File.AppendAllText(SB.logFile, $"[{entry.LogTime}] ({entry.LogLevel}) {entry.LogComponent} - " + entry.LogString + Environment.NewLine);
                 }
