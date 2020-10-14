@@ -5,11 +5,12 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:OpenBullet"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="Silver Bullet"
     Width="800"
     Height="620"
-    MinWidth="887"
+    MinWidth="880"
     MinHeight="620"
     Margin="0,0,0,0"
     AllowsTransparency="False"
@@ -91,60 +92,87 @@
                 Grid.Column="2"
                 Orientation="Horizontal"
                 WindowChrome.IsHitTestVisibleInChrome="True">
+                <StackPanel.Resources>
+                    <Style
+                        BasedOn="{StaticResource MaterialDesignRaisedDarkButton}"
+                        TargetType="Button">
+                        <Setter Property="Background" Value="{DynamicResource BackgroundSecondary}" />
+                        <Setter Property="Cursor" Value="Arrow" />
+                        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="0" />
+                        <Setter Property="materialDesign:RippleAssist.Feedback">
+                            <Setter.Value>
+                                <SolidColorBrush
+                                    Opacity="0.3"
+                                    Color="GhostWhite" />
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </StackPanel.Resources>
                 <!-- <Image x:Name="themeImage" Margin="0 0 4 0" Height="20" Source="/Images/Themes/charles2.png" /> -->
                 <!--<Image x:Name="themeImage2" Height="30" Source="/Images/Themes/ci.png" />-->
-                <StackPanel
-                    x:Name="minimizePanel"
-                    Background="{DynamicResource BackgroundSecondary}"
-                    MouseDown="minimizePanel_MouseDown"
-                    MouseEnter="minimizePanel_MouseEnter"
-                    MouseLeave="minimizePanel_MouseLeave"
-                    MouseLeftButtonUp="minimizePanel_MouseLeftButtonUp">
-                    <iconPacks:PackIconFontAwesome
-                        x:Name="minimizeImage"
-                        Width="15"
-                        Height="15"
-                        Margin="7"
-                        Foreground="White"
-                        Kind="WindowMinimizeRegular"
-                        ToolTip="Minimize" />
-
-                </StackPanel>
-                <StackPanel
-                    x:Name="maximizePanel"
-                    Background="{DynamicResource BackgroundSecondary}"
-                    MouseDown="maximizePanel_MouseDown"
-                    MouseEnter="maximizePanel_MouseEnter"
-                    MouseLeave="maximizePanel_MouseLeave"
-                    MouseLeftButtonUp="maximizePanel_MouseLeftButtonUp">
-                    <iconPacks:PackIconFontAwesome
-                        x:Name="maximizeImage"
-                        Width="15"
-                        Height="15"
-                        Margin="7"
-                        Foreground="White"
-                        Kind="WindowMaximizeRegular"
-                        ToolTip="Maximize" />
-                </StackPanel>
-                <StackPanel
-                    x:Name="quitPanel"
-                    Background="{DynamicResource BackgroundSecondary}"
-                    MouseDown="quitPanel_MouseDown"
-                    MouseEnter="quitPanel_MouseEnter"
-                    MouseLeave="quitPanel_MouseLeave"
-                    MouseLeftButtonUp="quitPanel_MouseLeftButtonUp">
-                    <iconPacks:PackIconMaterial
-                        Width="15"
-                        Height="15"
-                        Margin="7"
-                        VerticalAlignment="Center"
-                        Foreground="White"
-                        Kind="Close" />
+                <Button
+                    x:Name="minimizeButton"
+                    Width="32"
+                    BorderBrush="{Binding ElementName=minimizeButton, Path=Background}"
+                    Click="minimizeButton_Click"
+                    MouseEnter="minimizeButton_MouseEnter"
+                    MouseLeave="minimizeButton_MouseLeave"
+                    ToolTip="Minimize">
+                    <Grid>
+                        <iconPacks:PackIconFontAwesome
+                            x:Name="minimizeImage"
+                            Width="15"
+                            Height="15"
+                            Margin="-8,1,-8,0"
+                            Foreground="White"
+                            Kind="WindowMinimizeRegular" />
+                    </Grid>
+                </Button>
+                <Button
+                    x:Name="maximizeButton"
+                    Width="32"
+                    BorderBrush="{Binding ElementName=maximizeButton, Path=Background}"
+                    Click="maximizeButton_Click"
+                    MouseEnter="maximizeButton_MouseEnter"
+                    MouseLeave="maximizeButton_MouseLeave"
+                    ToolTip="Maximize">
+                    <Grid>
+                        <iconPacks:PackIconFontAwesome
+                            x:Name="maximizeImage"
+                            Width="15"
+                            Height="15"
+                            Margin="-7,0,-8,0"
+                            Foreground="White"
+                            Kind="WindowMaximizeRegular" />
+                    </Grid>
+                </Button>
+                <Button
+                    x:Name="quitButton"
+                    Width="32"
+                    BorderBrush="{Binding ElementName=quitButton, Path=Background}"
+                    Click="quitButton_Click"
+                    MouseEnter="quitButton_MouseEnter"
+                    MouseLeave="quitButton_MouseLeave"
+                    ToolTip="Close">
+                    <materialDesign:RippleAssist.Feedback>
+                        <SolidColorBrush
+                            Opacity="0.66"
+                            Color="GhostWhite" />
+                    </materialDesign:RippleAssist.Feedback>
+                    <Grid>
+                        <iconPacks:PackIconMaterial
+                            Width="15"
+                            Height="16"
+                            Margin="-7,4,-8,5"
+                            VerticalAlignment="Center"
+                            Foreground="White"
+                            Kind="Close" />
+                    </Grid>
                     <!--<Image
                         x:Name="quitImage"
                         Source="/Images/Icons/quit.png"
                         ToolTip="Quit" />-->
-                </StackPanel>
+                </Button>
             </StackPanel>
         </Grid>
 
@@ -167,104 +195,117 @@
                 Margin="0,0,0,0"
                 Orientation="Horizontal">
                 <StackPanel.Resources>
-                    <Style TargetType="Label">
+                    <Style
+                        BasedOn="{StaticResource MaterialDesignToolButton}"
+                        TargetType="Button">
                         <Setter Property="FontWeight" Value="Bold" />
                         <Setter Property="Margin" Value="0,0,1.3,0" />
                         <Setter Property="Foreground" Value="{DynamicResource ForegroundMain}" />
                         <Setter Property="FontFamily" Value="/OpenBullet;component/Fonts/#Century Gothic" />
                         <Setter Property="FontSize" Value="13.7" />
                         <Setter Property="VerticalAlignment" Value="Center" />
+                        <Setter Property="materialDesign:RippleAssist.Feedback">
+                            <Setter.Value>
+                                <SolidColorBrush
+                                    Opacity="0.3"
+                                    Color="GhostWhite" />
+                            </Setter.Value>
+                        </Setter>
                     </Style>
                 </StackPanel.Resources>
-                <Label
+                <Button
                     x:Name="menuOptionRunner"
-                    Margin="-5,0,0,0"
-                    MouseDown="menuOptionRunner_MouseDown">
-                    <DockPanel>
+                    Background="Transparent"
+                    Click="menuOptionRunner_Click"
+                    Foreground="{DynamicResource ForegroundMain}">
+                    <DockPanel Margin="0,-3,0,0">
                         <Path
                             Width="16"
                             Height="18.5"
-                            Margin="0,1,1,2"
+                            Margin="0,1,1,0"
                             VerticalAlignment="Center"
                             Data="M12,15C7.58,15 4,16.79 4,19V21H20V19C20,16.79 16.42,15 12,15M8,9A4,4 0 0,0 12,13A4,4 0 0,0 16,9M11.5,2C11.2,2 11,2.21 11,2.5V5.5H10V3C10,3 7.75,3.86 7.75,6.75C7.75,6.75 7,6.89 7,8H17C16.95,6.89 16.25,6.75 16.25,6.75C16.25,3.86 14,3 14,3V5.5H13V2.5C13,2.21 12.81,2 12.5,2H11.5Z"
                             Fill="{Binding ElementName=menuOptionRunner, Path=Foreground}"
                             Stretch="Fill" />
-                        <TextBlock Margin="2,2,0,0">Runner</TextBlock>
+                        <TextBlock Margin="2,3,0,0">Runner</TextBlock>
                     </DockPanel>
-                </Label>
-                <Label
+                </Button>
+                <Button
                     x:Name="menuOptionProxyManager"
-                    MouseDown="menuOptionProxyManager_MouseDown">
-                    <DockPanel>
-                        <iconPacks:PackIconFontAwesome Kind="ServerSolid" />
-                        <TextBlock Margin="4,0,0,0">Proxies</TextBlock>
+                    Click="menuOptionProxyManager_Click"
+                    Foreground="{DynamicResource ForegroundMain}">
+                    <DockPanel Margin="0,0,0,1">
+                        <iconPacks:PackIconFontAwesome
+                            Margin="0,1,0,0"
+                            Kind="ServerSolid" />
+                        <TextBlock Margin="4,1,0,0">Proxies</TextBlock>
                     </DockPanel>
-                </Label>
-                <Label
+                </Button>
+                <Button
                     x:Name="menuOptionWordlistManager"
-                    MouseDown="menuOptionWordlistManager_MouseDown">
+                    Click="menuOptionWordlistManager_Click">
                     <DockPanel>
                         <iconPacks:PackIconFontAwesome Kind="CopySolid" />
                         <TextBlock Margin="3,0,0,0">Wordlists</TextBlock>
                     </DockPanel>
-                </Label>
-                <Label
+                </Button>
+                <Button
                     x:Name="menuOptionConfigCreator"
-                    MouseDown="menuOptionConfigCreator_MouseDown">
+                    Click="menuOptionConfigCreator_Click">
                     <DockPanel>
                         <iconPacks:PackIconIonicons Kind="CogMD" />
                         <TextBlock Margin="3,0,0,0">Configs</TextBlock>
                     </DockPanel>
-                </Label>
-                <Label
+                </Button>
+                <Button
                     x:Name="menuOptionHitsDatabase"
-                    MouseDown="menuOptionHitsDatabase_MouseDown">
+                    Click="menuOptionHitsDatabase_Click">
                     <DockPanel>
                         <iconPacks:PackIconFontAwesome Kind="DatabaseSolid" />
                         <TextBlock Margin="3,0,0,0">Hits DB</TextBlock>
                     </DockPanel>
-                </Label>
-                <Label
+                </Button>
+                <Button
                     x:Name="menuOptionTools"
-                    MouseDown="menuOptionTools_MouseDown">
+                    Click="menuOptionTools_Click">
                     <DockPanel>
                         <iconPacks:PackIconFontAwesome Kind="ToolsSolid" />
                         <TextBlock Margin="4,0,0,0">Tools</TextBlock>
                     </DockPanel>
-                </Label>
-                <Label
+                </Button>
+                <Button
                     x:Name="menuOptionPlugins"
-                    MouseDown="menuOptionPlugins_MouseDown">
+                    Click="menuOptionPlugins_Click">
                     <DockPanel>
                         <iconPacks:PackIconFontAwesome Kind="PlugSolid" />
                         <TextBlock Margin="2,0,0,0">Plugins</TextBlock>
                     </DockPanel>
-                </Label>
-                <Label
+                </Button>
+                <Button
                     x:Name="menuOptionSettings"
-                    MouseDown="menuOptionSettings_MouseDown">
+                    Click="menuOptionSettings_Click">
                     <DockPanel>
                         <iconPacks:PackIconMaterial Kind="Cog" />
                         <TextBlock Margin="3,0,0,0">Settings</TextBlock>
                     </DockPanel>
-                </Label>
-                <Label
+                </Button>
+                <Button
                     x:Name="menuOptionAbout"
-                    MouseDown="menuOptionAbout_MouseDown">
+                    Click="menuOptionAbout_Click">
                     <DockPanel>
                         <iconPacks:PackIconMaterial Kind="HelpCircleOutline" />
                         <TextBlock Margin="3,0,0,0">Help</TextBlock>
                     </DockPanel>
-                </Label>
-                <Label
+                </Button>
+                <Button
                     x:Name="menuOptionSupport"
-                    Margin="-8,0,0,0"
-                    MouseDown="menuOptionSupport_MouseDown">
-                    <DockPanel>
+                    Margin="0,0,0,0"
+                    Click="menuOptionSupport_Click">
+                    <DockPanel Margin="-4,0,0,0">
                         <iconPacks:PackIconFontAwesome Kind="EllipsisVSolid" />
                         <TextBlock Margin="0,0,0,0">Supporters</TextBlock>
                     </DockPanel>
-                </Label>
+                </Button>
             </StackPanel>
 
             <Grid
@@ -366,6 +407,7 @@
             PreviewMouseLeftButtonDown="gripImage_PreviewMouseLeftButtonDown"
             PreviewMouseLeftButtonUp="gripImage_PreviewMouseLeftButtonUp"
             PreviewMouseMove="gripImage_PreviewMouseMove"
+            RenderOptions.BitmapScalingMode="HighQuality"
             Source="/Images/Icons/grip.png" />
 
     </Grid>

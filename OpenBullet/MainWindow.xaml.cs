@@ -53,8 +53,8 @@ namespace OpenBullet
         public Support SupportPage { get; private set; }
 
         System.Windows.Point _startPosition;
-        bool _isResizing = false;
-        bool _canMinimize, _canQuit, _canMaximize;
+        bool _isResizing = false,
+            _canQuit;
 
         public MainWindow()
         {
@@ -122,7 +122,7 @@ namespace OpenBullet
             // Initialize Settings
             SB.Settings.RLSettings = new RLSettingsViewModel();
             SB.Settings.ProxyManagerSettings = new ProxyManagerSettings();
-            SB.OBSettings = new OBSettingsViewModel();
+            SB.SBSettings = new SBSettingsViewModel();
 
             // Create / Load Settings
             if (!File.Exists(SB.rlSettingsFile))
@@ -158,19 +158,19 @@ namespace OpenBullet
             {
                 MessageBox.Show("OpenBullet Settings file not found, generating a default one");
                 SB.Logger.LogWarning(Components.Main, "OpenBullet Settings file not found, generating a default one");
-                OBIOManager.SaveSettings(SB.obSettingsFile, SB.OBSettings);
+                SBIOManager.SaveSettings(SB.obSettingsFile, SB.SBSettings);
                 SB.Logger.LogInfo(Components.Main, $"Created the default OpenBullet Settings file {SB.obSettingsFile}");
             }
             else
             {
-                SB.OBSettings = OBIOManager.LoadSettings(SB.obSettingsFile);
+                SB.SBSettings = SBIOManager.LoadSettings(SB.obSettingsFile);
                 SB.Logger.LogInfo(Components.Main, "Loaded the existing OpenBullet Settings file");
             }
 
             // If there is no DB backup or if it's more than 1 day old, back up the DB
             try
             {
-                if (SB.OBSettings.General.BackupDB &&
+                if (SB.SBSettings.General.BackupDB &&
                     (!File.Exists(SB.dataBaseBackupFile) ||
                     (File.Exists(SB.dataBaseBackupFile) && ((DateTime.Now - File.GetCreationTime(SB.dataBaseBackupFile)).TotalDays > 1))))
                 {
@@ -191,7 +191,7 @@ namespace OpenBullet
                 SB.Logger.LogError(Components.Main, $"Could not backup the DB: {ex.Message}");
             }
 
-            Topmost = SB.OBSettings.General.AlwaysOnTop;
+            Topmost = SB.SBSettings.General.AlwaysOnTop;
 
             // Load Plugins
             var (plugins, blockPlugins) = Loader.LoadPlugins(SB.pluginsFolder);
@@ -249,7 +249,7 @@ namespace OpenBullet
             RunnerManagerPage = new RunnerManager();
 
             // If we create first runner and there was no session to restore
-            if (SB.OBSettings.General.AutoCreateRunner & !SB.RunnerManager.RestoreSession())
+            if (SB.SBSettings.General.AutoCreateRunner & !SB.RunnerManager.RestoreSession())
             {
                 var firstRunner = SB.RunnerManager.Create();
                 CurrentRunnerPage = SB.RunnerManager.RunnersCollection.FirstOrDefault().View;
@@ -273,22 +273,22 @@ namespace OpenBullet
             AboutPage = new Help();
             SupportPage = new Support();
 
-            menuOptionRunner_MouseDown(this, null);
+            menuOptionRunner_Click(this, null);
 
-            var width = SB.OBSettings.General.StartingWidth;
-            var height = SB.OBSettings.General.StartingHeight;
+            var width = SB.SBSettings.General.StartingWidth;
+            var height = SB.SBSettings.General.StartingHeight;
             if (width > 800) Width = width;
             if (height > 600) Height = height;
 
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
-            if (SB.OBSettings.Themes.EnableSnow)
+            if (SB.SBSettings.Themes.EnableSnow)
                 Loaded += MainWindow_Loaded;
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            var t = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(10000 / SB.OBSettings.Themes.SnowAmount) };
+            var t = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(10000 / SB.SBSettings.Themes.SnowAmount) };
             t.Tick += (s, ea) => Snow();
             t.Start();
         }
@@ -353,63 +353,63 @@ namespace OpenBullet
             Main.Content = page;
         }
 
-        #region Menu Options MouseDown Events
-        public void menuOptionRunner_MouseDown(object sender, MouseButtonEventArgs e)
+        #region Menu Options Click Events
+        public void menuOptionRunner_Click(object sender, RoutedEventArgs e)
         {
             if (CurrentRunnerPage == null) Main.Content = RunnerManagerPage;
             else Main.Content = CurrentRunnerPage;
             menuOptionSelected(menuOptionRunner);
         }
 
-        private void menuOptionProxyManager_MouseDown(object sender, MouseButtonEventArgs e)
+        private void menuOptionProxyManager_Click(object sender, RoutedEventArgs e)
         {
             Main.Content = ProxyManagerPage;
             menuOptionSelected(menuOptionProxyManager);
         }
 
-        private void menuOptionWordlistManager_MouseDown(object sender, MouseButtonEventArgs e)
+        private void menuOptionWordlistManager_Click(object sender, RoutedEventArgs e)
         {
             Main.Content = WordlistManagerPage;
             menuOptionSelected(menuOptionWordlistManager);
         }
 
-        private void menuOptionConfigCreator_MouseDown(object sender, MouseButtonEventArgs e)
+        private void menuOptionConfigCreator_Click(object sender, RoutedEventArgs e)
         {
             Main.Content = ConfigsPage;
             menuOptionSelected(menuOptionConfigCreator);
         }
 
-        private void menuOptionHitsDatabase_MouseDown(object sender, MouseButtonEventArgs e)
+        private void menuOptionHitsDatabase_Click(object sender, RoutedEventArgs e)
         {
             Main.Content = HitsDBPage;
             menuOptionSelected(menuOptionHitsDatabase);
         }
 
-        private void menuOptionTools_MouseDown(object sender, MouseButtonEventArgs e)
+        private void menuOptionTools_Click(object sender, RoutedEventArgs e)
         {
             Main.Content = ToolsPage;
             menuOptionSelected(menuOptionTools);
         }
 
-        private void menuOptionPlugins_MouseDown(object sender, MouseButtonEventArgs e)
+        private void menuOptionPlugins_Click(object sender, RoutedEventArgs e)
         {
             Main.Content = PluginsPage;
             menuOptionSelected(menuOptionPlugins);
         }
 
-        private void menuOptionSettings_MouseDown(object sender, MouseButtonEventArgs e)
+        private void menuOptionSettings_Click(object sender, RoutedEventArgs e)
         {
             Main.Content = OBSettingsPage;
             menuOptionSelected(menuOptionSettings);
         }
 
-        private void menuOptionAbout_MouseDown(object sender, MouseButtonEventArgs e)
+        private void menuOptionAbout_Click(object sender, RoutedEventArgs e)
         {
             Main.Content = AboutPage;
             menuOptionSelected(menuOptionAbout);
         }
 
-        private void menuOptionSupport_MouseDown(object sender, MouseButtonEventArgs e)
+        private void menuOptionSupport_Click(object sender, RoutedEventArgs e)
         {
             Main.Content = SupportPage;
             menuOptionSelected(sender);
@@ -421,12 +421,12 @@ namespace OpenBullet
             {
                 try
                 {
-                    var c = (Label)child;
+                    var c = (Button)child;
                     c.Foreground = Utils.GetBrush("ForegroundMain");
                 }
                 catch { }
             }
-            ((Label)sender).Foreground = Utils.GetBrush("ForegroundMenuSelected");
+            ((Button)sender).Foreground = Utils.GetBrush("ForegroundMenuSelected");
         }
 
         private void IconDiscord_MouseDown(object sender, MouseButtonEventArgs e)
@@ -469,36 +469,26 @@ namespace OpenBullet
 
         #endregion
 
-        private void quitPanel_MouseEnter(object sender, MouseEventArgs e)
+        private void quitButton_Click(object sender, RoutedEventArgs e)
         {
-            quitPanel.Background = new SolidColorBrush(Colors.DarkRed);
+            if (CheckOnQuit())
+                Environment.Exit(0);
         }
 
-        private void quitPanel_MouseLeave(object sender, MouseEventArgs e)
+        private void quitButton_MouseEnter(object sender, MouseEventArgs e)
         {
-            quitPanel.Background = new SolidColorBrush(Colors.Transparent);
-            _canQuit = false;
+            quitButton.Background = new SolidColorBrush(Colors.DarkRed);
         }
 
-        private void quitPanel_MouseDown(object sender, MouseButtonEventArgs e)
+        private void quitButton_MouseLeave(object sender, MouseEventArgs e)
         {
-            _canQuit = true;
+            quitButton.Background = new SolidColorBrush(Colors.Transparent);
         }
-
-        private void quitPanel_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            if (_canQuit)
-            {
-                _canQuit = false;
-                if (CheckOnQuit()) Environment.Exit(0);
-            }
-        }
-
 
         private bool CheckOnQuit()
         {
             var active = SB.RunnerManager.RunnersCollection.Count(r => r.ViewModel.Busy);
-            if (!SB.OBSettings.General.DisableQuitWarning || active > 0)
+            if (!SB.SBSettings.General.DisableQuitWarning || active > 0)
             {
                 SB.Logger.LogWarning(Components.Main, "Prompting quit confirmation");
 
@@ -516,7 +506,7 @@ namespace OpenBullet
                 }
             }
 
-            if (!SB.OBSettings.General.DisableNotSavedWarning && !SB.MainWindow.ConfigsPage.ConfigManagerPage.CheckSaved())
+            if (!SB.SBSettings.General.DisableNotSavedWarning && !SB.MainWindow.ConfigsPage.ConfigManagerPage.CheckSaved())
             {
                 SB.Logger.LogWarning(Components.Main, "Config not saved, prompting quit confirmation");
                 if (MessageBox.Show("The Config in Stacker wasn't saved.\nAre you sure you want to quit?",
@@ -531,82 +521,53 @@ namespace OpenBullet
             return true;
         }
 
-        private void maximizePanel_MouseEnter(object sender, MouseEventArgs e)
-        {
-            maximizePanel.Background = new SolidColorBrush(Colors.DimGray);
-        }
-
-        private void maximizePanel_MouseLeave(object sender, MouseEventArgs e)
-        {
-            maximizePanel.Background = new SolidColorBrush(Colors.Transparent);
-            _canMaximize = false;
-        }
-
-        private void maximizePanel_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            _canMaximize = true;
-        }
-
-        private void maximizePanel_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void maximizeButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                if (_canMaximize)
+                if (WindowState == WindowState.Normal)
                 {
-                    _canMaximize = false;
-                    if (WindowState == WindowState.Normal)
-                    {
-                        var screen = WpfScreen.GetScreenFrom(this);
-                        MaxHeight = screen.WorkingArea.Height;
-                        MaxWidth = screen.WorkingArea.Width;
-                        WindowState = WindowState.Maximized;
-                        return;
-                    }
-                    WindowState = WindowState.Normal;
+                    var screen = WpfScreen.GetScreenFrom(this);
+                    MaxHeight = screen.WorkingArea.Height;
+                    MaxWidth = screen.WorkingArea.Width;
+                    WindowState = WindowState.Maximized;
+                    return;
                 }
+                WindowState = WindowState.Normal;
             }
             catch { }
         }
 
-        private void minimizePanel_MouseEnter(object sender, MouseEventArgs e)
+        private void maximizeButton_MouseEnter(object sender, MouseEventArgs e)
         {
-            minimizePanel.Background = new SolidColorBrush(Colors.DimGray);
+            maximizeButton.Background = new SolidColorBrush(Colors.DimGray);
         }
 
-        private void minimizePanel_MouseLeave(object sender, MouseEventArgs e)
+        private void maximizeButton_MouseLeave(object sender, MouseEventArgs e)
         {
-            minimizePanel.Background = new SolidColorBrush(Colors.Transparent);
-            _canMinimize = false;
+            maximizeButton.Background = new SolidColorBrush(Colors.Transparent);
         }
 
-        private void minimizePanel_MouseDown(object sender, MouseButtonEventArgs e)
+        private void minimizeButton_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                _canMinimize = true;
-            }
-            catch { }
+            WindowState = WindowState.Minimized;
         }
 
-        private void minimizePanel_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void minimizeButton_MouseEnter(object sender, MouseEventArgs e)
         {
-            try
-            {
-                if (_canMinimize)
-                {
-                    _canMinimize = false;
-                    WindowState = WindowState.Minimized;
-                }
-            }
-            catch { }
+            minimizeButton.Background = new SolidColorBrush(Colors.DimGray);
+        }
+
+        private void minimizeButton_MouseLeave(object sender, MouseEventArgs e)
+        {
+            minimizeButton.Background = new SolidColorBrush(Colors.Transparent);
         }
 
         private void titleBar_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left && e.ClickCount == 2)
             {
-                _canMaximize = true;
-                maximizePanel_MouseLeftButtonUp(sender, e);
+                maximizeButton_Click(sender, e);
             }
         }
 
@@ -711,7 +672,7 @@ namespace OpenBullet
             {
                 var brush = Utils.GetBrush("BackgroundMain");
 
-                if (!SB.OBSettings.Themes.UseImage)
+                if (!SB.SBSettings.Themes.UseImage)
                 {
                     Background = brush;
                     Main.Background = brush;
@@ -719,10 +680,10 @@ namespace OpenBullet
                 else
                 {
                     // BACKGROUND
-                    if (File.Exists(SB.OBSettings.Themes.BackgroundImage))
+                    if (File.Exists(SB.SBSettings.Themes.BackgroundImage))
                     {
-                        var bbrush = new ImageBrush(new BitmapImage(new Uri(SB.OBSettings.Themes.BackgroundImage)));
-                        bbrush.Opacity = (double)((double)SB.OBSettings.Themes.BackgroundImageOpacity / (double)100);
+                        var bbrush = new ImageBrush(new BitmapImage(new Uri(SB.SBSettings.Themes.BackgroundImage)));
+                        bbrush.Opacity = (double)((double)SB.SBSettings.Themes.BackgroundImageOpacity / (double)100);
                         Background = bbrush;
                     }
                     else
@@ -731,13 +692,13 @@ namespace OpenBullet
                     }
 
                     // LOGO
-                    if (File.Exists(SB.OBSettings.Themes.BackgroundLogo))
+                    if (File.Exists(SB.SBSettings.Themes.BackgroundLogo))
                     {
-                        var lbrush = new ImageBrush(new BitmapImage(new Uri(SB.OBSettings.Themes.BackgroundLogo)));
+                        var lbrush = new ImageBrush(new BitmapImage(new Uri(SB.SBSettings.Themes.BackgroundLogo)));
                         lbrush.AlignmentX = AlignmentX.Center;
                         lbrush.AlignmentY = AlignmentY.Center;
                         lbrush.Stretch = Stretch.None;
-                        lbrush.Opacity = (double)((double)SB.OBSettings.Themes.BackgroundImageOpacity / (double)100);
+                        lbrush.Opacity = (double)((double)SB.SBSettings.Themes.BackgroundImageOpacity / (double)100);
                         Main.Background = lbrush;
                     }
                     else
