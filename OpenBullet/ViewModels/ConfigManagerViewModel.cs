@@ -122,7 +122,7 @@ namespace OpenBullet.ViewModels
         {
             var configs = new List<ConfigViewModel>();
 
-            foreach (var source in SB.OBSettings.Sources.Sources)
+            foreach (var source in SB.SBSettings.Sources.Sources)
             {
                 try
                 {

@@ -3,9 +3,9 @@ using System.Reflection;
 
 namespace OpenBullet.ViewModels
 {
-    public class OBSettingsViewModel
+    public class SBSettingsViewModel
     {
-        public OBSettingsGeneral General { get; set; } = new OBSettingsGeneral();
+        public SBSettingsGeneral General { get; set; } = new SBSettingsGeneral();
         public OBSettingsSounds Sounds { get; set; } = new OBSettingsSounds();
         public OBSettingsSources Sources { get; set; } = new OBSettingsSources();
         public OBSettingsThemes Themes { get; set; } = new OBSettingsThemes();
