@@ -46,7 +46,7 @@ namespace OpenBullet.Views.Main.Configs
             var stacker = SB.MainWindow.ConfigsPage.StackerPage;
 
             // If we don't have a config selected or we suppressed the warning or we don't have a Stacker open
-            if (vm.CurrentConfig == null || SB.OBSettings.General.DisableNotSavedWarning || stacker == null)
+            if (vm.CurrentConfig == null || SB.SBSettings.General.DisableNotSavedWarning || stacker == null)
             {
                 return true;
             }
@@ -213,7 +213,7 @@ namespace OpenBullet.Views.Main.Configs
 
             try
             {
-                OBIOManager.CheckRequiredPlugins(SB.BlockPlugins.Select(b => b.Name), config.Config);
+                SBIOManager.CheckRequiredPlugins(SB.BlockPlugins.Select(b => b.Name), config.Config);
             }
             catch (Exception ex)
             {
