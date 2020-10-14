@@ -252,43 +252,7 @@ namespace OpenBullet.Views.Main.Configs
 
         private IEnumerable<Tuple<string, string>> GetDataList(string text)
         {
-            var caret = loliScriptEditor.TextArea.Caret;
-            var visualColumn = caret.VisualColumn;
-            var currentLineDoc = string.Empty;
-            if (loliScriptEditor.LineCount > 0)
-            {
-                currentLineDoc = loliScriptEditor.Text.Split('\n')[caret.Line - 1];
-            }
-            if (visualColumn > 1)
-            {
-                try
-                {
-                    var docs = currentLineDoc.Split(' ');
-                    var blockType = string.Empty;
-                    if (!docs.Any(d => LoliScriptCompletionData.DataList.Where(d2 => d2.Item2 == "Block" || d2.Item2 == "Ls").Any(d2 => d == (blockType = d2.Item1))))
-                    {
-                        visualColumn = 1;
-                    }
-                    else
-                    {
-                        return blockParameters.GetType().GetProperty(blockType, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic)
-                            .GetValue(blockParameters, null) as IReadOnlyCollection<Tuple<string, string>>;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    //return LoliScriptCompletionData.DataList.Where(d => d.Item2 == "Parameter");
-                }
-            }
-            switch (visualColumn)
-            {
-                case 0:
-                    return LoliScriptCompletionData.DataList.Where(d => d.Item2 != "Parameter");
-                case 1:
-                    return LoliScriptCompletionData.DataList.Where(d => d.Item2 == "Block" || d.Item2 == "Ls");
-                default:
-                    return LoliScriptCompletionData.DataList;
-            }
+            return null;
         }
 
         private void TextArea_TextEntering(object sender, TextCompositionEventArgs e)
