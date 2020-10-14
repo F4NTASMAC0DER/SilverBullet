@@ -24,7 +24,7 @@ namespace OpenBullet
             Alerter = Alerter
         };
 
-        public static string Version => "1.0.2";
+        public static string Version => "1.1.0";
 
         // Block Mappings (including Plugins)
         public static List<(Type, Type, Color)> BlockMappings = new List<(Type, Type, Color)>();
@@ -49,7 +49,7 @@ namespace OpenBullet
         public static Alerter Alerter { get; set; } = new Alerter();
         public static LoggerViewModel Logger { get; set; } = new LoggerViewModel();
         public static GlobalSettings Settings { get; set; } = new GlobalSettings();
-        public static OBSettingsViewModel OBSettings { get; set; }
+        public static SBSettingsViewModel SBSettings { get; set; }
 
         // Constant file paths
         public static readonly string dataBaseFile = @"DB/OpenBullet.db";
