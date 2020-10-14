@@ -83,9 +83,7 @@ namespace OpenBullet.Views.Main.Configs
             }
             catch (Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show(ex.Message, "NOTICE",
-                  System.Windows.Forms.MessageBoxButtons.OK,
-                  System.Windows.Forms.MessageBoxIcon.Error);
+                SB.Logger.LogError(Components.OcrTesting, ex.Message, true);
             }
         }
 
@@ -93,9 +91,8 @@ namespace OpenBullet.Views.Main.Configs
         {
             try
             {
-                if (System.Windows.Forms.MessageBox.Show("Do you want to clear the list of filters?", "Warning",
-                    System.Windows.Forms.MessageBoxButtons.YesNo,
-                    System.Windows.Forms.MessageBoxIcon.Warning) == System.Windows.Forms.DialogResult.No)
+                if (SB.Logger.Log(Components.OcrTesting, LogLevel.Warning, "Do you want to clear the list of filters?",
+                    true, isCancelButtonVisible: true) == MessageBoxResult.Cancel)
                 {
                     return;
                 }
