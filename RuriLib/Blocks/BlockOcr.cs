@@ -906,9 +906,8 @@ pixConverter:
             while (LineParser.Lookahead(ref input) == TokenType.Boolean)
                 LineParser.SetBool(ref input, this);
 
-
-            //if (LineParser.ParseToken(ref input, TokenType.Arrow, false) == string.Empty)
-            //    return this;
+            if (LineParser.ParseToken(ref input, TokenType.Arrow, false) == string.Empty)
+                return this;
 
             //Parse the VAR / CAP
             try
