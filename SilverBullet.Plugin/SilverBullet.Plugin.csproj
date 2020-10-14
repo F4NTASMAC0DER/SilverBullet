@@ -43,7 +43,7 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="SpiceRandomUserAgent">
-      <HintPath>C:\Users\MOHAMMAD\Desktop\SpiceRandomUserAgent.dll</HintPath>
+      <HintPath>..\packages\SpiceRandomUA\SpiceRandomUserAgent.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
