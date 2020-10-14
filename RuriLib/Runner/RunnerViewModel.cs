@@ -154,6 +154,12 @@ namespace RuriLib.Runner
         /// <summary>The remaining balance in the captcha solver account preceeded by a $ sign.</summary>
         public string BalanceString { get { return $"${_balance}"; } }
 
+        private string usage = "0/0";
+        /// <summary>
+        /// current cpu,ram usage
+        /// </summary>
+        public string Usage { get { return usage; } set { usage = value; OnPropertyChanged(); } }
+
         private ProxyMode proxyMode = ProxyMode.Default;
         /// <summary>The Proxy Mode.</summary>
         public ProxyMode ProxyMode { get { return proxyMode; } set { proxyMode = value; OnPropertyChanged(); } }
@@ -352,6 +358,9 @@ namespace RuriLib.Runner
                 return $"{amountLeft} {unitOfTime} left";
             }
         }
+
+        private Timer usageTimer;
+
         #endregion
 
         #region Setters
@@ -420,6 +429,7 @@ namespace RuriLib.Runner
             OnPropertyChanged("Busy");
             OnPropertyChanged("ControlsEnabled");
             RaiseWorkerStatusChanged();
+            usageTimer?.Dispose();
             try { if (Config.OcrNeeded) ocrEngine?.DisposeEngines(); } catch { }
             try { if (Config.JsNeeded) jsEngine?.DisposeEngines(); } catch { }
         }
@@ -434,6 +444,7 @@ namespace RuriLib.Runner
             Master.Abort();
             RaiseMessageArrived(LogLevel.Info, "Hard Aborted the Master Worker", false);
             Timer.Stop();
+            usageTimer?.Dispose();
             Master.Status = WorkerStatus.Idle;
             OnPropertyChanged("Busy");
             OnPropertyChanged("ControlsEnabled");
@@ -495,6 +506,8 @@ namespace RuriLib.Runner
             NoProxyWarningSent = false;
             CustomInputsInitialized = false;
             RetryCount = 0;
+            Usage = "0/0";
+            OcrRate = 0;
             FailedList.Clear();
             GlobalVariables = new VariableList();
             GlobalCookies = new CookieDictionary();
@@ -521,6 +534,12 @@ namespace RuriLib.Runner
 
                 if (TotalProxiesCount == 0) throw new Exception("Zero proxies available!");
             }
+
+            usageTimer = new Timer((c) =>
+            {
+                if (ShouldStop()) return;
+                try { Usage = RuriLib.Models.Usage.Get()?.ToString(); } catch { }
+            }, null, TimeSpan.Zero, TimeSpan.FromSeconds(0.8));
 
             // Ask for the inputs
             if (Config.Settings.CustomInputs.Count > 0)
@@ -713,10 +732,12 @@ namespace RuriLib.Runner
             OnPropertyChanged("ControlsEnabled");
             RaiseWorkerStatusChanged();
             Timer.Stop();
+            usageTimer?.Dispose();
             AbortAllBots();
             StartingPoint += TestedCount;
             ocrEngine?.DisposeEngines();
             jsEngine?.DisposeEngines();
+            usageTimer?.Dispose();
         }
         #endregion
 
@@ -759,7 +780,6 @@ namespace RuriLib.Runner
             try
             {
 GETPROXY:
-
 // Check if the job was cancelled or if the Master Worker is not running
                 if (senderABW.CancellationPending || ShouldStop())
                 {
