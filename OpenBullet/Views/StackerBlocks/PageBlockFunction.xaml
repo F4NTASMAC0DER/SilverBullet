@@ -5,11 +5,13 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:OpenBullet.Views.StackerBlocks"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ruriLib="clr-namespace:RuriLib;assembly=RuriLib"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     Title="PageBlockFunction"
     d:DesignHeight="500"
     d:DesignWidth="400"
+    Loaded="Page_Loaded"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -21,6 +23,7 @@
                 <x:Type TypeName="sys:StringSplitOptions" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
+
     </Page.Resources>
 
     <Grid>
@@ -168,6 +171,10 @@
                             </TextBox.ToolTip>
                         </TextBox>
                     </DockPanel>
+                    <ComboBox
+                        x:Name="dateToUnixTimeCombobox"
+                        SelectedIndex="0"
+                        SelectedItem="{Binding UnixTimeType, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
             </TabItem>
             <TabItem x:Name="stringReplaceTab">
@@ -412,8 +419,26 @@
                     </DockPanel>
                 </StackPanel>
             </TabItem>
+            <TabItem Header="encoding">
+                <StackPanel>
+                    <DockPanel>
+                        <Label Content="Name/CodePage:" />
+                        <ComboBox
+                            x:Name="encCombobox"
+                            IsEditable="True"
+                            SelectedIndex="0"
+                            Text="{Binding GetEncoding, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                    </DockPanel>
+                    <DockPanel>
+                        <Label Content="Func:" />
+                        <ComboBox
+                            x:Name="encFuncCombobox"
+                            SelectedIndex="0"
+                            SelectedItem="{Binding EncFunc, UpdateSourceTrigger=PropertyChanged}" />
+                    </DockPanel>
+                </StackPanel>
+            </TabItem>
         </TabControl>
-
         <TextBlock
             x:Name="functionInfoTextblock"
             Grid.Row="2"

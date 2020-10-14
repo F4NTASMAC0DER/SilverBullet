@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using RuriLib;
 using RuriLib.Functions.Crypto;
 using RuriLib.Functions.UserAgent;
+using static RuriLib.BlockFunction;
 
 namespace OpenBullet.Views.StackerBlocks
 {
@@ -54,6 +55,20 @@ namespace OpenBullet.Views.StackerBlocks
             foreach (var p in Enum.GetNames(typeof(PaddingMode)))
             {
                 aesPaddingCombobox.Items.Add(p);
+            }
+
+            foreach (var d in Enum.GetNames(typeof(DateToUnixTimeType)))
+            {
+                dateToUnixTimeCombobox.Items.Add(d);
+            }
+
+            encCombobox.Items.Add("utf-8");
+            encCombobox.Items.Add("windows-1251");
+            encCombobox.Items.Add(1251);
+
+            foreach(var e in Enum.GetNames(typeof(EncodingMethods)))
+            {
+                encFuncCombobox.Items.Add(e);
             }
 
             aesPaddingCombobox.SelectedIndex = (int)vm.AesPadding - 1;
@@ -109,11 +124,11 @@ namespace OpenBullet.Views.StackerBlocks
                     functionTabControl.SelectedIndex = 9;
                     break;
 
-                    /*
-                case BlockFunction.Function.RSADecrypt:
-                    functionTabControl.SelectedIndex = 10;
-                    break;
-                    */
+                /*
+            case BlockFunction.Function.RSADecrypt:
+                functionTabControl.SelectedIndex = 10;
+                break;
+                */
 
                 case BlockFunction.Function.RSAPKCS1PAD2:
                     functionTabControl.SelectedIndex = 11;
@@ -146,6 +161,10 @@ namespace OpenBullet.Views.StackerBlocks
 
                 case BlockFunction.Function.Split:
                     functionTabControl.SelectedIndex = 18;
+                    break;
+
+                case BlockFunction.Function.Encoding:
+                    functionTabControl.SelectedIndex = 19;
                     break;
 
             }
@@ -193,7 +212,8 @@ namespace OpenBullet.Views.StackerBlocks
             { "GetRandomUA", "Generates a random User Agent." },
             { "AESEncrypt", "Encrypts data with AES. All parameters must be provided as base64 strings. Uses SHA-256 to get a 256 bit key" },
             { "AESDecrypt", "Decrypts data with AES. All parameters must be provided as base64 strings. Uses SHA-256 to get a 256 bit key" },
-            { "PBKDF2PKCS5", "Generates a key based on a password. The salt, if provided, must be a base64 string" }
+            { "PBKDF2PKCS5", "Generates a key based on a password. The salt, if provided, must be a base64 string" },
+            { "Ntlm", "Generates NTLM hash" }
         };
 
         private void dictionaryRTB_TextChanged(object sender, TextChangedEventArgs e)
@@ -229,6 +249,16 @@ namespace OpenBullet.Views.StackerBlocks
         private void randomUABrowserCombobox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             vm.UserAgentBrowser = (UserAgent.Browser)((ComboBox)e.OriginalSource).SelectedIndex;
+        }
+
+        private void Page_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            try { SetItemToComboBox(); } catch { }
+        }
+
+        private void SetItemToComboBox()
+        {
+            dateToUnixTimeCombobox.SelectedIndex = (int)vm.UnixTimeType;
         }
     }
 }
