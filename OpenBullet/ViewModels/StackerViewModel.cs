@@ -1,14 +1,13 @@
-﻿using Extreme.Net;
-using OpenBullet.Views.StackerBlocks;
-using PluginFramework;
-using RuriLib;
-using RuriLib.LS;
-using RuriLib.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Media;
+using Extreme.Net;
+using OpenBullet.Views.StackerBlocks;
+using RuriLib;
+using RuriLib.LS;
+using RuriLib.ViewModels;
 
 namespace OpenBullet.ViewModels
 {
@@ -106,7 +105,7 @@ namespace OpenBullet.ViewModels
         public void MoveBlockUp(StackerBlockViewModel block)
         {
             var oldIndex = Stack.IndexOf(block);
-            if(oldIndex != 0)
+            if (oldIndex != 0)
                 Stack.Move(oldIndex, oldIndex - 1);
         }
 
@@ -163,6 +162,20 @@ namespace OpenBullet.ViewModels
         {
             get => totalSearchMatches;
             set { totalSearchMatches = value; OnPropertyChanged(); }
+        }
+
+        private bool disableToolTip;
+        public bool DisableToolTip
+        {
+            get { return disableToolTip; }
+            set { disableToolTip = value; OnPropertyChanged(); }
+        }
+
+        private bool scriptCompletion = false;
+        public bool ScriptCompletion
+        {
+            get { return scriptCompletion; }
+            set { scriptCompletion = value; OnPropertyChanged(); }
         }
 
         //public void UpdateTotalSearchMatches()
