@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Security.Authentication;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -161,6 +163,26 @@ namespace RuriLib
             }
         }
 
+        /// <summary>
+        /// Converts a string to byte array
+        /// </summary>
+        /// <param name="input">The string</param>
+        /// <returns>The byte array</returns>
+        public static byte[] ConvertToByteArray(this string input)
+        {
+            return input.Select(Convert.ToByte).ToArray();
+        }
+
+        /// <summary>
+        /// Converts a byte array to a string
+        /// </summary>
+        /// <param name="bytes">the byte array</param>
+        /// <returns>The string</returns>
+        public static string ConvertToString(this byte[] bytes)
+        {
+            return new string(bytes.Select(Convert.ToChar).ToArray());
+        }
+
     }
 
     /// <summary>
@@ -223,6 +245,9 @@ namespace RuriLib
         }
     }
 
+    /// <summary>
+    ///  Extension methods for bitmap
+    /// </summary>
     public static class BitmapExtensions
     {
         public static System.Drawing.Imaging.ImageFormat GetImageFormat(this System.Drawing.Image img)
@@ -388,8 +413,17 @@ namespace RuriLib
             nullableType = ty;
             return ty != null;
         }
+
+        public static IEnumerable<Type> GetEnumTypes(this Type type, BindingFlags bindingAttr, bool getCanWrite = true)
+        {
+            return type.GetProperties(bindingAttr).Where(p => p.PropertyType.IsEnum && p.CanWrite == getCanWrite)
+                .Select(e => e.PropertyType);
+        }
     }
 
+    /// <summary>
+    ///  Extension methods for method info
+    /// </summary>
     public static class MethodInfoExtensions
     {
         public static Delegate CreateDelegate(this MethodInfo method)
@@ -417,6 +451,9 @@ namespace RuriLib
         }
     }
 
+    /// <summary>
+    ///  Extension methods for loliscript
+    /// </summary>
     public static class ScriptExtension
     {
         /// <summary>
@@ -468,7 +505,9 @@ namespace RuriLib
 
     }
 
-
+    /// <summary>
+    ///  Extension methods for path file
+    /// </summary>
     public static class PathExtensions
     {
         public static string RemoveIllegalCharacters(this string illegal)
@@ -509,6 +548,9 @@ namespace RuriLib
         }
     }
 
+    /// <summary>
+    /// Extension methods for object
+    /// </summary>
     public static class ObjectExtensions
     {
         public static T[] Remove<T>(this T[] original, T itemToRemove)
@@ -539,7 +581,9 @@ namespace RuriLib
          */
 
     }
-
+    /// <summary>
+    /// Extension methods for convert time
+    /// </summary>
     public static class ConvertTimeExtensions
     {
         public static double ConvertMillisecondsToNanoseconds(double milliseconds)
@@ -633,7 +677,9 @@ namespace RuriLib
             return self.AddTicks((int)Math.Round(nanoseconds / (double)NanosecondsPerTick));
         }
     }
-
+    /// <summary>
+    /// Extension methods for wordlist
+    /// </summary>
     public static class WordlistExtensions
     {
         public static Wordlist Clone(this Wordlist wordlist)
@@ -642,6 +688,9 @@ namespace RuriLib
                 temporary: wordlist.Temporary, subwordlists: wordlist.SubWordlists);
         }
     }
+    /// <summary>
+    /// Extension methods for task
+    /// </summary>
     public static class TaskExtensions
     {
         /// <summary>
@@ -680,6 +729,61 @@ namespace RuriLib
             if (waitTask != await Task.WhenAny(waitTask,
                     Task.Delay(timeout)))
                 throw new TimeoutException();
+        }
+    }
+    /// <summary>
+    /// Extension methods for data size
+    /// </summary>
+    public static class SizeExtensions
+    {
+        static readonly string[] SizeSuffixes = { "MB", "GB" };
+        public static string SizeSuffix(long value, int decimalPlaces = 0)
+        {
+            if (value < 0)
+            {
+                throw new ArgumentException("Bytes should not be negative", "value");
+            }
+            var mag = (int)Math.Max(0, Math.Log(value, 1024));
+            var adjustedSize = Math.Round(value / Math.Pow(1024, mag), decimalPlaces);
+            return String.Format("{0} {1}", adjustedSize, SizeSuffixes[mag]);
+        }
+    }
+
+    /// <summary>
+    /// Extension methods for notepad
+    /// </summary>
+    public static class NotepadExtensions
+    {
+        [DllImport("user32.dll", EntryPoint = "SetWindowText")]
+        private static extern int SetWindowText(IntPtr hWnd, string text);
+
+        [DllImport("user32.dll", EntryPoint = "FindWindowEx")]
+        private static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
+
+        [DllImport("User32.dll", EntryPoint = "SendMessage")]
+        private static extern int SendMessage(IntPtr hWnd, int uMsg, int wParam, string lParam);
+
+        /// <summary>
+        /// show text in notepad
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="title"></param>
+        public static void ShowText(string text = null, string title = "Log")
+        {
+            Process notepad = Process.Start(new ProcessStartInfo("notepad.exe"));
+            if (notepad != null)
+            {
+                notepad.WaitForInputIdle();
+
+                if (!string.IsNullOrEmpty(title))
+                    SetWindowText(notepad.MainWindowHandle, title);
+
+                if (!string.IsNullOrEmpty(text))
+                {
+                    IntPtr child = FindWindowEx(notepad.MainWindowHandle, new IntPtr(0), "Edit", null);
+                    SendMessage(child, 0x000C, 0, text);
+                }
+            }
         }
     }
 }
