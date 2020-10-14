@@ -24,6 +24,8 @@ namespace OpenBullet
             Dispatcher.UnhandledException += (s, e) =>
                 OnUnhandledException(e.Exception, "Application.Current.DispatcherUnhandledException");
 
+            Application.Current.Dispatcher.UnhandledException += Dispatcher_UnhandledException;
+
             //AppDomain.CurrentDomain.FirstChanceException += (s, e) =>
             //  OnUnhandledException(e.Exception, "AppDomain.CurrentDomain.FirstChanceException");
 
@@ -31,6 +33,12 @@ namespace OpenBullet
                 OnUnhandledException(e.Exception, "TaskScheduler.UnobservedTaskException");
 
             AppDomain.CurrentDomain.AssemblyResolve += OnAssemblyResolve;
+        }
+
+        private void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            e.Handled = true;
+            OnUnhandledException(e.Exception, "Dispatcher_UnhandledException");
         }
 
         public void OnUnhandledException(Exception ex, string @event)
