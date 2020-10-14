@@ -1,0 +1,1004 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\CefSharp.Wpf.83.4.20\build\CefSharp.Wpf.props" Condition="Exists('..\packages\CefSharp.Wpf.83.4.20\build\CefSharp.Wpf.props')" />
+  <Import Project="..\packages\CefSharp.Common.83.4.20\build\CefSharp.Common.props" Condition="Exists('..\packages\CefSharp.Common.83.4.20\build\CefSharp.Common.props')" />
+  <Import Project="..\packages\cef.redist.x86.83.4.2\build\cef.redist.x86.props" Condition="Exists('..\packages\cef.redist.x86.83.4.2\build\cef.redist.x86.props')" />
+  <Import Project="..\packages\cef.redist.x64.83.4.2\build\cef.redist.x64.props" Condition="Exists('..\packages\cef.redist.x64.83.4.2\build\cef.redist.x64.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <CefSharpAnyCpuSupport>true</CefSharpAnyCpuSupport>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{99E40E7F-00A4-4FB1-9441-B05A56C47C08}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>OpenBullet</RootNamespace>
+    <AssemblyName>SilverBullet</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowedReferenceRelatedFileExtensions>
+      <!-- Prevent default XML and PDB files copied to output in RELEASE. 
+           Only *.allowedextension files will be included, which doesn't exist in my case.
+       -->
+      .allowedextension
+    </AllowedReferenceRelatedFileExtensions>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Images\SilverBullet Icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>false</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <OutputPath>bin\x64\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Alerter.cs" />
+    <Compile Include="AvalonEdit\Search\ISearchStrategy.cs" />
+    <Compile Include="AvalonEdit\Search\RegexSearchStrategy.cs" />
+    <Compile Include="AvalonEdit\Search\SearchTextEditor.cs" />
+    <Compile Include="AvalonEdit\Search\SearchResultBackgroundRenderer.cs" />
+    <Compile Include="AvalonEdit\Search\SearchStrategyFactory.cs" />
+    <Compile Include="AvalonEdit\TruncateLongLines.cs" />
+    <Compile Include="CefSharp\MenuHandler.cs" />
+    <Compile Include="CheckUpdate.cs" />
+    <Compile Include="Converters\BooleanBrushConverter.cs" />
+    <Compile Include="Converters\EnumBooleanConverter.cs" />
+    <Compile Include="Converters\InverseBooleanConverter.cs" />
+    <Compile Include="Converters\KeychainBrushConverter.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="Models\ControlText.cs" />
+    <Compile Include="Models\Source.cs" />
+    <Compile Include="NotesWindow.xaml.cs">
+      <DependentUpon>NotesWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SB.cs" />
+    <Compile Include="OBIOManager.cs" />
+    <Compile Include="LoggerViewModel.cs" />
+    <Compile Include="LogWindow.xaml.cs">
+      <DependentUpon>LogWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="OpenBulletApp.cs" />
+    <Compile Include="Plugins\Build.cs" />
+    <Compile Include="Plugins\Check.cs" />
+    <Compile Include="Plugins\IControl.cs" />
+    <Compile Include="Plugins\Loader.cs" />
+    <Compile Include="Utils.cs" />
+    <Compile Include="Views\Dialogs\DialogEditWordlist.xaml.cs">
+      <DependentUpon>DialogEditWordlist.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Dialogs\DialogLSDoc.xaml.cs">
+      <DependentUpon>DialogLSDoc.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Dialogs\DialogSelectBots.xaml.cs">
+      <DependentUpon>DialogSelectBots.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Dialogs\DialogSetProxies.xaml.cs">
+      <DependentUpon>DialogSetProxies.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Dialogs\FindReplaceDialog.xaml.cs">
+      <DependentUpon>FindReplaceDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\AboutPage.xaml.cs">
+      <DependentUpon>AboutPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Configs\ConfigOcrSettings.xaml.cs">
+      <DependentUpon>ConfigOcrSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Configs\OtherOptions\Requests.xaml.cs">
+      <DependentUpon>Requests.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Configs\OtherOptions\Selenium.xaml.cs">
+      <DependentUpon>Selenium.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Dialogs\DialogShowLog.xaml.cs">
+      <DependentUpon>DialogShowLog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LoadingWindow.xaml.cs">
+      <DependentUpon>LoadingWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\PluginsSection.xaml.cs">
+      <DependentUpon>PluginsSection.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\ReleaseNotesPage.xaml.cs">
+      <DependentUpon>ReleaseNotesPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Settings\RuriLib\CefSharp.xaml.cs">
+      <DependentUpon>CefSharp.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Settings\RuriLib\Ocr.xaml.cs">
+      <DependentUpon>Ocr.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Support.xaml.cs">
+      <DependentUpon>Support.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Tools\TessDataDownloads.xaml.cs">
+      <DependentUpon>TessDataDownloads.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Tools\WordlistTools.xaml.cs">
+      <DependentUpon>WordlistTools.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StackerBlocks\PageBlockOcr.xaml.cs">
+      <DependentUpon>PageBlockOcr.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StackerBlocks\PageBlockReportCaptcha.xaml.cs">
+      <DependentUpon>PageBlockReportCaptcha.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StackerBlocks\PageBlockSolveCaptcha.xaml.cs">
+      <DependentUpon>PageBlockSolveCaptcha.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StackerBlocks\PageBlockSpeechToText.xaml.cs">
+      <DependentUpon>PageBlockSpeechToText.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StackerBlocks\PageBlockWebSocket.xaml.cs">
+      <DependentUpon>PageBlockWebSocket.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\ButtonContainer.xaml.cs">
+      <DependentUpon>ButtonContainer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StackerBlocks\BlockPluginPage.xaml.cs">
+      <DependentUpon>BlockPluginPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Filters\UserControlAdaptiveThreshold.xaml.cs">
+      <DependentUpon>UserControlAdaptiveThreshold.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Filters\UserControlBlur.xaml.cs">
+      <DependentUpon>UserControlBlur.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Filters\UserControlCropLayer.xaml.cs">
+      <DependentUpon>UserControlCropLayer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Filters\UserControlCvtColor.xaml.cs">
+      <DependentUpon>UserControlCvtColor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Filters\UserControlEnumBox.xaml.cs">
+      <DependentUpon>UserControlEnumBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Filters\UserControlFastNlMeansDenoisingColored.xaml.cs">
+      <DependentUpon>UserControlFastNlMeansDenoisingColored.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Filters\UserControlHoughLine.xaml.cs">
+      <DependentUpon>UserControlHoughLine.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Filters\UserControlInput.xaml.cs">
+      <DependentUpon>UserControlInput.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Filters\UserControlInputTextAndBoolean.xaml.cs">
+      <DependentUpon>UserControlInputTextAndBoolean.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Filters\UserControlInputTextAndEnum.xaml.cs">
+      <DependentUpon>UserControlInputTextAndEnum.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Filters\UserControlMorphology.xaml.cs">
+      <DependentUpon>UserControlMorphology.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Filters\UserControlNegate.xaml.cs">
+      <DependentUpon>UserControlNegate.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Filters\UserControlReplaceColor.xaml.cs">
+      <DependentUpon>UserControlReplaceColor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Filters\UserControlResize.xaml.cs">
+      <DependentUpon>UserControlResize.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Filters\UserControlResolution.xaml.cs">
+      <DependentUpon>UserControlResolution.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Filters\UserControlThreshold.xaml.cs">
+      <DependentUpon>UserControlThreshold.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\PluginControl.xaml.cs">
+      <DependentUpon>PluginControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\UserControlCheckbox.xaml.cs">
+      <DependentUpon>UserControlCheckbox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\UserControlContainer.xaml.cs">
+      <DependentUpon>UserControlContainer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\UserControlDropdown.xaml.cs">
+      <DependentUpon>UserControlDropdown.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\UserControlConfig.xaml.cs">
+      <DependentUpon>UserControlConfig.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\UserControlInfoText.xaml.cs">
+      <DependentUpon>UserControlInfoText.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\UserControlSupport.xaml.cs">
+      <DependentUpon>UserControlSupport.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\UserControlWordlist.xaml.cs">
+      <DependentUpon>UserControlWordlist.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\UserControlFilePicker.xaml.cs">
+      <DependentUpon>UserControlFilePicker.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\UserControlNumeric.xaml.cs">
+      <DependentUpon>UserControlNumeric.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\UserControlText.xaml.cs">
+      <DependentUpon>UserControlText.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\UserControlTextMulti.xaml.cs">
+      <DependentUpon>UserControlTextMulti.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WpfScreen.cs" />
+    <None Include="LSHighlighting.xshd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </None>
+    <Compile Include="Views\Dialogs\DialogSelectWordlist.xaml.cs">
+      <DependentUpon>DialogSelectWordlist.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="HugeFileSort.cs" />
+    <Compile Include="Views\Dialogs\DialogAddBlock.xaml.cs">
+      <DependentUpon>DialogAddBlock.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Dialogs\DialogCustomInput.xaml.cs">
+      <DependentUpon>DialogCustomInput.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Dialogs\DialogSelectConfig.xaml.cs">
+      <DependentUpon>DialogSelectConfig.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Configs\ConfigOtherOptions.xaml.cs">
+      <DependentUpon>ConfigOtherOptions.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Configs\OtherOptions\Data.xaml.cs">
+      <DependentUpon>Data.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Configs\OtherOptions\General.xaml.cs">
+      <DependentUpon>General.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Configs\OtherOptions\Inputs.xaml.cs">
+      <DependentUpon>Inputs.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Configs\OtherOptions\Proxies.xaml.cs">
+      <DependentUpon>Proxies.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Dialogs\DialogNewConfig.xaml.cs">
+      <DependentUpon>DialogNewConfig.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Help.xaml.cs">
+      <DependentUpon>Help.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\ConfigsSection.xaml.cs">
+      <DependentUpon>ConfigsSection.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Configs\ConfigManager.xaml.cs">
+      <DependentUpon>ConfigManager.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\HitsDB.xaml.cs">
+      <DependentUpon>HitsDB.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\RunnerManager.xaml.cs">
+      <DependentUpon>RunnerManager.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Settings\OBSettings.xaml.cs">
+      <DependentUpon>OBSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Settings\OpenBullet\General.xaml.cs">
+      <DependentUpon>General.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Settings\OpenBullet\Sources.xaml.cs">
+      <DependentUpon>Sources.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Settings\OpenBullet\Themes.xaml.cs">
+      <DependentUpon>Themes.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Settings\OpenBullet\Sounds.xaml.cs">
+      <DependentUpon>Sounds.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Settings\RLSettings.xaml.cs">
+      <DependentUpon>RLSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Settings\RuriLib\Selenium.xaml.cs">
+      <DependentUpon>Selenium.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Settings\RuriLib\Captchas.xaml.cs">
+      <DependentUpon>Captchas.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Settings\RuriLib\Proxies.xaml.cs">
+      <DependentUpon>Proxies.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Settings\RuriLib\General.xaml.cs">
+      <DependentUpon>General.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Settings.xaml.cs">
+      <DependentUpon>Settings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Dialogs\DialogAddWordlist.xaml.cs">
+      <DependentUpon>DialogAddWordlist.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Dialogs\DialogAddProxies.xaml.cs">
+      <DependentUpon>DialogAddProxies.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="GlobalSettings.cs" />
+    <Compile Include="MainDialog.xaml.cs">
+      <DependentUpon>MainDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\ProxyManager.xaml.cs">
+      <DependentUpon>ProxyManager.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Tools\Database.xaml.cs">
+      <DependentUpon>Database.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StackerBlocks\PageBlockBypassCF.xaml.cs">
+      <DependentUpon>PageBlockBypassCF.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StackerBlocks\PageBlockCaptcha.xaml.cs">
+      <DependentUpon>PageBlockCaptcha.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StackerBlocks\PageBlockFunction.xaml.cs">
+      <DependentUpon>PageBlockFunction.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StackerBlocks\PageBlockKeycheck.xaml.cs">
+      <DependentUpon>PageBlockKeycheck.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StackerBlocks\PageBlockLSCode.xaml.cs">
+      <DependentUpon>PageBlockLSCode.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StackerBlocks\PageBlockParse.xaml.cs">
+      <DependentUpon>PageBlockParse.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StackerBlocks\PageBlockRecaptcha.xaml.cs">
+      <DependentUpon>PageBlockRecaptcha.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StackerBlocks\PageBlockRequest.xaml.cs">
+      <DependentUpon>PageBlockRequest.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StackerBlocks\PageBlockTCP.xaml.cs">
+      <DependentUpon>PageBlockTCP.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StackerBlocks\PageBlockUtility.xaml.cs">
+      <DependentUpon>PageBlockUtility.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StackerBlocks\PageSBlockBrowserAction.xaml.cs">
+      <DependentUpon>PageSBlockBrowserAction.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StackerBlocks\PageSBlockElementAction.xaml.cs">
+      <DependentUpon>PageSBlockElementAction.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StackerBlocks\PageSBlockExecuteJS.xaml.cs">
+      <DependentUpon>PageSBlockExecuteJS.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StackerBlocks\PageSBlockNavigate.xaml.cs">
+      <DependentUpon>PageSBlockNavigate.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Resources1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\ToolsSection.xaml.cs">
+      <DependentUpon>ToolsSection.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Tools\ListGenerator.xaml.cs">
+      <DependentUpon>ListGenerator.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Tools\SeleniumTools.xaml.cs">
+      <DependentUpon>SeleniumTools.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Repositories\ConfigRepository.cs" />
+    <Compile Include="Repositories\LiteDBRepository.cs" />
+    <Compile Include="ViewModels\OBSettingsViewModel.cs" />
+    <Compile Include="Snowflake.xaml.cs">
+      <DependentUpon>Snowflake.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SortAdorner.cs" />
+    <Compile Include="Views\Main\Configs\Stacker.xaml.cs">
+      <DependentUpon>Stacker.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SplashWindow.xaml.cs">
+      <DependentUpon>SplashWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\BlockKeycheckViewModel.cs" />
+    <Compile Include="ViewModels\ConfigManagerViewModel.cs" />
+    <Compile Include="ViewModels\ConfigOtherOptionsInputViewModel.cs" />
+    <Compile Include="ViewModels\HitsDBViewModel.cs" />
+    <Compile Include="ViewModels\ListGeneratorViewModel.cs" />
+    <Compile Include="ViewModels\OBSettings\OBSettingsGeneral.cs" />
+    <Compile Include="ViewModels\OBSettings\OBSettingsSounds.cs" />
+    <Compile Include="ViewModels\OBSettings\OBSettingsSources.cs" />
+    <Compile Include="ViewModels\OBSettings\OBSettingsThemes.cs" />
+    <Compile Include="ViewModels\ProxyManagerViewModel.cs" />
+    <Compile Include="ViewModels\RunnerManagerViewModel.cs" />
+    <Compile Include="ViewModels\KeychainViewModel.cs" />
+    <Compile Include="ViewModels\KeyViewModel.cs" />
+    <Compile Include="ViewModels\StackerBlockViewModel.cs" />
+    <Compile Include="ViewModels\StackerViewModel.cs" />
+    <Compile Include="ViewModels\WordlistManagerViewModel.cs" />
+    <Compile Include="Views\Main\WordlistManager.xaml.cs">
+      <DependentUpon>WordlistManager.xaml</DependentUpon>
+    </Compile>
+    <None Include="Properties\app.manifest" />
+    <None Include="Resources\LSHighlighting.xshd" />
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Views\Main\Runner\Runner.xaml.cs">
+      <DependentUpon>Runner.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BBIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BBLogowhiteBullets.png" />
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.6.1 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LSHighlighting.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="LSDoc.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Extreme.Net\Extreme.Net.csproj">
+      <Project>{5d25d06e-0d35-42ef-bba2-d5de6e06cd04}</Project>
+      <Name>Extreme.Net</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PluginFramework\PluginFramework.csproj">
+      <Project>{E1DD89D0-EC1D-4849-A2B6-ADB261DFA3CE}</Project>
+      <Name>PluginFramework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RuriLib\RuriLib.csproj">
+      <Project>{17e95d0b-c1fd-445c-9fdf-244af7299a67}</Project>
+      <Name>RuriLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SilverBullet.ImageProcessor\SilverBullet.ImageProcessor.csproj">
+      <Project>{0a8b141b-e5f3-4f7f-ba88-183668361b42}</Project>
+      <Name>SilverBullet.ImageProcessor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SilverBullet.RedistributableChecker\SilverBullet.RedistributableChecker.csproj">
+      <Project>{96cc2534-a4ea-44de-9b8c-06e54bba2ef8}</Project>
+      <Name>SilverBullet.RedistributableChecker</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tesseract\Tesseract\Tesseract.csproj">
+      <Project>{ab8f7cf1-e75b-4bd3-8853-2348ecdea969}</Project>
+      <Name>Tesseract</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DefaultEnvFile.ini" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SyntaxHelper.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Content Include="Images\Icons\export.png" />
+    <Content Include="Sounds\rifle_hit.wav" />
+    <Content Include="Sounds\rifle_reload.wav" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Questo progetto fa riferimento a uno o più pacchetti NuGet che non sono presenti in questo computer. Usare lo strumento di ripristino dei pacchetti NuGet per scaricarli. Per altre informazioni, vedere http://go.microsoft.com/fwlink/?LinkID=322105. Il file mancante è {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Selenium.WebDriver.GeckoDriver.Win64.0.26.0\build\Selenium.WebDriver.GeckoDriver.Win64.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Selenium.WebDriver.GeckoDriver.Win64.0.26.0\build\Selenium.WebDriver.GeckoDriver.Win64.targets'))" />
+    <Error Condition="!Exists('..\packages\Selenium.Firefox.WebDriver.0.26.0\build\Selenium.Firefox.WebDriver.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Selenium.Firefox.WebDriver.0.26.0\build\Selenium.Firefox.WebDriver.targets'))" />
+    <Error Condition="!Exists('..\packages\Selenium.WebDriver.ChromeDriver.83.0.4103.3900\build\Selenium.WebDriver.ChromeDriver.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Selenium.WebDriver.ChromeDriver.83.0.4103.3900\build\Selenium.WebDriver.ChromeDriver.targets'))" />
+    <Error Condition="!Exists('..\packages\Selenium.Chrome.WebDriver.83.0.0\build\Selenium.Chrome.WebDriver.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Selenium.Chrome.WebDriver.83.0.0\build\Selenium.Chrome.WebDriver.targets'))" />
+    <Error Condition="!Exists('..\packages\cef.redist.x64.83.4.2\build\cef.redist.x64.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\cef.redist.x64.83.4.2\build\cef.redist.x64.props'))" />
+    <Error Condition="!Exists('..\packages\cef.redist.x86.83.4.2\build\cef.redist.x86.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\cef.redist.x86.83.4.2\build\cef.redist.x86.props'))" />
+    <Error Condition="!Exists('..\packages\CefSharp.Common.83.4.20\build\CefSharp.Common.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.Common.83.4.20\build\CefSharp.Common.props'))" />
+    <Error Condition="!Exists('..\packages\CefSharp.Common.83.4.20\build\CefSharp.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.Common.83.4.20\build\CefSharp.Common.targets'))" />
+    <Error Condition="!Exists('..\packages\CefSharp.Wpf.83.4.20\build\CefSharp.Wpf.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.Wpf.83.4.20\build\CefSharp.Wpf.props'))" />
+    <Error Condition="!Exists('..\packages\CefSharp.Wpf.83.4.20\build\CefSharp.Wpf.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.Wpf.83.4.20\build\CefSharp.Wpf.targets'))" />
+  </Target>
+  <PropertyGroup>
+    <PostBuildEvent>if not exist "$(TargetDir)bin" mkdir "$(TargetDir)bin"
+if $(ConfigurationName) == Release move "$(TargetDir)*.dll" "$(TargetDir)bin\"
+if $(ConfigurationName) == Release move "$(TargetDir)*driver.exe" "$(TargetDir)bin\"
+if exist "$(TargetDir)cs-CZ" RD /S /Q "$(TargetDir)cs-CZ"
+if exist "$(TargetDir)de" RD /S /Q "$(TargetDir)de"
+if exist "$(TargetDir)es" RD /S /Q "$(TargetDir)es"
+if exist "$(TargetDir)fr" RD /S /Q "$(TargetDir)fr"
+
+XCOPY "$(TargetDir)ar" "$(TargetDir)bin\ar" /i /e /s /y /f
+XCOPY "$(TargetDir)az" "$(TargetDir)bin\az" /i /e /s /y /f
+XCOPY "$(TargetDir)dg" "$(TargetDir)bin\dg" /i /e /s /y /f
+XCOPY "$(TargetDir)bn-DB" "$(TargetDir)bin\bn-DB" /i /e /s /y /f
+XCOPY "$(TargetDir)cs" "$(TargetDir)bin\cs" /i /e /s /y /f
+XCOPY "$(TargetDir)da" "$(TargetDir)bin\da" /i /e /s /y /f
+XCOPY "$(TargetDir)el" "$(TargetDir)bin\el" /i /e /s /y /f
+XCOPY "$(TargetDir)el" "$(TargetDir)bin\el" /i /e /s /y /f
+XCOPY "$(TargetDir)fa" "$(TargetDir)bin\fa" /i /e /s /y /f
+XCOPY "$(TargetDir)fi-FI" "$(TargetDir)bin\fi-FI" /i /e /s /y /f
+XCOPY "$(TargetDir)fr-BE" "$(TargetDir)bin\fr-BE" /i /e /s /y /f
+XCOPY "$(TargetDir)he" "$(TargetDir)bin\he" /i /e /s /y /f
+XCOPY "$(TargetDir)hr" "$(TargetDir)bin\hr" /i /e /s /y /f
+XCOPY "$(TargetDir)id" "$(TargetDir)bin\ja" /i /e /s /y /f
+XCOPY "$(TargetDir)lv" "$(TargetDir)bin\lv" /i /e /s /y /f
+XCOPY "$(TargetDir)ms-MY" "$(TargetDir)bin\ms-MY" /i /e /s /y /f
+XCOPY "$(TargetDir)mt" "$(TargetDir)bin\mt" /i /e /s /y /f
+XCOPY "$(TargetDir)nb" "$(TargetDir)bin\nb" /i /e /s /y /f
+XCOPY "$(TargetDir)nb-NO" "$(TargetDir)bin\nb-NO" /i /e /s /y /f
+XCOPY "$(TargetDir)nl" "$(TargetDir)bin\nl" /i /e /s /y /f
+XCOPY "$(TargetDir)pl" "$(TargetDir)bin\pl" /i /e /s /y /f
+XCOPY "$(TargetDir)pt" "$(TargetDir)bin\pt" /i /e /s /y /f
+XCOPY "$(TargetDir)sk" "$(TargetDir)bin\sk" /i /e /s /y /f
+XCOPY "$(TargetDir)sl" "$(TargetDir)bin\sl" /i /e /s /y /f
+XCOPY "$(TargetDir)sr" "$(TargetDir)bin\sr" /i /e /s /y /f
+XCOPY "$(TargetDir)sr-Latn" "$(TargetDir)bin\st-Latn" /i /e /s /y /f
+XCOPY "$(TargetDir)tr" "$(TargetDir)bin\tr" /i /e /s /y /f
+XCOPY "$(TargetDir)uk" "$(TargetDir)bin\uk" /i /e /s /y /f
+XCOPY "$(TargetDir)uz-Cyrl-UZ" "$(TargetDir)bin\uz-Cyrl-UZ" /i /e /s /y /f
+XCOPY "$(TargetDir)uz-Latn-UZ" "$(TargetDir)bin\uz-Latn-UZ" /i /e /s /y /f
+XCOPY "$(TargetDir)vi" "$(TargetDir)bin\vi" /i /e /s /y /f
+XCOPY "$(TargetDir)zh-CN" "$(TargetDir)bin\zh-CN" /i /e /s /y /f
+XCOPY "$(TargetDir)zh-Hant" "$(TargetDir)bin\zh-Hant" /i /e /s /y /f
+
+if exist "$(TargetDir)af" RD /S /Q "$(TargetDir)af"
+if exist "$(TargetDir)ar" RD /S /Q "$(TargetDir)ar"
+if exist "$(TargetDir)az" RD /S /Q "$(TargetDir)az"
+if exist "$(TargetDir)bg" RD /S /Q "$(TargetDir)bg"
+if exist "$(TargetDir)bin-DB" RD /S /Q "$(TargetDir)bin-DB"
+if exist "$(TargetDir)cs" RD /S /Q "$(TargetDir)cs"
+if exist "$(TargetDir)da" RD /S /Q "$(TargetDir)da"
+if exist "$(TargetDir)el" RD /S /Q "$(TargetDir)el"
+if exist "$(TargetDir)fa" RD /S /Q "$(TargetDir)fa"
+if exist "$(TargetDir)fi-FI" RD /S /Q "$(TargetDir)fi-FI"
+if exist "$(TargetDir)fr-BE" RD /S /Q "$(TargetDir)fr-BE"
+if exist "$(TargetDir)he" RD /S /Q "$(TargetDir)he"
+if exist "$(TargetDir)hr" RD /S /Q "$(TargetDir)hr"
+if exist "$(TargetDir)id" RD /S /Q "$(TargetDir)id"
+if exist "$(TargetDir)ja" RD /S /Q "$(TargetDir)ja"
+if exist "$(TargetDir)lv" RD /S /Q "$(TargetDir)lv"
+if exist "$(TargetDir)ms-MY" RD /S /Q "$(TargetDir)ms-MY"
+if exist "$(TargetDir)mt" RD /S /Q "$(TargetDir)mt"
+if exist "$(TargetDir)nb" RD /S /Q "$(TargetDir)nb"
+if exist "$(TargetDir)nb-NO" RD /S /Q "$(TargetDir)nb-NO"
+if exist "$(TargetDir)nl" RD /S /Q "$(TargetDir)nl"
+if exist "$(TargetDir)pl" RD /S /Q "$(TargetDir)pl"
+if exist "$(TargetDir)pt" RD /S /Q "$(TargetDir)pt"
+if exist "$(TargetDir)sk" RD /S /Q "$(TargetDir)sk"
+if exist "$(TargetDir)sl" RD /S /Q "$(TargetDir)sl"
+if exist "$(TargetDir)sr" RD /S /Q "$(TargetDir)sr"
+if exist "$(TargetDir)sr-Latn" RD /S /Q "$(TargetDir)sr-Latn"
+if exist "$(TargetDir)tr" RD /S /Q "$(TargetDir)tr"
+if exist "$(TargetDir)uk" RD /S /Q "$(TargetDir)uk"
+if exist "$(TargetDir)uz-Cyrl-UZ" RD /S /Q "$(TargetDir)uz-Cyrl-UZ"
+if exist "$(TargetDir)uz-Latn-UZ" RD /S /Q "$(TargetDir)uz-Latn-UZ"
+if exist "$(TargetDir)vi" RD /S /Q "$(TargetDir)vi"
+
+if exist "$(TargetDir)hu" RD /S /Q "$(TargetDir)hu"
+if exist "$(TargetDir)it" RD /S /Q "$(TargetDir)it"
+if exist "$(TargetDir)pt-BR" RD /S /Q "$(TargetDir)pt-BR"
+if exist "$(TargetDir)ro" RD /S /Q "$(TargetDir)ro"
+if exist "$(TargetDir)ru" RD /S /Q "$(TargetDir)ru"
+if exist "$(TargetDir)sv" RD /S /Q "$(TargetDir)sv"
+if exist "$(TargetDir)zh-Hans" RD /S /Q "$(TargetDir)zh-Hans"
+if not exist "$(TargetDir)Settings" mkdir "$(TargetDir)Settings"
+if not exist "$(TargetDir)Settings\Environment.ini" copy "$(ProjectDir)DefaultEnvFile.ini" "$(TargetDir)Settings\Environment.ini"
+if not exist "$(TargetDir)Sounds" mkdir "$(TargetDir)Sounds"
+copy "$(ProjectDir)Sounds\rifle_hit.wav" "$(TargetDir)Sounds\rifle_hit.wav"
+copy "$(ProjectDir)Sounds\rifle_reload.wav" "$(TargetDir)Sounds\rifle_reload.wav"
+    if not exist "$(TargetDir)x86" md "$(TargetDir)x86"
+    xcopy /s /y "$(SolutionDir)packages\Noesis.Javascript.0.7.1.0\NativeBinaries\net40\x86\*.*" "$(TargetDir)x86"
+    if not exist "$(TargetDir)amd64" md "$(TargetDir)amd64"
+    xcopy /s /y "$(SolutionDir)packages\Noesis.Javascript.0.7.1.0\NativeBinaries\net40\amd64\*.*" "$(TargetDir)amd64"</PostBuildEvent>
+  </PropertyGroup>
+  <Import Project="..\packages\Selenium.WebDriver.GeckoDriver.Win64.0.26.0\build\Selenium.WebDriver.GeckoDriver.Win64.targets" Condition="Exists('..\packages\Selenium.WebDriver.GeckoDriver.Win64.0.26.0\build\Selenium.WebDriver.GeckoDriver.Win64.targets')" />
+  <Import Project="..\packages\Selenium.Firefox.WebDriver.0.26.0\build\Selenium.Firefox.WebDriver.targets" Condition="Exists('..\packages\Selenium.Firefox.WebDriver.0.26.0\build\Selenium.Firefox.WebDriver.targets')" />
+  <Import Project="..\packages\Selenium.WebDriver.ChromeDriver.83.0.4103.3900\build\Selenium.WebDriver.ChromeDriver.targets" Condition="Exists('..\packages\Selenium.WebDriver.ChromeDriver.83.0.4103.3900\build\Selenium.WebDriver.ChromeDriver.targets')" />
+  <Import Project="..\packages\Selenium.Chrome.WebDriver.83.0.0\build\Selenium.Chrome.WebDriver.targets" Condition="Exists('..\packages\Selenium.Chrome.WebDriver.83.0.0\build\Selenium.Chrome.WebDriver.targets')" />
+  <Import Project="..\packages\CefSharp.Common.83.4.20\build\CefSharp.Common.targets" Condition="Exists('..\packages\CefSharp.Common.83.4.20\build\CefSharp.Common.targets')" />
+  <Import Project="..\packages\CefSharp.Wpf.83.4.20\build\CefSharp.Wpf.targets" Condition="Exists('..\packages\CefSharp.Wpf.83.4.20\build\CefSharp.Wpf.targets')" />
+  <ItemGroup>
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\AngleSharp.0.14.0\lib\net472\AngleSharp.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\CaptchaSharp.1.0.4\lib\netstandard2.0\CaptchaSharp.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\CaptchaSharp.Services.More.1.0.0\lib\netstandard2.0\CaptchaSharp.Services.More.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\CefSharp.Common.83.4.20\build\..\CefSharp\x86\CefSharp.Core.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\CefSharp.Common.83.4.20\build\..\CefSharp\x86\CefSharp.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\CefSharp.Wpf.83.4.20\build\..\CefSharp\x86\CefSharp.Wpf.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\CommonServiceLocator.2.0.2\lib\net47\CommonServiceLocator.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\Extreme.Net\bin\Debug\Extreme.Net.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\MvvmLightLibs.5.4.1.1\lib\net45\GalaSoft.MvvmLight.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\MvvmLightLibs.5.4.1.1\lib\net45\GalaSoft.MvvmLight.Extras.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\MvvmLightLibs.5.4.1.1\lib\net45\GalaSoft.MvvmLight.Platform.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\AvalonEdit.6.0.1\lib\net45\ICSharpCode.AvalonEdit.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\IronPython.2.7.9\lib\net45\IronPython.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\IronPython.2.7.9\lib\net45\IronPython.Modules.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\IronPython.2.7.9\lib\net45\IronPython.SQLite.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\IronPython.2.7.9\lib\net45\IronPython.Wpf.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\LiteDB.4.1.4\lib\net40\LiteDB.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\MahApps.Metro.IconPacks.Modern.4.3.0\lib\net47\MahApps.Metro.IconPacks.Core.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\MahApps.Metro.IconPacks.FontAwesome.4.2.0\lib\net47\MahApps.Metro.IconPacks.FontAwesome.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\MahApps.Metro.IconPacks.Ionicons.4.2.0\lib\net47\MahApps.Metro.IconPacks.Ionicons.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\MahApps.Metro.IconPacks.Material.4.2.0\lib\net47\MahApps.Metro.IconPacks.Material.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\MahApps.Metro.IconPacks.MaterialDesign.4.2.0\lib\net47\MahApps.Metro.IconPacks.MaterialDesign.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\MahApps.Metro.IconPacks.Microns.4.2.0\lib\net47\MahApps.Metro.IconPacks.Microns.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\MahApps.Metro.IconPacks.Modern.4.3.0\lib\net47\MahApps.Metro.IconPacks.Modern.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\MahApps.Metro.IconPacks.Unicons.4.3.0\lib\net47\MahApps.Metro.IconPacks.Unicons.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\MahApps.Metro.IconPacks.Zondicons.4.2.0\lib\net47\MahApps.Metro.IconPacks.Zondicons.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Microsoft.CSharp.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\DynamicLanguageRuntime.1.2.2\lib\net45\Microsoft.Dynamic.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\DynamicLanguageRuntime.1.2.2\lib\net45\Microsoft.Scripting.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\DynamicLanguageRuntime.1.2.2\lib\net45\Microsoft.Scripting.Metadata.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\mscorlib.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\OpenCvSharp4.4.3.0.20200524\lib\net461\OpenCvSharp.Blob.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\OpenCvSharp4.4.3.0.20200524\lib\net461\OpenCvSharp.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\OpenCvSharp4.4.3.0.20200524\lib\net461\OpenCvSharp.Extensions.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\PluginFramework\bin\Debug\PluginFramework.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\PresentationCore.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\PresentationFramework.Aero2.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\PresentationFramework.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\RuriLib\bin\Debug\RuriLib.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\SilverBullet.ImageProcessor\bin\Debug\SilverBullet.ImageProcessor.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\SilverBullet.RedistributableChecker\bin\Debug\SilverBullet.RedistributableChecker.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\OpenBullet\bin\Debug\SpiceRandomUserAgent.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.ComponentModel.Composition.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.Core.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.Data.DataSetExtensions.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.Data.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.Drawing.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.IO.Compression.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.IO.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.Net.Http.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\System.Runtime.CompilerServices.Unsafe.4.7.1\lib\net461\System.Runtime.CompilerServices.Unsafe.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Runtime.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Security.Cryptography.Algorithms.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Security.Cryptography.Encoding.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Security.Cryptography.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Security.Cryptography.X509Certificates.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\System.Text.Encoding.CodePages.4.7.0\lib\net461\System.Text.Encoding.CodePages.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\Infragistics.Themes.MetroDark.Wpf.1.0.0\lib\net40\System.Windows.Controls.Input.Toolkit.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\Infragistics.Themes.MetroDark.Wpf.1.0.0\lib\net40\System.Windows.Controls.Layout.Toolkit.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.Windows.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.Windows.Forms.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\MvvmLightLibs.5.4.1.1\lib\net45\System.Windows.Interactivity.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.Xaml.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.Xml.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.Xml.Linq.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\Telegram.Bot.15.7.1\lib\net45\Telegram.Bot.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\Tesseract\Tesseract\bin\Debug\net45\Tesseract.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\Selenium.WebDriver.3.141.0\lib\net45\WebDriver.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\Selenium.Support.3.141.0\lib\net45\WebDriver.Support.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\WebSocketSharp.1.0.3-rc11\lib\websocket-sharp.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\WindowsBase.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\WindowsFormsIntegration.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\Infragistics.Themes.MetroDark.Wpf.1.0.0\lib\net40\WPFToolkit.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\Extended.Wpf.Toolkit.3.8.1\lib\net40\Xceed.Wpf.AvalonDock.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\Extended.Wpf.Toolkit.3.8.1\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\Extended.Wpf.Toolkit.3.8.1\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\Extended.Wpf.Toolkit.3.8.1\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll" />
+    <ReferencePath Include="E:\Projects\Desktop\SilverBullet\packages\Extended.Wpf.Toolkit.3.8.1\lib\net40\Xceed.Wpf.Toolkit.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\Microsoft.Win32.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\netstandard.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.AppContext.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Collections.Concurrent.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Collections.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Collections.NonGeneric.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Collections.Specialized.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.ComponentModel.Annotations.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.ComponentModel.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.ComponentModel.EventBasedAsync.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.ComponentModel.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.ComponentModel.TypeConverter.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Console.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Data.Common.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Diagnostics.Contracts.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Diagnostics.Debug.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Diagnostics.FileVersionInfo.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Diagnostics.Process.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Diagnostics.StackTrace.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Diagnostics.TextWriterTraceListener.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Diagnostics.Tools.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Diagnostics.TraceSource.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Drawing.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Dynamic.Runtime.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Globalization.Calendars.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Globalization.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Globalization.Extensions.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.IO.Compression.ZipFile.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.IO.FileSystem.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.IO.FileSystem.DriveInfo.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.IO.FileSystem.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.IO.FileSystem.Watcher.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.IO.IsolatedStorage.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.IO.MemoryMappedFiles.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.IO.Pipes.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.IO.UnmanagedMemoryStream.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Linq.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Linq.Expressions.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Linq.Parallel.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Linq.Queryable.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Net.Http.Rtc.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Net.NameResolution.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Net.NetworkInformation.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Net.Ping.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Net.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Net.Requests.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Net.Security.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Net.Sockets.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Net.WebHeaderCollection.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Net.WebSockets.Client.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Net.WebSockets.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.ObjectModel.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Reflection.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Reflection.Emit.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Reflection.Emit.ILGeneration.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Reflection.Emit.Lightweight.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Reflection.Extensions.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Reflection.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Resources.Reader.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Resources.ResourceManager.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Resources.Writer.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Runtime.CompilerServices.VisualC.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Runtime.Extensions.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Runtime.Handles.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Runtime.InteropServices.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Runtime.InteropServices.RuntimeInformation.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Runtime.InteropServices.WindowsRuntime.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Runtime.Numerics.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Runtime.Serialization.Formatters.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Runtime.Serialization.Json.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Runtime.Serialization.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Runtime.Serialization.Xml.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Security.Claims.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Security.Cryptography.Csp.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Security.Principal.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Security.SecureString.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.ServiceModel.Duplex.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.ServiceModel.Http.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.ServiceModel.NetTcp.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.ServiceModel.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.ServiceModel.Security.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Text.Encoding.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Text.Encoding.Extensions.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Text.RegularExpressions.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Threading.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Threading.Overlapped.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Threading.Tasks.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Threading.Tasks.Parallel.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Threading.Thread.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Threading.ThreadPool.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Threading.Timer.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Xml.ReaderWriter.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Xml.XDocument.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Xml.XmlDocument.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Xml.XmlSerializer.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Xml.XPath.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades\System.Xml.XPath.XDocument.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\LogWindow.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\NotesWindow.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Dialogs\DialogEditWordlist.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Dialogs\DialogLSDoc.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Dialogs\DialogSelectBots.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Dialogs\DialogSetProxies.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Dialogs\FindReplaceDialog.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\AboutPage.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Configs\ConfigOcrSettings.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Configs\OtherOptions\Requests.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Configs\OtherOptions\Selenium.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Dialogs\DialogShowLog.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\LoadingWindow.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Dialogs\DialogSelectWordlist.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Dialogs\DialogAddBlock.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Dialogs\DialogCustomInput.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Dialogs\DialogSelectConfig.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Configs\ConfigOtherOptions.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Configs\OtherOptions\Data.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Configs\OtherOptions\General.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Configs\OtherOptions\Inputs.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Configs\OtherOptions\Proxies.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Dialogs\DialogNewConfig.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Help.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\ConfigsSection.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Configs\ConfigManager.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\HitsDB.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\PluginsSection.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\ReleaseNotesPage.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\RunnerManager.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Settings\OBSettings.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Settings\OpenBullet\General.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Settings\OpenBullet\Sources.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Settings\OpenBullet\Themes.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Settings\OpenBullet\Sounds.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Settings\RLSettings.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Settings\RuriLib\CefSharp.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Settings\RuriLib\Ocr.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Settings\RuriLib\Selenium.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Settings\RuriLib\Captchas.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Settings\RuriLib\Proxies.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Settings\RuriLib\General.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Settings.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Dialogs\DialogAddWordlist.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Dialogs\DialogAddProxies.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\MainDialog.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Runner\Runner.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\MainWindow.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\ProxyManager.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Support.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Tools\Database.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Tools\TessDataDownloads.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Tools\WordlistTools.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\StackerBlocks\PageBlockOcr.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\StackerBlocks\PageBlockReportCaptcha.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\StackerBlocks\PageBlockBypassCF.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\StackerBlocks\PageBlockCaptcha.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\StackerBlocks\PageBlockFunction.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\StackerBlocks\PageBlockKeycheck.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\StackerBlocks\PageBlockLSCode.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\StackerBlocks\PageBlockParse.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\StackerBlocks\PageBlockRecaptcha.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\StackerBlocks\PageBlockRequest.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\StackerBlocks\PageBlockSolveCaptcha.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\StackerBlocks\PageBlockSpeechToText.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\StackerBlocks\PageBlockTCP.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\StackerBlocks\PageBlockUtility.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\StackerBlocks\PageBlockWebSocket.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\StackerBlocks\PageSBlockBrowserAction.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\StackerBlocks\PageSBlockElementAction.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\StackerBlocks\PageSBlockExecuteJS.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\StackerBlocks\PageSBlockNavigate.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Configs\Stacker.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Snowflake.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\SplashWindow.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\WordlistManager.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\ToolsSection.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Tools\ListGenerator.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\Main\Tools\SeleniumTools.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\ButtonContainer.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\StackerBlocks\BlockPluginPage.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\Filters\UserControlAdaptiveThreshold.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\Filters\UserControlBlur.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\Filters\UserControlCropLayer.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\Filters\UserControlCvtColor.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\Filters\UserControlEnumBox.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\Filters\UserControlFastNlMeansDenoisingColored.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\Filters\UserControlHoughLine.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\Filters\UserControlInput.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\Filters\UserControlInputTextAndBoolean.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\Filters\UserControlInputTextAndEnum.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\Filters\UserControlMorphology.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\Filters\UserControlNegate.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\Filters\UserControlReplaceColor.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\Filters\UserControlResize.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\Filters\UserControlResolution.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\Filters\UserControlThreshold.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\PluginControl.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\UserControlCheckbox.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\UserControlContainer.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\UserControlDropdown.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\UserControlConfig.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\UserControlInfoText.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\UserControlSupport.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\UserControlWordlist.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\UserControlFilePicker.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\UserControlNumeric.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\UserControlText.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\Views\UserControls\UserControlTextMulti.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\App.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\SilverBullet_Content.g.cs" />
+    <Compile Include="E:\Projects\Desktop\SilverBullet\OpenBullet\obj\Debug\GeneratedInternalTypeHelper.g.cs" />
+  </ItemGroup>
+</Project>
