@@ -22,7 +22,7 @@ namespace OpenBullet
         {
             InitializeComponent();
             Caller = caller;
-            authorTextbox.Text = SB.OBSettings.General.DefaultAuthor;
+            authorTextbox.Text = SB.SBSettings.General.DefaultAuthor;
             nameTextbox.Focus();
 
             categoryCombobox.Items.Add(ConfigRepository.defaultCategory);

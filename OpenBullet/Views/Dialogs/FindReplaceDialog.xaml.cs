@@ -78,7 +78,7 @@ namespace OpenBullet.Views.Dialogs
         {
             if (MessageBox.Show("Are you sure you want to Replace All occurences of \"" +
             txtFind2.Text + "\" with \"" + txtReplace.Text + "\"?",
-                "Replace All", MessageBoxButton.OKCancel, MessageBoxImage.Question) == MessageBoxResult.OK)
+                "Replace All", MessageBoxButton.OKCancel, System.Windows.MessageBoxImage.Question) == MessageBoxResult.OK)
             {
                 Regex regex = GetRegEx(txtFind2.Text, true);
                 int offset = 0;

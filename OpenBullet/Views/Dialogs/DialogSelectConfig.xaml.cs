@@ -38,7 +38,7 @@ namespace OpenBullet
                 var config = ((ConfigViewModel)configsListView.SelectedItem).Config;
                 var runner = Caller as Runner;
                 
-                if (SB.OBSettings.General.LiveConfigUpdates) runner.SetConfig(config);
+                if (SB.SBSettings.General.LiveConfigUpdates) runner.SetConfig(config);
                 else runner.SetConfig(IOManager.CloneConfig(config));
             }
             else if (Caller.GetType() == typeof(UserControlConfig))
