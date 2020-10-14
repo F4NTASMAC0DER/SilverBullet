@@ -1,14 +1,10 @@
-﻿using RuriLib.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using RuriLib.ViewModels;
 
 namespace OpenBullet.ViewModels
 {
-    public class OBSettingsGeneral : ViewModelBase
+    public class SBSettingsGeneral : ViewModelBase
     {
         private bool displayLoliScriptOnLoad = false;
         public bool DisplayLoliScriptOnLoad { get { return displayLoliScriptOnLoad; } set { displayLoliScriptOnLoad = value; OnPropertyChanged(); } }
@@ -53,10 +49,24 @@ namespace OpenBullet.ViewModels
         private bool ignoreWordlistOnHitsDedupe = false;
         public bool IgnoreWordlistOnHitDedupe { get { return ignoreWordlistOnHitsDedupe; } set { ignoreWordlistOnHitsDedupe = value; OnPropertyChanged(); } }
 
+        private int autoSaveConfigTime = 1;
+        public int AutoSaveConfigTime
+        {
+            get { return autoSaveConfigTime; }
+            set { autoSaveConfigTime = value; OnPropertyChanged(); }
+        }
+
+        private bool autoSaveConfigOnStacker;
+        public bool AutoSaveConfigOnStacker
+        {
+            get { return autoSaveConfigOnStacker; }
+            set { autoSaveConfigOnStacker = value; OnPropertyChanged(); }
+        }
+
         public void Reset()
         {
-            OBSettingsGeneral def = new OBSettingsGeneral();
-            IList<PropertyInfo> props = new List<PropertyInfo>(typeof(OBSettingsGeneral).GetProperties());
+            SBSettingsGeneral def = new SBSettingsGeneral();
+            IList<PropertyInfo> props = new List<PropertyInfo>(typeof(SBSettingsGeneral).GetProperties());
 
             foreach (PropertyInfo prop in props)
             {
