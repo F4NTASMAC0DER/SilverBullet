@@ -71,6 +71,10 @@
     <Reference Include="IronPython.Wpf, Version=2.7.9.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
       <HintPath>..\packages\IronPython.2.7.9\lib\net45\IronPython.Wpf.dll</HintPath>
     </Reference>
+    <Reference Include="Jint, Version=0.0.0.0, Culture=neutral, PublicKeyToken=2e92ba9c8d81157f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\OpenBullet\bin\Release\bin\Jint.dll</HintPath>
+    </Reference>
     <Reference Include="LiteDB, Version=4.1.4.0, Culture=neutral, PublicKeyToken=4ee40123013c9f27, processorArchitecture=MSIL">
       <HintPath>..\packages\LiteDB.4.1.4\lib\net40\LiteDB.dll</HintPath>
     </Reference>
@@ -104,7 +108,7 @@
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Noesis.Javascript">
-      <HintPath>C:\Users\MOHAMMAD\Desktop\jurassic-test\packages\Noesis.Javascript.0.7.1.0\lib\net40\x86\Noesis.Javascript.dll</HintPath>
+      <HintPath>..\packages\Noesis.Javascript.0.7.1.0\lib\net40\x86\Noesis.Javascript.dll</HintPath>
     </Reference>
     <Reference Include="OpenCvSharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenCvSharp4.4.3.0.20200524\lib\net461\OpenCvSharp.dll</HintPath>
@@ -119,6 +123,7 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="ProxySocket, Version=1.1.2.0, Culture=neutral, PublicKeyToken=966874d7118d1436, processorArchitecture=MSIL">
       <HintPath>..\packages\ProxySocket.1.1.2\lib\net40\ProxySocket.dll</HintPath>
     </Reference>
@@ -255,6 +260,7 @@
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -297,6 +303,8 @@
     <Compile Include="Functions\Encoding\Encode.cs" />
     <Compile Include="Functions\EvaluateMathString\CodeDomCalculator.cs" />
     <Compile Include="Functions\Files\Files.cs" />
+    <Compile Include="Functions\ImgToBase64\ImageToBase64.cs" />
+    <Compile Include="Functions\NTLM\Ntml.cs" />
     <Compile Include="Functions\Requests\Request.cs" />
     <Compile Include="Functions\Time\Time.cs" />
     <Compile Include="Functions\UserAgent\UserAgent.cs" />
@@ -371,6 +379,7 @@
     <Compile Include="SB.JS\JsEngine.cs" />
     <Compile Include="SB.Tesseract\Engine.cs" />
     <Compile Include="SB.Tesseract\OcrEngine.cs" />
+    <Compile Include="Models\Usage.cs" />
     <Compile Include="ViewModels\ConfigViewModel.cs" />
     <Compile Include="Models\CProxy.cs" />
     <Compile Include="Models\LogEntry.cs" />
