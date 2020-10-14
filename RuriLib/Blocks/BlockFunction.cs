@@ -14,6 +14,8 @@ using Microsoft.IdentityModel.Tokens;
 using RuriLib.Functions.Crypto;
 using RuriLib.Functions.EvalString;
 using RuriLib.Functions.Formats;
+using RuriLib.Functions.ImgToBase64;
+using RuriLib.Functions.NTLM;
 using RuriLib.Functions.Time;
 using RuriLib.Functions.UserAgent;
 using RuriLib.Functions.WordToNum;
@@ -39,6 +41,11 @@ namespace RuriLib
 
             /// <summary>Decodes the string from a base64-encoded input.</summary>
             Base64Decode,
+
+            /// <summary>
+            /// Encodes an image input as a base64 string.
+            /// </summary>
+            ImageToBase64,
 
             /// <summary>Hashes an input string.</summary>
             Hash,
@@ -129,6 +136,9 @@ namespace RuriLib
 
             /// <summary>Decoded an input containing HTML or XML entities.</summary>
             HTMLEntityDecode,
+
+            ///<summary>character encoding</summary>
+            Encoding,
 
             /// <summary>Converts a unix timestamp to a formatted date.</summary>
             UnixTimeToDate,
@@ -224,7 +234,32 @@ namespace RuriLib
             GenerateGUID,
 
             ///<summary>Generates a certain amount of bytes based on input</summary>
-            GenerateBytes
+            GenerateBytes,
+
+            /// <summary>Generates NTLM hash</summary>
+            Ntlm,
+        }
+
+        /// <summary>
+        /// Date to unix time 
+        /// </summary>
+        public enum DateToUnixTimeType
+        {
+            /// <summary>Converts a formatted date to a unix timestamp Seconds</summary>
+            Seconds,
+            /// <summary>Converts a formatted date to a unix timestamp Miliseconds</summary>
+            Miliseconds,
+        }
+
+        /// <summary>
+        /// Encoding methods
+        /// </summary>
+        public enum EncodingMethods
+        {
+            ///<summary>encodes all the characters in the specified character array into a sequence of bytes.</summary>
+            GetBytes,
+            ///<summary>decodes a specified number of bytes starting at a specified address into a string.</summary>
+            GetString,
         }
 
         #region General Properties
@@ -440,6 +475,37 @@ namespace RuriLib
         private Hash kdfAlgorithm = Hash.SHA1;
         /// <summary>The size of the generated salt (in bytes) in case none is specified.</summary>
         public Hash KdfAlgorithm { get { return kdfAlgorithm; } set { kdfAlgorithm = value; OnPropertyChanged(); } }
+
+        private DateToUnixTimeType unixTimeType = DateToUnixTimeType.Seconds;
+        /// <summary>
+        /// Unix time type
+        /// </summary>
+        public DateToUnixTimeType UnixTimeType
+        {
+            get => unixTimeType;
+            set { unixTimeType = value; OnPropertyChanged(); }
+        }
+
+        private object getEncoding;
+        /// <summary>
+        /// Encoding name/codepage
+        /// </summary>
+        public object GetEncoding
+        {
+            get { return getEncoding; }
+            set { getEncoding = value; OnPropertyChanged(); }
+        }
+
+        private EncodingMethods encFunc;
+        /// <summary>
+        /// Encoding method
+        /// </summary>
+        public EncodingMethods EncFunc
+        {
+            get { return encFunc; }
+            set { encFunc = value; OnPropertyChanged(); }
+        }
+
         #endregion
 
         #region RandomString Properties
@@ -513,16 +579,24 @@ namespace RuriLib
                     break;
 
                 case Function.DateToUnixTime:
-                    DateFormat = LineParser.ParseLiteral(ref input, "DATE FORMAT");
+                    {
+                        DateFormat = LineParser.ParseLiteral(ref input, "DATE FORMAT");
+                        var tempInput = input;
+                        try { UnixTimeType = LineParser.ParseEnum(ref input, "UnixTimeType", typeof(DateToUnixTimeType)); } catch { input = tempInput; }
+                    }
                     break;
 
                 case Function.UnixTimeToDate:
-                    DateFormat = LineParser.ParseLiteral(ref input, "DATE FORMAT");
-                    // a little backward compatability with the old line format.
-                    if (LineParser.Lookahead(ref input) != TokenType.Literal)
                     {
-                        InputString = DateFormat;
-                        DateFormat = "yyyy-MM-dd:HH-mm-ss";
+                        DateFormat = LineParser.ParseLiteral(ref input, "DATE FORMAT");
+                        // a little backward compatability with the old line format.
+                        if (LineParser.Lookahead(ref input) != TokenType.Literal)
+                        {
+                            InputString = DateFormat;
+                            DateFormat = "yyyy-MM-dd:HH-mm-ss";
+                        }
+                        var tempInput = input;
+                        try { UnixTimeType = LineParser.ParseEnum(ref input, "UnixTimeType", typeof(DateToUnixTimeType)); } catch { input = tempInput; }
                     }
                     break;
 
@@ -627,6 +701,11 @@ namespace RuriLib
                     KdfAlgorithm = LineParser.ParseEnum(ref input, "Algorithm", typeof(Hash));
                     break;
 
+                case Function.Encoding:
+                    GetEncoding = LineParser.ParseLiteral(ref input, "Encoding name/codepage");
+                    EncFunc = LineParser.ParseEnum(ref input, "Encoding Methods", typeof(EncodingMethods));
+                    break;
+
                 default:
                     break;
             }
@@ -698,8 +777,11 @@ namespace RuriLib
 
                 case Function.UnixTimeToDate:
                 case Function.DateToUnixTime:
-                    writer
-                        .Literal(DateFormat);
+                    {
+                        writer.Literal(DateFormat);
+                        if (UnixTimeType != DateToUnixTimeType.Seconds)
+                            writer.Token(UnixTimeType);
+                    }
                     break;
 
                 case Function.Replace:
@@ -801,6 +883,11 @@ namespace RuriLib
                         .Integer(KdfKeySize)
                         .Token(KdfAlgorithm);
                     break;
+
+                case Function.Encoding:
+                    writer.Literal(GetEncoding.ToString())
+                        .Token(EncFunc);
+                    break;
             }
 
             writer
@@ -876,7 +963,21 @@ namespace RuriLib
                         break;
 
                     case Function.DateToUnixTime:
-                        outputString = localInputString.ToDateTime(dateFormat).ToUnixTimeSeconds().ToString();
+                        switch (UnixTimeType)
+                        {
+                            case DateToUnixTimeType.Seconds:
+                                if (!string.IsNullOrEmpty(localInputString))
+                                    outputString = localInputString.ToDateTime(DateFormat).ToUnixTimeSeconds().ToString();
+                                else
+                                    outputString = DateTime.Now.ToUnixTimeSeconds().ToString();
+                                break;
+                            case DateToUnixTimeType.Miliseconds:
+                                if (!string.IsNullOrEmpty(localInputString))
+                                    outputString = localInputString.ToDateTime(DateFormat).ToUnixTimeMilliseconds().ToString();
+                                else
+                                    outputString = DateTime.Now.ToUnixTimeMilliseconds().ToString();
+                                break;
+                        }
                         break;
 
                     case Function.DateToSolar:
@@ -1202,6 +1303,36 @@ namespace RuriLib
                             data.LogBuffer.Add(new LogEntry("ERROR: " + ex.Message, Colors.Tomato));
                             outputString = "BYTE SIZE TOO LARGE FOR 32BIT INTEGER";
                         }
+                        break;
+
+                    case Function.Encoding:
+                        switch (EncFunc)
+                        {
+                            case EncodingMethods.GetBytes:
+                                if (int.TryParse(ReplaceValues(GetEncoding.ToString(), data), out int bCodePage))
+                                {
+                                    outputString = Encoding.GetEncoding(bCodePage).GetBytes(ReplaceValues(localInputString, data)).ConvertToString();
+                                }
+                                else
+                                    outputString = Encoding.GetEncoding(ReplaceValues(GetEncoding.ToString(), data)).GetBytes(ReplaceValues(localInputString, data)).ConvertToString();
+                                break;
+                            case EncodingMethods.GetString:
+                                if (int.TryParse(ReplaceValues(GetEncoding.ToString(), data), out int sCodePage))
+                                {
+                                    outputString = Encoding.GetEncoding(sCodePage).GetString(ReplaceValues(localInputString, data).ConvertToByteArray());
+                                }
+                                else
+                                    outputString = Encoding.GetEncoding(GetEncoding.ToString()).GetString(ReplaceValues(localInputString, data).ConvertToByteArray());
+                                break;
+                        }
+                        break;
+
+                    case Function.Ntlm:
+                        outputString = Ntml.Generate(ReplaceValues(localInputString, data));
+                        break;
+
+                    case Function.ImageToBase64:
+                        outputString = ImageToBase64.Convert(ReplaceValues(localInputString, data), data);
                         break;
                 }
 
