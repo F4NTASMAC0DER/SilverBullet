@@ -24,6 +24,7 @@ using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using ICSharpCode.AvalonEdit.Rendering;
 using MahApps.Metro.IconPacks;
+using Microsoft.Scripting.Utils;
 using OpenBullet.CefBrowser;
 using OpenBullet.Editor.Search;
 using OpenBullet.ViewModels;
@@ -50,11 +51,13 @@ namespace OpenBullet.Views.Main.Configs
         CompletionWindow completionWindow;
         private ToolTip toolTip;
         private Task taskSwitchView = null;
+        private LoliScriptCompletionData.BlockParameters blockParameters;
         public delegate void SaveConfigEventHandler(object sender, EventArgs e);
         public event SaveConfigEventHandler SaveConfig;
         BrushConverter bc = new BrushConverter();
         SearchTextEditor searchTextEditor;
         OcrEngine _ocrEngine;
+        private Timer autoSaveConfigTimer;
 
         protected virtual void OnSaveConfig()
         {
@@ -109,8 +112,18 @@ namespace OpenBullet.Views.Main.Configs
             vm = SB.Stacker;
             DataContext = vm;
 
-            if (!Cef.IsInitialized)
-                App.InitializeCefSharp(null);
+            try
+            {
+                if (!Cef.IsInitialized)
+                    App.InitializeCefSharp(null);
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("Could not load file or assembly 'Cef") || ex.Message.Contains("Could not load file or assembly"))
+                {
+                    SB.Logger.LogError(Components.Stacker, "Visual C++ Redistributable 2015+ (x86 or x64) Not Installed\nDl Link: microsoft.com/en-us/download/details.aspx?id=48145", true);
+                }
+            }
 
             InitializeComponent();
 
@@ -164,7 +177,7 @@ namespace OpenBullet.Views.Main.Configs
             loliScriptEditor.Text = vm.LS.Script;
 
             // If the user prefers Stack view, switch to it
-            if (!SB.OBSettings.General.DisplayLoliScriptOnLoad)
+            if (!SB.SBSettings.General.DisplayLoliScriptOnLoad)
             {
                 stackButton_Click(this, null);
             }
@@ -202,24 +215,108 @@ namespace OpenBullet.Views.Main.Configs
 
             //Any CefSharp references have to be in another method with NonInlining
             // attribute so the assembly rolver has time to do it's thing.
+        }
 
-            // loliScriptEditor.TextArea.TextEntered += TextArea_TextEntered;
+        private void TextArea_KeyDown(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                if (e.Key == System.Windows.Input.Key.Space &&
+                    e.KeyboardDevice.Modifiers == ModifierKeys.Control && vm.ScriptCompletion)
+                {
+                    InvokeCompletionWindow(GetDataList(string.Empty), Brushes.White);
+                    e.Handled = true;
+                }
+            }
+            catch { }
         }
 
         private void TextArea_TextEntered(object sender, TextCompositionEventArgs e)
         {
             try
             {
-
+                if (e.Text == "\n" || !vm.ScriptCompletion)
+                {
+                    return;
+                }
+                if (completionWindow == null && e.Text == " ")
+                {
+                    InvokeCompletionWindow(GetDataList(e.Text),
+                        Brushes.White);
+                }
             }
             catch (Exception ex)
             {
             }
         }
 
-        private void InvokeCompletionWindow(List<Tuple<string, string>> scriptAutoCompleteList)
+        private IEnumerable<Tuple<string, string>> GetDataList(string text)
+        {
+            var caret = loliScriptEditor.TextArea.Caret;
+            var visualColumn = caret.VisualColumn;
+            var currentLineDoc = string.Empty;
+            if (loliScriptEditor.LineCount > 0)
+            {
+                currentLineDoc = loliScriptEditor.Text.Split('\n')[caret.Line - 1];
+            }
+            if (visualColumn > 1)
+            {
+                try
+                {
+                    var docs = currentLineDoc.Split(' ');
+                    var blockType = string.Empty;
+                    if (!docs.Any(d => LoliScriptCompletionData.DataList.Where(d2 => d2.Item2 == "Block" || d2.Item2 == "Ls").Any(d2 => d == (blockType = d2.Item1))))
+                    {
+                        visualColumn = 1;
+                    }
+                    else
+                    {
+                        return blockParameters.GetType().GetProperty(blockType, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic)
+                            .GetValue(blockParameters, null) as IReadOnlyCollection<Tuple<string, string>>;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //return LoliScriptCompletionData.DataList.Where(d => d.Item2 == "Parameter");
+                }
+            }
+            switch (visualColumn)
+            {
+                case 0:
+                    return LoliScriptCompletionData.DataList.Where(d => d.Item2 != "Parameter");
+                case 1:
+                    return LoliScriptCompletionData.DataList.Where(d => d.Item2 == "Block" || d.Item2 == "Ls");
+                default:
+                    return LoliScriptCompletionData.DataList;
+            }
+        }
+
+        private void TextArea_TextEntering(object sender, TextCompositionEventArgs e)
+        {
+            if (!vm.ScriptCompletion) return;
+            if (e.Text.Length > 0 && completionWindow != null && char.IsLetter(e.Text[0]))
+            {
+                // Whenever a non-letter is typed while the completion window is open,
+                // insert the currently selected element.
+                completionWindow.CompletionList.RequestInsertion(e);
+            }
+            // Do not set e.Handled=true.
+            // We still want to insert the character that was typed.
+        }
+
+        private void InvokeCompletionWindow(IEnumerable<Tuple<string, string>> scriptAutoCompleteList,
+            Brush foreground)
         {
             var completionWindow = new CompletionWindow(loliScriptEditor.TextArea);
+
+            #region Set brush
+            completionWindow.Background =
+               completionWindow.CompletionList.ListBox.Background =
+                completionWindow.CompletionList.Background = Brushes.Black;
+            completionWindow.CompletionList.Foreground =
+                completionWindow.CompletionList.ListBox.Foreground = foreground;
+            #endregion Set brush
+
             IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
             if (scriptAutoCompleteList.Any())
             {
@@ -227,8 +324,6 @@ namespace OpenBullet.Views.Main.Configs
                 {
                     data.Add(new LoliScriptCompletionData(autoCompleteScript.Item1, autoCompleteScript.Item2));
                 }
-                completionWindow.SetResourceReference(CompletionWindow.BackgroundProperty, "BackgroundMain");
-                completionWindow.SetResourceReference(CompletionWindow.ForegroundProperty, "ForegroundMain");
                 completionWindow.Show();
                 completionWindow.Closed += delegate { completionWindow = null; };
             }
@@ -342,13 +437,13 @@ namespace OpenBullet.Views.Main.Configs
                         break;
 
                     case System.Windows.Input.Key.C:
-                        if (SB.OBSettings.General.DisableCopyPasteBlocks) return;
+                        if (SB.SBSettings.General.DisableCopyPasteBlocks) return;
                         try { Clipboard.SetText(IOManager.SerializeBlocks(vm.SelectedBlocks.Select(b => b.Block).ToList())); }
                         catch { SB.Logger.LogError(Components.Stacker, "Exception while copying blocks"); }
                         break;
 
                     case System.Windows.Input.Key.V:
-                        if (SB.OBSettings.General.DisableCopyPasteBlocks) return;
+                        if (SB.SBSettings.General.DisableCopyPasteBlocks) return;
                         try
                         {
                             foreach (var block in IOManager.DeserializeBlocks(Clipboard.GetText()))
@@ -384,7 +479,7 @@ namespace OpenBullet.Views.Main.Configs
                     if (debuggerTabControl.SelectedIndex == 1)
                         logRTB.Focus();
                     vm.ControlsEnabled = false;
-                    if (!SB.OBSettings.General.PersistDebuggerLog)
+                    if (!SB.SBSettings.General.PersistDebuggerLog)
                         logRTB.Clear();
                     dataRTB.Document.Blocks.Clear();
 
@@ -611,7 +706,7 @@ namespace OpenBullet.Views.Main.Configs
                 dataRTB.AppendText(Environment.NewLine);
                 dataRTB.AppendText($"BOT STATUS: {vm.BotData.StatusString}" + Environment.NewLine, Colors.White);
                 dataRTB.AppendText("VARIABLES:" + Environment.NewLine, Colors.Yellow);
-                if (SB.OBSettings.General.DisplayCapturesLast)
+                if (SB.SBSettings.General.DisplayCapturesLast)
                 {
                     foreach (var variable in vm.BotData.Variables.All.Where(v => !v.Hidden && !v.IsCapture))
                         dataRTB.AppendText(variable.Name + $" ({variable.Type}) = " + variable.ToString() + Environment.NewLine, Colors.Yellow);
@@ -629,7 +724,7 @@ namespace OpenBullet.Views.Main.Configs
 
         private void DisplayHTML()
         {
-            if (SB.OBSettings.General.DisableHTMLView) return;
+            if (SB.SBSettings.General.DisableHTMLView) return;
             App.Current.Dispatcher.Invoke(new Action(() =>
             {
                 try
@@ -992,7 +1087,7 @@ namespace OpenBullet.Views.Main.Configs
                 }
             }
 
-            if (SB.OBSettings.General.DisableSyntaxHelper) return;
+            if (SB.SBSettings.General.DisableSyntaxHelper) return;
 
             DocumentLine line = loliScriptEditor.Document.GetLineByOffset(loliScriptEditor.CaretOffset);
             var blockLine = loliScriptEditor.Document.GetText(line.Offset, line.Length);
@@ -1028,7 +1123,17 @@ namespace OpenBullet.Views.Main.Configs
                 if (node == null) return;
 
                 toolTipEditor.Text = node.InnerText;
-                toolTip.IsOpen = true;
+                if (!vm.DisableToolTip)
+                {
+                    toolTip.Visibility = Visibility.Visible;
+                    toolTip.IsOpen = true;
+                }
+                else
+                {
+                    toolTipEditor.Text = string.Empty;
+                    toolTip.Visibility = Visibility.Collapsed;
+                    loliScriptEditor.ToolTip = null;
+                }
             }
             else
             {
@@ -1212,6 +1317,52 @@ namespace OpenBullet.Views.Main.Configs
                 else labelInitBrowser.Visibility = Visibility.Collapsed;
             }
             catch { }
+        }
+
+        private void AutoSaveConfig()
+        {
+            try
+            {
+                if (!SB.SBSettings.General.AutoSaveConfigOnStacker)
+                {
+                    try { autoSaveConfigTimer.Dispose(); } catch { }
+                    try { autoSaveConfigTimer = null; } catch { }
+                    return;
+                }
+                if (Dispatcher.Invoke(() => SB.MainWindow.Main.Content.GetType() == typeof(ConfigsSection)))
+                    Dispatcher.Invoke(() => OnSaveConfig());
+            }
+            catch { }
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (SB.SBSettings.General.AutoSaveConfigOnStacker && autoSaveConfigTimer == null)
+                {
+                    autoSaveConfigTimer = new Timer((_) => AutoSaveConfig(), null, TimeSpan.Zero, TimeSpan.FromMinutes(SB.SBSettings.General.AutoSaveConfigTime));
+                }
+                else
+                {
+                    autoSaveConfigTimer?.Dispose();
+                    autoSaveConfigTimer = null;
+                }
+            }
+            catch { }
+        }
+
+        //open log in notepad
+        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                NotepadExtensions.ShowText(logRTB.Text);
+            }
+            catch (Exception ex)
+            {
+                SB.Logger.LogError(Components.Stacker, ex.Message, true);
+            }
         }
     }
 }
