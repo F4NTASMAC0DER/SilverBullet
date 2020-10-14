@@ -1360,6 +1360,10 @@ namespace RuriLib
 
             switch (type)
             {
+                case Hash.MD2:
+                    digest = Crypto.MD2(rawInput);
+                    break;
+
                 case Hash.MD4:
                     digest = Crypto.MD4(rawInput);
                     break;
@@ -1382,6 +1386,22 @@ namespace RuriLib
 
                 case Hash.SHA512:
                     digest = Crypto.SHA512(rawInput);
+                    break;
+
+                case Hash.SHA3_224:
+                    digest = Crypto.SHA3_224(rawInput);
+                    break;
+
+                case Hash.SHA3_256:
+                    digest = Crypto.SHA3_256(rawInput);
+                    break;
+
+                case Hash.SHA3_384:
+                    digest = Crypto.SHA3_384(rawInput);
+                    break;
+
+                case Hash.SHA3_512:
+                    digest = Crypto.SHA3_512(rawInput);
                     break;
 
                 default:
