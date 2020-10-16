@@ -66,7 +66,7 @@ namespace OpenBullet.Views.StackerBlocks
             encCombobox.Items.Add("windows-1251");
             encCombobox.Items.Add(1251);
 
-            foreach(var e in Enum.GetNames(typeof(EncodingMethods)))
+            foreach (var e in Enum.GetNames(typeof(EncodingMethods)))
             {
                 encFuncCombobox.Items.Add(e);
             }

@@ -306,7 +306,6 @@
     <Compile Include="Functions\Encoding\Encode.cs" />
     <Compile Include="Functions\EvaluateMathString\CodeDomCalculator.cs" />
     <Compile Include="Functions\Files\Files.cs" />
-    <Compile Include="Functions\ImgToBase64\ImageToBase64.cs" />
     <Compile Include="Functions\NTLM\Ntml.cs" />
     <Compile Include="Functions\Requests\Request.cs" />
     <Compile Include="Functions\Time\Time.cs" />

@@ -393,7 +393,7 @@ namespace RuriLib
                             if (data.ConfigSettings.DisableImageLoading)
                             {
                                 chromeop.AddArgument("--disable-images");
-                                chromeop.AddAdditionalCapability("profile.default_content_settings", "2");
+                                chromeop.AddUserProfilePreference("profile.default_content_setting_values.images", 2);
                             }
                             if (data.UseProxies) chromeop.AddArgument("--proxy-server=" + data.Proxy.Type.ToString().ToLower() + "://" + data.Proxy.Proxy);
 

@@ -14,7 +14,6 @@ using Microsoft.IdentityModel.Tokens;
 using RuriLib.Functions.Crypto;
 using RuriLib.Functions.EvalString;
 using RuriLib.Functions.Formats;
-using RuriLib.Functions.ImgToBase64;
 using RuriLib.Functions.NTLM;
 using RuriLib.Functions.Time;
 using RuriLib.Functions.UserAgent;
@@ -41,11 +40,6 @@ namespace RuriLib
 
             /// <summary>Decodes the string from a base64-encoded input.</summary>
             Base64Decode,
-
-            /// <summary>
-            /// Encodes an image input as a base64 string.
-            /// </summary>
-            ImageToBase64,
 
             /// <summary>Hashes an input string.</summary>
             Hash,
@@ -885,7 +879,7 @@ namespace RuriLib
                     break;
 
                 case Function.Encoding:
-                    writer.Literal(GetEncoding.ToString())
+                    writer.Literal((GetEncoding ?? string.Empty).ToString())
                         .Token(EncFunc);
                     break;
             }
@@ -1329,10 +1323,6 @@ namespace RuriLib
 
                     case Function.Ntlm:
                         outputString = Ntml.Generate(ReplaceValues(localInputString, data));
-                        break;
-
-                    case Function.ImageToBase64:
-                        outputString = ImageToBase64.Convert(ReplaceValues(localInputString, data), data);
                         break;
                 }
 

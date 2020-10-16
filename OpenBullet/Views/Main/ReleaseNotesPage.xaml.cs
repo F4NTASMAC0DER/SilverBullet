@@ -13,6 +13,14 @@ namespace OpenBullet.Views.Main
             InitializeComponent();
             DataContext = this;
             AppendNote(new[] {
+                "Added usage (runner)",
+                "Added new hashing algorithms (by its5Q)",
+                "Added encoding (function)",
+                "Added auto save config on stacker",
+                "Added open log in notepad",
+                "Fixed bugs",
+            });
+            AppendNote(new[] {
             "Added websocket block (ws)",
             "Added send text message to telegram in utility block",
             "Added set selenium user agent in browser action block",
