@@ -251,6 +251,8 @@ namespace OpenBullet.Views.Main.Configs
             SB.Logger.LogInfo(Components.ConfigManager, "Created and assigned a new Stacker instance");
             SB.MainWindow.ConfigsPage.OtherOptionsPage = new ConfigOtherOptions(); // Create an Other Options instance
             SB.Logger.LogInfo(Components.ConfigManager, "Created and assigned a new Other Options instance");
+            SB.MainWindow.ConfigsPage.ConfigOcrSettings = new ConfigOcrSettings();// Create an Ocr Testing instance
+            SB.Logger.LogInfo(Components.ConfigManager, "Created and assigned a new Ocr Testing instance");
             SB.MainWindow.ConfigsPage.menuOptionStacker_MouseDown(this, null); // Switch to Stacker
 
             // Save the last state of the config
