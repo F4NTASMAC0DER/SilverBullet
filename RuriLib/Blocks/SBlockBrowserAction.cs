@@ -315,7 +315,7 @@ namespace RuriLib
                 case BrowserAction.DOMtoSOURCE:
                     data.ResponseSource = data.Driver.FindElement(By.TagName("body")).GetAttribute("innerHTML");
                     break;
-
+                    
                 case BrowserAction.GetCookies:
                     foreach (var cookie in data.Driver.Manage().Cookies.AllCookies)
                     {

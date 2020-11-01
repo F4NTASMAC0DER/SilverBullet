@@ -1,16 +1,15 @@
-﻿using Extreme.Net;
-using RuriLib.Functions.Formats;
-using RuriLib.Models;
-using RuriLib.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using RuriLib.Functions.Files;
 using System.Windows.Media;
+using Extreme.Net;
 using RuriLib.Functions.Conversions;
+using RuriLib.Functions.Formats;
+using RuriLib.Models;
+using RuriLib.ViewModels;
 
 namespace RuriLib.Functions.Requests
 {
