@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -21,7 +22,7 @@ namespace OpenBullet.Views.Main.Tools
         public string url = @"https://github.com/tesseract-ocr/tessdata/tree/3.04.00";
         public string siteResponse = null;
         public string language = null;
-        private Regex lang = new Regex("title=\"(.*).traineddata\" id=\"");
+        private Regex lang = new Regex("title=\"(.*)\" href=\"/tesseract-ocr/tessdata/blob/");
         Task taskDl;
 
         public TessDataDownloads()
@@ -90,9 +91,10 @@ namespace OpenBullet.Views.Main.Tools
                 {
                     foreach (Match line in lang.Matches(siteResponse))
                     {
+                        var val = line.Groups[1].Value;
                         Dispatcher.BeginInvoke(DispatcherPriority.Normal, (ThreadStart)delegate
                         {
-                            LanguageList.Items.Add(line.Groups[1].Value);
+                            LanguageList.Items.Add($"{Path.GetFileNameWithoutExtension(val)} ({Path.GetExtension(val).Split('.')[1]})");
                         });
                     }
                     DispatcherInvoke(() => LogsText.Text += "Downloading language list Finished!" + Environment.NewLine);
