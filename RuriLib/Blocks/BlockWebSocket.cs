@@ -230,7 +230,7 @@ namespace RuriLib
                         var msg = ReplaceValues(Message, data);
                         var bytes = Encoding.ASCII.GetBytes(msg.Unescape());
                         bool? wsSendReplied = null;
-                        data.Log(new LogEntry($"Sending {Message}", Colors.GreenYellow));
+                        data.Log(new LogEntry($"Sending {msg}", Colors.GreenYellow));
                         ws.SendAsync(bytes, (completed) =>
                          {
                              wsSendReplied = completed;
