@@ -2,7 +2,7 @@
   "LatestVersion": "1.1.1",
   "Available": "False",
   "ReleaseNotes": {
-    "Note":"added test 1",
-    "Note": "added test2"
+    "1":"added test 1",
+    "2": "added test2"
   }
 }
