@@ -1,6 +1,7 @@
 {
   "LatestVersion": "1.1.1",
   "Available": "False",
+  "Message": "",
   "ReleaseNotes": [
     {
       "Note":"added test 1" 
