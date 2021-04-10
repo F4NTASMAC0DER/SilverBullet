@@ -1,8 +1,12 @@
 {
   "LatestVersion": "1.1.1",
   "Available": "False",
-  "ReleaseNotes": {
-    "1":"added test 1",
-    "2": "added test2"
-  }
+  "ReleaseNotes": [
+    {
+      "Note":"added test 1" 
+    },
+    {
+     "Note":"added test 2"
+    }
+  ]
 }
