@@ -1,0 +1,8 @@
+{
+  "LatestVersion": "1.1.1",
+  "Available": "False",
+  "ReleaseNotes": {
+    "Note":"added test 1",
+    "Note": "added test2"
+  }
+}
