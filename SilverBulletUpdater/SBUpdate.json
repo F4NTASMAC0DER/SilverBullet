@@ -5,10 +5,39 @@
   "DownloadUrl": "",
   "ReleaseNotes": [
     {
-      "Note":"added test 1" 
+      "Note": "added test 1"
     },
     {
-     "Note":"added test 2"
+      "Note": "added test 2"
+    }
+  ],
+  "Donate": [
+    {
+      "Address": "BTC: 1CpMVXXyiBymhVg8if3Dev6qPyogmc2U4H"
+    },
+    {
+      "Address": "ETH: 1CpMVXXyiBymhVg8if3Dev6qPyogmc2U4H"
+    },
+    {
+      "Address": "BCH: "
+    },
+    {
+      "Address": "BNB: "
+    },
+    {
+      "Address": "ETC: "
+    },
+    {
+      "Address": "LTC: "
+    },
+    {
+      "Address": "USDT: "
+    },
+    {
+      "Address": "XRP: "
+    },
+    {
+      "Address": "TRX: "
     }
   ]
 }
