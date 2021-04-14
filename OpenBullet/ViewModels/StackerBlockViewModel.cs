@@ -19,7 +19,7 @@ namespace OpenBullet.ViewModels
         public bool Selected { get => selected; set { selected = value; OnPropertyChanged(); OnPropertyChanged(nameof(BorderColor)); } }
         public SolidColorBrush BorderColor => new SolidColorBrush(Selected ? Colors.White : Colors.Black);
 
-        public SolidColorBrush Color => new SolidColorBrush(Block.Disabled ? Colors.Gray : GetBlockColor()); 
+        public LinearGradientBrush Color => Block.Disabled ? Colors.Gray.GetLinearGradientBrush() : GetBlockColor();
         public SolidColorBrush Foreground => new SolidColorBrush(Block.IsSelenium ? Colors.White : Colors.Black);
 
         private int height;
@@ -66,8 +66,8 @@ namespace OpenBullet.ViewModels
             }
         }
 
-        
-        public Color GetBlockColor()
+
+        public LinearGradientBrush GetBlockColor()
         {
             return SB.BlockMappings.First(m => m.Item1 == block.GetType()).Item3;
         }

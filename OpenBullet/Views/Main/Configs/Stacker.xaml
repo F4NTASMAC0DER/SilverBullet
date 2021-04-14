@@ -68,21 +68,20 @@
                             <TextBlock Margin="3,0,0,0">LoliScript Code</TextBlock>
                         </DockPanel>
                     </Label>
-                    <StackPanel
+
+                    <Button
                         Grid.ColumnSpan="2"
-                        Margin="0,-3,11,0"
-                        HorizontalAlignment="Right">
-                        <CheckBox
-                            Padding="0"
-                            Content="Script Completion"
-                            IsChecked="{Binding ScriptCompletion}"
-                            IsEnabled="False" />
-                        <CheckBox
-                            Margin="0,-11,0,0"
-                            Padding="0"
-                            Content="Disable ToolTip"
-                            IsChecked="{Binding DisableToolTip}" />
-                    </StackPanel>
+                        Margin="0,0,0,0"
+                        HorizontalAlignment="Right"
+                        Click="Compile_Click">
+                        <DockPanel>
+                            <iconPacks:PackIconMaterialDesign
+                                Margin="0,0,5,0"
+                                Foreground="FloralWhite"
+                                Kind="Build" />
+                            <TextBlock Foreground="FloralWhite">Compile</TextBlock>
+                        </DockPanel>
+                    </Button>
 
                     <avalonEdit:TextEditor
                         x:Name="loliScriptEditor"
@@ -94,7 +93,8 @@
                         FontFamily="Consolas"
                         FontSize="10pt"
                         Foreground="Gainsboro"
-                        LostFocus="loliScriptEditor_LostFocus">
+                        LostFocus="loliScriptEditor_LostFocus"
+                        TextChanged="loliScriptEditor_TextChanged">
                         <avalonEdit:TextEditor.Resources>
                             <Style TargetType="avalonEditCodeCompletion:CompletionWindow">
                                 <Setter Property="Background" Value="{DynamicResource BackgroundMain}" />
@@ -828,7 +828,7 @@
                         </DockPanel>
                     </TabItem.Header>
                     <Grid
-                        Background="{DynamicResource BackgroundMain}"
+                        Background="White"
                         MouseDown="Grid_MouseDown">
                         <Grid.RowDefinitions>
                             <RowDefinition />
@@ -838,6 +838,7 @@
                             Name="labelInitBrowser"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
+                            Background="Black"
                             Content="Double click for initialize browser"
                             FontSize="15"
                             FontWeight="Bold"
@@ -854,10 +855,11 @@
                             VerticalAlignment="Center">
                             <Label
                                 VerticalAlignment="Center"
+                                Background="{DynamicResource BackgroundMain}"
                                 Content="Status:"
                                 FontSize="13"
                                 FontWeight="Bold"
-                                Foreground="{DynamicResource ForegroundMain}" />
+                                Foreground="White" />
                             <TextBox
                                 Name="browserStatus"
                                 VerticalAlignment="Center"

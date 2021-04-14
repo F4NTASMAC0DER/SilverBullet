@@ -31,7 +31,10 @@ namespace RuriLib.Functions.Requests
         TLS11,
 
         /// <summary>The TLS 1.2 protocol.</summary>
-        TLS12
+        TLS12,
+
+        /// <summary>The TLS 1.3 protocol.</summary>
+        TLS13
     }
 
     /// <summary>
@@ -69,13 +72,17 @@ namespace RuriLib.Functions.Requests
         /// <param name="autoRedirect">Whether to perform automatic redirection</param>
         /// <param name="acceptEncoding"></param>
         /// <param name="maxRedirects"></param>
+        /// <param name="protocolVersion">Version HTTP-protocol, used in requests.</param>
+        /// <param name="allowEmptyHeaderValues">Allows empty values for headers. </param>
         /// <returns></returns>
         public Request Setup(RLSettingsViewModel settings = null, SecurityProtocol securityProtocol = SecurityProtocol.SystemDefault,
-            bool autoRedirect = true, int maxRedirects = 8, bool acceptEncoding = true)
+            bool autoRedirect = true, int maxRedirects = 8, bool acceptEncoding = true, Version protocolVersion = null, bool allowEmptyHeaderValues = false)
         {
             // Setup options
             if (settings != null)
                 timeout = settings.General.RequestTimeout * 1000;
+            if (protocolVersion != null)
+                request.ProtocolVersion = protocolVersion;
             request.IgnoreProtocolErrors = true;
             request.AllowAutoRedirect = autoRedirect;
             request.EnableEncodingContent = acceptEncoding;
@@ -84,6 +91,7 @@ namespace RuriLib.Functions.Requests
             request.KeepAlive = true;
             request.MaximumAutomaticRedirections = maxRedirects;
             request.SslProtocols = securityProtocol.ToSslProtocols();
+            request.AllowEmptyHeaderValues = allowEmptyHeaderValues;
 
             return this;
         }
@@ -369,6 +377,7 @@ namespace RuriLib.Functions.Requests
 
                 // Get cookies
                 cookies = response.Cookies;
+
                 if (log != null)
                 {
                     log.Add(new LogEntry("Received cookies:", Colors.Goldenrod));

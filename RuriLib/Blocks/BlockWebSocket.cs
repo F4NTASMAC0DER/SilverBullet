@@ -23,7 +23,10 @@ namespace RuriLib
         Disconnect,
 
         /// <summary>Sends a message to the connected url.</summary>
-        Send
+        Send,
+
+        /// <summary>Receives unread messages from the last sent</summary>
+        Read
     }
 
     /// <summary>
@@ -144,7 +147,7 @@ namespace RuriLib
             base.Process(data);
 
             var ws = data.GetCustomObject(nameof(WebSocket)) as WebSocket;
-            var receivedMsg = string.Empty;
+            var wsMessages = data.GetCustomObject(nameof(WebSocket) + "Messages") as List<string>;
             bool onMsg = false;
 
             switch (Command)
@@ -162,7 +165,15 @@ namespace RuriLib
                             EnableRedirection = Redirection,
                         };
                         ws.SslConfiguration.EnabledSslProtocols = SslProtocols;
-                        //ws.SetProxy()
+
+                        if (data.UseProxies)
+                        {
+                            if (data.Proxy.Type != Extreme.Net.ProxyType.Http)
+                            {
+                                throw new NotSupportedException("Only HTTP proxy is supported");
+                            }
+                            ws.SetProxy($"http://{data.Proxy.Host}:{data.Proxy.Port}", data.Proxy.Username, data.Proxy.Password);
+                        }
 
                         if (Credentials)
                             ws.SetCredentials(ReplaceValues(Username, data), ReplaceValues(Password, data), PreAuth);
@@ -184,19 +195,18 @@ namespace RuriLib
                         ws.Log.Level = WebSocketSharp.LogLevel.Trace;
 #endif
 
-                        ws.OnMessage += new EventHandler<MessageEventArgs>((s, e) =>
+                        if (wsMessages == null) wsMessages = new List<string>();
+                        data.CustomObjects[nameof(WebSocket) + "Messages"] = wsMessages;
+                        ws.OnMessage += (sender, e) =>
                         {
-                            onMsg = true;
-                            var msg = string.Empty;
-                            if (e.IsText)
-                                receivedMsg += $"{msg = e.Data}\n";
-                            else if (e.IsBinary)
-                                receivedMsg += $"{msg = Encoding.ASCII.GetString(e.RawData)}\n";
+                            lock (wsMessages)
+                            {
+                                wsMessages.Add(e.Data);
+                            }
+                        };
 
-                            data.Log(new LogEntry($"On Message Ev: {msg}", Colors.Yellow));
-                        });
-
-                        ws.ConnectAsync();
+                        // Connect
+                        ws.Connect();
 
                         if (!WaitForConnect(ws))
                         {
@@ -206,16 +216,15 @@ namespace RuriLib
                         data.CustomObjects[nameof(WebSocket)] = ws;
                         data.Log(new LogEntry($"Succesfully connected to url: {inputs}.", Colors.LimeGreen));
                         data.Log(new LogEntry($"Connection Status: {ws.ReadyState}", Colors.LimeGreen));
-                        data.Log(new LogEntry(receivedMsg, Colors.GreenYellow));
                     }
                     break;
                 case WSCommand.Disconnect:
                     {
                         if (ws == null)
                         {
-                            throw new Exception("Make a connection first!");
+                            throw new NullReferenceException("Make a connection first!");
                         }
-                        ws.CloseAsync(CloseStatusCode.Normal);
+                        ws.Close();
                         ws = null;
                         data.Log(new LogEntry($"Succesfully closed", Colors.GreenYellow));
                         data.CustomObjects[nameof(WebSocket)] = null;
@@ -225,38 +234,28 @@ namespace RuriLib
                     {
                         if (ws == null)
                         {
-                            throw new Exception("Make a connection first!");
+                            throw new NullReferenceException("Make a connection first!");
                         }
                         var msg = ReplaceValues(Message, data);
-                        var bytes = Encoding.ASCII.GetBytes(msg.Unescape());
-                        bool? wsSendReplied = null;
-                        data.Log(new LogEntry($"Sending {msg}", Colors.GreenYellow));
-                        ws.SendAsync(bytes, (completed) =>
-                         {
-                             wsSendReplied = completed;
-                             if (completed)
-                             {
-                                 data.Log(new LogEntry("Success to send Message", Colors.GreenYellow));
-                             }
-                             else
-                             {
-                                 data.Log(new LogEntry("Failure to send Message", Colors.Red));
-                             }
-                         });
-                        TaskExtensions.WaitUntil(() => wsSendReplied.HasValue, timeout: 100).Wait();
+                        ws.Send(msg);
+                        data.Log(new LogEntry($"Sent {msg} to the server", Colors.LimeGreen));
                     }
                     break;
+                case WSCommand.Read:
+                    if (ws == null)
+                    {
+                        throw new NullReferenceException("Make a connection first!");
+                    }
+                    wsMessages = data.CustomObjects[nameof(WebSocket) + "Messages"] as List<string>;
+                    data.Log(new LogEntry($"Unread messages from server", Colors.LimeGreen));
+                    break;
             }
-            try
-            {
-                TaskExtensions.WaitUntil(() => onMsg,
-                timeout: 500)
-                .Wait();
-            }
-            catch { }
 
             if (!string.IsNullOrEmpty(VariableName))
-                InsertVariable(data, IsCapture, receivedMsg, VariableName);
+            {
+                InsertVariable(data, IsCapture, wsMessages, VariableName);
+                wsMessages.Clear();
+            }
         }
 
         private bool WaitForConnect(WebSocket ws)

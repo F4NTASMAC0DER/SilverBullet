@@ -56,6 +56,14 @@ namespace OpenBullet.ViewModels
             set { autoSaveConfigTime = value; OnPropertyChanged(); }
         }
 
+
+        private bool scriptCompletion;
+        public bool ScriptCompletion
+        {
+            get { return scriptCompletion; }
+            set { scriptCompletion = value; OnPropertyChanged(); }
+        }
+
         private bool autoSaveConfigOnStacker;
         public bool AutoSaveConfigOnStacker
         {

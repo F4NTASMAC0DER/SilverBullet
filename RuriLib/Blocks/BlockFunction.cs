@@ -232,6 +232,9 @@ namespace RuriLib
 
             /// <summary>Generates NTLM hash</summary>
             Ntlm,
+
+            /// <summary>Encrypts a string with Scrypt.</summary>
+            Scrypt,
         }
 
         /// <summary>
@@ -254,6 +257,19 @@ namespace RuriLib
             GetBytes,
             ///<summary>decodes a specified number of bytes starting at a specified address into a string.</summary>
             GetString,
+        }
+
+        /// <summary>
+        /// Scrypt methods
+        /// </summary>
+        public enum ScryptMethods
+        {
+            /// <summary>Hash a password using the scrypt scheme</summary>
+            Encode,
+            /// <summary>Compares a password against a hashed password.</summary>
+            Compare,
+            /// <summary>Checks if the given hash is a valid scrypt hash</summary>
+            IsValid
         }
 
         #region General Properties
@@ -449,6 +465,12 @@ namespace RuriLib
         /// <summary>The padding mode.</summary>
         public PaddingMode AesPadding { get { return aesPadding; } set { aesPadding = value; OnPropertyChanged(); } }
 
+        private bool hexKeys;
+        /// <summary>
+        /// String keys to hex
+        /// </summary>
+        public bool HexKeys { get => hexKeys; set { hexKeys = value; OnPropertyChanged(); } }
+
         // -- PBKDF2PKCS5
         private string kdfSalt = "";
         /// <summary>The KDF's salt as a base64 string.</summary>
@@ -498,6 +520,30 @@ namespace RuriLib
         {
             get { return encFunc; }
             set { encFunc = value; OnPropertyChanged(); }
+        }
+
+        private ScryptMethods scryptMeth;
+        /// <summary>
+        /// Scrypt method
+        /// </summary>
+        public ScryptMethods ScryptMeth
+        {
+            get { return scryptMeth; }
+            set { scryptMeth = value; OnPropertyChanged(); }
+        }
+
+        private string scryptHashedPassword;
+        /// <summary>
+        /// hashed password with scrypt
+        /// </summary>
+        public string ScryptHashedPassword
+        {
+            get { return scryptHashedPassword; }
+            set
+            {
+                scryptHashedPassword = value;
+                OnPropertyChanged();
+            }
         }
 
         #endregion
@@ -685,6 +731,8 @@ namespace RuriLib
                     AesIV = LineParser.ParseLiteral(ref input, "IV");
                     AesMode = LineParser.ParseEnum(ref input, "Cipher mode", typeof(CipherMode));
                     AesPadding = LineParser.ParseEnum(ref input, "Padding mode", typeof(PaddingMode));
+                    if (LineParser.Lookahead(ref input) == TokenType.Boolean)
+                        LineParser.SetBool(ref input, this);
                     break;
 
                 case Function.PBKDF2PKCS5:
@@ -698,6 +746,14 @@ namespace RuriLib
                 case Function.Encoding:
                     GetEncoding = LineParser.ParseLiteral(ref input, "Encoding name/codepage");
                     EncFunc = LineParser.ParseEnum(ref input, "Encoding Methods", typeof(EncodingMethods));
+                    break;
+
+                case Function.Scrypt:
+                    ScryptMeth = LineParser.ParseEnum(ref input, "Scrypt Methods", typeof(ScryptMethods));
+                    if (ScryptMeth == ScryptMethods.Compare)
+                    {
+                        ScryptHashedPassword = LineParser.ParseLiteral(ref input, "Hashed Password");
+                    }
                     break;
 
                 default:
@@ -866,7 +922,8 @@ namespace RuriLib
                         .Literal(AesKey)
                         .Literal(AesIV)
                         .Token(AesMode)
-                        .Token(AesPadding);
+                        .Token(AesPadding)
+                        .Boolean(HexKeys, nameof(HexKeys));
                     break;
 
                 case Function.PBKDF2PKCS5:
@@ -882,6 +939,15 @@ namespace RuriLib
                     writer.Literal((GetEncoding ?? string.Empty).ToString())
                         .Token(EncFunc);
                     break;
+
+                case Function.Scrypt:
+                    writer.Token(ScryptMeth);
+                    if (ScryptMeth == ScryptMethods.Compare)
+                    {
+                        writer.Literal(ScryptHashedPassword);
+                    }
+                    break;
+
             }
 
             writer
@@ -1210,7 +1276,7 @@ namespace RuriLib
                         break;
 
                     case Function.AESEncrypt:
-                        outputString = Crypto.AESEncrypt(localInputString, ReplaceValues(aesKey, data), ReplaceValues(aesIV, data), AesMode, AesPadding);
+                        outputString = Crypto.AESEncrypt(localInputString, ReplaceValues(aesKey, data), ReplaceValues(aesIV, data), AesMode, AesPadding, HexKeys);
                         break;
 
                     case Function.AESDecrypt:
@@ -1322,7 +1388,26 @@ namespace RuriLib
                         break;
 
                     case Function.Ntlm:
-                        outputString = Ntml.Generate(ReplaceValues(localInputString, data));
+                        outputString = Ntlm.Generate(ReplaceValues(localInputString, data));
+                        break;
+
+                    case Function.Scrypt:
+                        switch (scryptMeth)
+                        {
+                            case ScryptMethods.Encode:
+                                outputString = Crypto.ScryptEncoder(ReplaceValues(localInputString, data));
+                                break;
+                            case ScryptMethods.Compare:
+                                outputString = Crypto.ScryptCompare(ReplaceValues(localInputString, data), ReplaceValues(ScryptHashedPassword, data))
+                                    .ToString();
+                                break;
+                            case ScryptMethods.IsValid:
+                                outputString = Crypto.ScryptIsValid(ReplaceValues(localInputString, data))
+                                    .ToString();
+                                break;
+                            default:
+                                break;
+                        }
                         break;
                 }
 

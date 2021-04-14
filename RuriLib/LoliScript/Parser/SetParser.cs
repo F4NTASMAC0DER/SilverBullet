@@ -1,8 +1,8 @@
-﻿using AngleSharp.Text;
+﻿using System;
+using System.Windows.Media;
+using AngleSharp.Text;
 using Extreme.Net;
 using RuriLib.Models;
-using System;
-using System.Windows.Media;
 
 namespace RuriLib.LS
 {
@@ -128,7 +128,7 @@ namespace RuriLib.LS
                                    LineParser.ParseLiteral(ref input, "VALUE", true, data),
                                    false
                                    );
-                             try
+                            try
                             {
                                 cVar.Hidden = LineParser.ParseToken(ref input, TokenType.Parameter, false)
                               .ToBoolean();

@@ -86,7 +86,28 @@
                 x:Name="dragPanel"
                 Grid.Column="1"
                 Background="{DynamicResource BackgroundSecondary}"
-                MouseDown="dragPanel_MouseDown" />
+                MouseDown="dragPanel_MouseDown">
+                <Button
+                    Name="updateButton"
+                    Width="93"
+                    Height="Auto"
+                    Margin="0,4,7,4"
+                    HorizontalAlignment="Right"
+                    Background="Transparent"
+                    BorderBrush="#FFFFB12A"
+                    Foreground="#FFFFB12A"
+                    Click="UpdateButton_Click"
+                    Style="{StaticResource MaterialDesignRaisedButton}"
+                    Visibility="Collapsed">
+                    <Grid>
+                        <TextBlock
+                            Margin="-10,0,-12,0"
+                            FontSize="10.5">
+                            Update Available
+                        </TextBlock>
+                    </Grid>
+                </Button>
+            </Grid>
 
             <StackPanel
                 Grid.Column="2"

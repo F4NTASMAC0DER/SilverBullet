@@ -1,13 +1,10 @@
-﻿using OpenBullet.Views.Main.Runner;
-using RuriLib;
-using RuriLib.Functions.Requests;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Media.Animation;
+using RuriLib;
+using RuriLib.Functions.Requests;
 
 namespace OpenBullet.Views.StackerBlocks
 {
@@ -57,6 +54,10 @@ namespace OpenBullet.Views.StackerBlocks
             foreach (var s in Enum.GetNames(typeof(SecurityProtocol)))
                 securityProtocolCombobox.Items.Add(s);
 
+            foreach (var p in vm.ProtocolVersions)
+                protocolVersionComboBox.Items.Add(p);
+
+            protocolVersionComboBox.Text = vm.ProtocolVersion.ToString();
             securityProtocolCombobox.SelectedIndex = (int)vm.SecurityProtocol;
         }
 
@@ -195,6 +196,26 @@ namespace OpenBullet.Views.StackerBlocks
                 analyzeIcon.RenderTransform = analyzeRenderTransform;
                 SB.Logger.Log(ex.Message, LogLevel.Error, true);
             }
+        }
+
+        private void ProtocolVersionComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var ver = protocolVersionComboBox.SelectedItem.ToString();
+            var v1 = 1;
+            var v2 = 0;
+            try { v1 = int.Parse(ver.Split('.')[0]); } catch { }
+            try { v2 = int.Parse(ver.Split('.')[1]); } catch { }
+            vm.ProtocolVersion = new Version(v1, v2);
+        }
+
+        private void ProtocolVersionComboBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var ver = protocolVersionComboBox.Text;
+            var v1 = 1;
+            var v2 = 0;
+            try { v1 = int.Parse(ver.Split('.')[0]); } catch { }
+            try { v2 = int.Parse(ver.Split('.')[1]); } catch { }
+            vm.ProtocolVersion = new Version(v1, v2);
         }
     }
 }

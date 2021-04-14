@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -6,6 +7,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -197,26 +199,30 @@ namespace RuriLib
         /// <returns>The converted SslProtocols.</returns>
         public static SslProtocols ToSslProtocols(this SecurityProtocol protocol)
         {
-            switch (protocol)
-            {
-                case SecurityProtocol.SystemDefault:
-                    return SslProtocols.None;
+            return protocol.ToString().ToEnum(SslProtocols.None);
+            //switch (protocol)
+            //{
+            //    case SecurityProtocol.SystemDefault:
+            //        return SslProtocols.None;
 
-                case SecurityProtocol.SSL3:
-                    return SslProtocols.Ssl3;
+            //    case SecurityProtocol.SSL3:
+            //        return SslProtocols.Ssl3;
 
-                case SecurityProtocol.TLS10:
-                    return SslProtocols.Tls;
+            //    case SecurityProtocol.TLS10:
+            //        return SslProtocols.Tls;
 
-                case SecurityProtocol.TLS11:
-                    return SslProtocols.Tls11;
+            //    case SecurityProtocol.TLS11:
+            //        return SslProtocols.Tls11;
 
-                case SecurityProtocol.TLS12:
-                    return SslProtocols.Tls12;
+            //    case SecurityProtocol.TLS12:
+            //        return SslProtocols.Tls12;
 
-                default:
-                    throw new Exception("Protocol not supported");
-            }
+            //    case SecurityProtocol.TLS13:
+            //        return SslProtocols.Tls13;
+
+            //    default:
+            //        throw new Exception("Protocol not supported");
+            //}
         }
     }
 
@@ -782,6 +788,43 @@ namespace RuriLib
                 {
                     IntPtr child = FindWindowEx(notepad.MainWindowHandle, new IntPtr(0), "Edit", null);
                     SendMessage(child, 0x000C, 0, text);
+                }
+            }
+        }
+    }
+
+    public static class LinearGradientBrushExtensions
+    {
+        public static System.Windows.Media.LinearGradientBrush GetLinearGradientBrush(this System.Windows.Media.Color color)
+        {
+            return new System.Windows.Media.LinearGradientBrush(
+                new System.Windows.Media.GradientStopCollection() {
+                    new System.Windows.Media.GradientStop() {
+                        Color = color } });
+        }
+
+        public static System.Windows.Media.Color ColorConverter(this string color)
+        {
+            return (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(color);
+        }
+
+    }
+
+    public static class CookieCollectionExtensions
+    {
+        public static IEnumerable<Cookie> GetAllCookies(this CookieContainer c)
+        {
+            Hashtable k = (Hashtable)c.GetType().GetField("m_domainTable", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(c);
+            foreach (DictionaryEntry element in k)
+            {
+                SortedList l = (SortedList)element.Value.GetType().GetField("m_list", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(element.Value);
+                foreach (var e in l)
+                {
+                    var cl = (CookieCollection)((DictionaryEntry)e).Value;
+                    foreach (Cookie fc in cl)
+                    {
+                        yield return fc;
+                    }
                 }
             }
         }

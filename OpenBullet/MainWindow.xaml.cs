@@ -23,9 +23,12 @@ using OpenBullet.Views.Main;
 using OpenBullet.Views.Main.Runner;
 using OpenBullet.Views.Main.Settings;
 using OpenBullet.Views.StackerBlocks;
+using OpenBullet.Views.UserControls;
+using PluginFramework;
 using RuriLib;
 using RuriLib.LS;
 using RuriLib.ViewModels;
+using Color = System.Windows.Media.Color;
 
 namespace OpenBullet
 {
@@ -68,9 +71,17 @@ namespace OpenBullet
             var title = $"SilverBullet {SB.Version}";
             Title = title;
             titleLabel.Content = title;
-
+            try
+            {
+                Task.Run(() =>
+            {
+                var update = CheckUpdate.Run<Release>("https://api.github.com/repos/mohamm4dx/SilverBullet/releases/latest");
+                Dispatcher.Invoke(() => updateButton.Visibility = update.Available ? Visibility.Visible : Visibility.Collapsed);
+            });
+            }
+            catch { }
             // Make sure all folders are there or recreate them
-            var folders = new string[] { "Captchas", "ChromeExtensions", "Configs", "DB", "Hits", "Plugins", "Screenshots", "Settings", "Sounds", "Wordlists", "Js" };
+            var folders = new string[] { "Captchas", "ChromeExtensions", "Configs", "DB", "Hits", "Plugins", "Screenshots", "Settings", "Sounds", "Wordlists", "Js", "Compiled" };
             foreach (var folder in folders.Select(f => Path.Combine(Directory.GetCurrentDirectory(), f)))
             {
                 if (!Directory.Exists(folder))
@@ -194,49 +205,60 @@ namespace OpenBullet
             Topmost = SB.SBSettings.General.AlwaysOnTop;
 
             // Load Plugins
-            var (plugins, blockPlugins) = Loader.LoadPlugins(SB.pluginsFolder);
-            SB.BlockPlugins = blockPlugins.ToList();
+            (IEnumerable<PluginControl>, IEnumerable<IBlockPlugin>) plugins;
+            //(plugins, blockPlugins)
+            try
+            {
+                plugins = Loader.LoadPlugins(SB.pluginsFolder);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error in load plugins\n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Environment.Exit(0);
+                throw;
+            }
+            SB.BlockPlugins = plugins.Item2.ToList();
 
             // Set mappings
-            SB.BlockMappings = new List<(Type, Type, System.Windows.Media.Color)>()
+            SB.BlockMappings = new List<(Type, Type, LinearGradientBrush)>()
             {
-                ( typeof(BlockBypassCF),        typeof(PageBlockBypassCF),          Colors.DarkSalmon ),
-                ( typeof(BlockImageCaptcha),    typeof(PageBlockCaptcha),           Colors.DarkOrange ),
-                ( typeof(BlockReportCaptcha),   typeof(PageBlockReportCaptcha),     Colors.DarkOrange ),
-                ( typeof(BlockFunction),        typeof(PageBlockFunction),          Colors.YellowGreen ),
-                ( typeof(BlockKeycheck),        typeof(PageBlockKeycheck),          Colors.DodgerBlue ),
-                ( typeof(BlockLSCode),          typeof(PageBlockLSCode),            Colors.White ),
-                ( typeof(BlockParse),           typeof(PageBlockParse),             Colors.Gold ),
-                ( typeof(BlockRecaptcha),       typeof(PageBlockRecaptcha),         Colors.Turquoise ),
-                ( typeof(BlockSolveCaptcha),    typeof(PageBlockSolveCaptcha),      Colors.Turquoise ),
-                ( typeof(BlockRequest),         typeof(PageBlockRequest),           Colors.LimeGreen ),
-                ( typeof(BlockTCP),             typeof(PageBlockTCP),               Colors.MediumPurple ),
-                ( typeof(BlockOcr),             typeof(PageBlockOcr),               System.Windows.Media.Color.FromRgb(230, 230, 230)),
-                ( typeof(BlockWebSocket),       typeof(PageBlockWebSocket),         System.Windows.Media.Color.FromRgb(245, 180, 0)),
-                ( typeof(BlockSpeechToText),    typeof(PageBlockSpeechToText),      System.Windows.Media.Color.FromRgb(164, 198, 197)),
-                ( typeof(BlockUtility),         typeof(PageBlockUtility),           Colors.Wheat ),
-                ( typeof(SBlockBrowserAction),  typeof(PageSBlockBrowserAction),    Colors.Green ),
-                ( typeof(SBlockElementAction),  typeof(PageSBlockElementAction),    Colors.Firebrick ),
-                ( typeof(SBlockExecuteJS),      typeof(PageSBlockExecuteJS),        System.Windows.Media.Color.FromRgb(60, 193, 226) ),
-                ( typeof(SBlockNavigate),       typeof(PageSBlockNavigate),         Colors.RoyalBlue )
+                ( typeof(BlockBypassCF),        typeof(PageBlockBypassCF),          Colors.DarkSalmon.GetLinearGradientBrush() ),
+                ( typeof(BlockImageCaptcha),    typeof(PageBlockCaptcha),           Colors.DarkOrange.GetLinearGradientBrush()),
+                ( typeof(BlockReportCaptcha),   typeof(PageBlockReportCaptcha),     Colors.DarkOrange.GetLinearGradientBrush()),
+                ( typeof(BlockFunction),        typeof(PageBlockFunction),          Colors.YellowGreen.GetLinearGradientBrush()),
+                ( typeof(BlockKeycheck),        typeof(PageBlockKeycheck),          Colors.DodgerBlue.GetLinearGradientBrush()),
+                ( typeof(BlockLSCode),          typeof(PageBlockLSCode),            Colors.White.GetLinearGradientBrush()),
+                ( typeof(BlockParse),           typeof(PageBlockParse),             Colors.Gold.GetLinearGradientBrush()),
+                ( typeof(BlockRecaptcha),       typeof(PageBlockRecaptcha),         Colors.Turquoise.GetLinearGradientBrush()),
+                ( typeof(BlockSolveCaptcha),    typeof(PageBlockSolveCaptcha),      Colors.Turquoise.GetLinearGradientBrush()),
+                ( typeof(BlockRequest),         typeof(PageBlockRequest),           Colors.LimeGreen.GetLinearGradientBrush()),
+                ( typeof(BlockTCP),             typeof(PageBlockTCP),               Colors.MediumPurple.GetLinearGradientBrush()),
+                ( typeof(BlockOcr),             typeof(PageBlockOcr),               Color.FromRgb(230, 230, 230).GetLinearGradientBrush()),
+                ( typeof(BlockWebSocket),       typeof(PageBlockWebSocket),         Color.FromRgb(245, 180, 0).GetLinearGradientBrush()),
+                ( typeof(BlockSpeechToText),    typeof(PageBlockSpeechToText),      Color.FromRgb(164, 198, 197).GetLinearGradientBrush()),
+                ( typeof(BlockUtility),         typeof(PageBlockUtility),           Colors.Wheat.GetLinearGradientBrush()),
+                ( typeof(SBlockBrowserAction),  typeof(PageSBlockBrowserAction),    Colors.Green.GetLinearGradientBrush()),
+                ( typeof(SBlockElementAction),  typeof(PageSBlockElementAction),    Colors.Firebrick.GetLinearGradientBrush()),
+                ( typeof(SBlockExecuteJS),      typeof(PageSBlockExecuteJS),        Color.FromRgb(60, 193, 226).GetLinearGradientBrush()),
+                ( typeof(SBlockNavigate),       typeof(PageSBlockNavigate),         Colors.RoyalBlue.GetLinearGradientBrush())
             };
 
             // Add block plugins to mappings
-            foreach (var plugin in blockPlugins)
+            foreach (var plugin in plugins.Item2)
             {
                 try
                 {
-                    var color = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(plugin.Color);
-                    SB.BlockMappings.Add((plugin.GetType(), typeof(BlockPluginPage), color));
+                    SB.BlockMappings.Add((plugin.GetType(), typeof(BlockPluginPage), plugin.LinearGradientBrush));
                     BlockParser.BlockMappings.Add(plugin.Name, plugin.GetType());
                     SB.Logger.LogInfo(Components.Main, $"Initialized {plugin.Name} block plugin");
                 }
                 catch
                 {
-                    SB.Logger.LogError(Components.Main, $"The color {plugin.Color} in block plugin {plugin.Name} is invalid", true);
+                    SB.Logger.LogError(Components.Main, $"The color {plugin.LinearGradientBrush.GradientStops[0].Color} in block plugin {plugin.Name} is invalid", true);
                     Environment.Exit(0);
                 }
             }
+
 
             // ViewModels
             SB.RunnerManager = new RunnerManagerViewModel();
@@ -268,7 +290,7 @@ namespace OpenBullet
             SB.Logger.LogInfo(Components.Main, "Initialized Settings");
             ToolsPage = new ToolsSection();
             SB.Logger.LogInfo(Components.Main, "Initialized Tools");
-            PluginsPage = new PluginsSection(plugins);
+            PluginsPage = new PluginsSection(plugins.Item1);
             SB.Logger.LogInfo(Components.Main, "Initialized Plugins");
             AboutPage = new Help();
             SupportPage = new Support();
@@ -415,6 +437,16 @@ namespace OpenBullet
             menuOptionSelected(sender);
         }
 
+        private void UpdateButton_Click(object sender, RoutedEventArgs e)
+        {
+            Task.Run(() =>
+            {
+                Dispatcher.Invoke(() => menuOptionAbout_Click(sender, e), DispatcherPriority.Background);
+                Dispatcher.Invoke(() => AboutPage.checkForUpdateLabel_MouseLeftButtonUp(sender, null), DispatcherPriority.Background);
+                Dispatcher.Invoke(() => AboutPage.CheckUpdatePage.CheckForUpdate(), DispatcherPriority.Background);
+            });
+        }
+
         private void menuOptionSelected(object sender)
         {
             foreach (var child in topMenu.Children)
@@ -438,7 +470,8 @@ namespace OpenBullet
                 {
                     using (var wc = new WebClient())
                     {
-                        url = wc.DownloadString("https://c-cracking.org/ApplicationVeri/SilverBullet/Discord.txt");
+                        wc.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:87.0) Gecko/20100101 Firefox/87.0");
+                        url = wc.DownloadString("https://raw.githubusercontent.com/mohamm4dx/SilverBullet/master/OpenBullet/Discoard.txt");
                     }
                 }).ContinueWith(_ =>
                 {

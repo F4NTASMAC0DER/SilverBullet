@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
+using System.Windows.Media;
 using Newtonsoft.Json;
 using RuriLib.Models;
 using RuriLib.ViewModels;
@@ -184,6 +187,11 @@ namespace RuriLib
         /// <summary>Whether to quit the browser and dispose of the WebDriver at the end of the checking process (if any browser is open) on a BAN or RETRY status.</summary>
         public bool QuitOnBanRetry { get { return quitOnBanRetry; } set { quitOnBanRetry = value; OnPropertyChanged(); } }
 
+        private bool acceptInsecureCertificates = true;
+        /// <summary>Gets or sets a value indicating whether the browser should accept self-signed
+        /// SSL certificates.</summary>
+        public bool AcceptInsecureCertificates { get { return acceptInsecureCertificates; } set { acceptInsecureCertificates = value; OnPropertyChanged(); } }
+
         private bool disableNotifications = false;
         /// <summary>Whether to disable notifications the lock the page and make it impossible to proceed.</summary>
         public bool DisableNotifications { get { return disableNotifications; } set { disableNotifications = value; OnPropertyChanged(); } }
@@ -212,6 +220,178 @@ namespace RuriLib
         private string customCMDArgs = "";
         /// <summary>The custom command line arguments that are sent when running the executable file.</summary>
         public string CustomCMDArgs { get { return customCMDArgs; } set { customCMDArgs = value; OnPropertyChanged(); } }
+        #endregion
+
+        #region Compile
+        private string title;
+        /// <summary>
+        /// Compiler title
+        /// </summary>
+        public string Title
+        {
+            get => title;
+            set { title = value; OnPropertyChanged(); }
+        }
+
+        private string iconPath;
+        /// <summary>
+        /// Compiler icon path
+        /// </summary>
+        public string IconPath
+        {
+            get => iconPath;
+            set { iconPath = value; OnPropertyChanged(); }
+        }
+
+        private string message;
+        /// <summary>
+        /// Compiler message
+        /// </summary>
+        public string Message
+        {
+            get => message;
+            set { message = value; OnPropertyChanged(); }
+        }
+
+        private Color messageColor = Color.FromRgb(255, 255, 255);
+        /// <summary>
+        /// Compiler message color
+        /// </summary>
+        public Color MessageColor
+        {
+            get => messageColor;
+            set { messageColor = value; OnPropertyChanged(); }
+        }
+
+        private Color authorColor = Color.FromRgb(255, 178, 102);
+        /// <summary>
+        /// Compiler author color
+        /// </summary>
+        public Color AuthorColor
+        {
+            get => authorColor;
+            set { authorColor = value; OnPropertyChanged(); }
+        }
+
+        private Color wordlistColor = Color.FromRgb(181, 194, 225);
+        /// <summary>
+        /// Compiler wordlist color
+        /// </summary>
+        public Color WordlistColor
+        {
+            get => wordlistColor;
+            set { wordlistColor = value; OnPropertyChanged(); }
+        }
+
+        private Color botsColor = Color.FromRgb(168, 255, 255);
+        /// <summary>
+        /// Compiler bots color
+        /// </summary>
+        public Color BotsColor
+        {
+            get => botsColor;
+            set { botsColor = value; OnPropertyChanged(); }
+        }
+
+        private Color customInputColor = Color.FromRgb(214, 199, 199);
+        /// <summary>
+        /// Compiler custom input color
+        /// </summary>
+        public Color CustomInputColor
+        {
+            get => customInputColor;
+            set { customInputColor = value; OnPropertyChanged(); }
+        }
+
+        private Color cpmColor = Color.FromRgb(255, 255, 255);
+        /// <summary>
+        /// Compiler cpm color
+        /// </summary>
+        public Color CPMColor
+        {
+            get => cpmColor;
+            set { cpmColor = value; OnPropertyChanged(); }
+        }
+
+        private Color progressColor = Color.FromRgb(173, 147, 227);
+        /// <summary>
+        /// Compiler progress color
+        /// </summary>
+        public Color ProgressColor
+        {
+            get => progressColor;
+            set { progressColor = value; OnPropertyChanged(); }
+        }
+
+        private Color hitsColor = Color.FromRgb(102, 255, 102);
+        /// <summary>
+        /// Compiler hits color
+        /// </summary>
+        public Color HitsColor
+        {
+            get => hitsColor;
+            set { hitsColor = value; OnPropertyChanged(); }
+        }
+
+        private Color customColor = Color.FromRgb(255, 178, 102);
+        /// <summary>
+        /// Compiler custom color
+        /// </summary>
+        public Color CustomColor
+        {
+            get => customColor;
+            set { customColor = value; OnPropertyChanged(); }
+        }
+
+        private Color toCheckColor = Color.FromRgb(127, 255, 212);
+        /// <summary>
+        /// Compiler to check color
+        /// </summary>
+        public Color ToCheckColor
+        {
+            get => toCheckColor;
+            set { toCheckColor = value; OnPropertyChanged(); }
+        }
+
+        private Color failsColor = Color.FromRgb(255, 51, 51);
+        /// <summary>
+        /// Compiler fails color
+        /// </summary>
+        public Color FailsColor
+        {
+            get => failsColor;
+            set { failsColor = value; OnPropertyChanged(); }
+        }
+
+        private Color retriesColor = Color.FromRgb(255, 255, 153);
+        /// <summary>
+        /// Compiler retries color
+        /// </summary>
+        public Color RetriesColor
+        {
+            get => retriesColor;
+            set { retriesColor = value; OnPropertyChanged(); }
+        }
+
+        private Color ocrRateColor = Color.FromRgb(70, 152, 253);
+        /// <summary>
+        /// Compiler ocrRate color
+        /// </summary>
+        public Color OcrRateColor
+        {
+            get => ocrRateColor;
+            set { ocrRateColor = value; OnPropertyChanged(); }
+        }
+
+        private Color proxiesColor = Color.FromRgb(255, 255, 255);
+        /// <summary>
+        /// Compiler proxies color
+        /// </summary>
+        public Color ProxiesColor
+        {
+            get => proxiesColor;
+            set { proxiesColor = value; OnPropertyChanged(); }
+        }
         #endregion
 
         #region Methods

@@ -664,7 +664,7 @@ pixConverter:
         /// Get ocr image from url
         /// </summary>
         /// <returns></returns>
-        public Bitmap GetOcrImage(bool applyFilter = true)
+        public Bitmap GetOcrImage(bool applyFilter = true, CProxy proxy = null)
         {
             Bitmap captcha = null;
             Bitmap appliedCaptcha;
@@ -690,6 +690,9 @@ pixConverter:
             {
                 var request = new Request();
                 request.Setup(securityProtocol: SecurityProtocol);
+
+                if (proxy != null)
+                    request.SetProxy(proxy);
 
                 // Perform the request
                 try
@@ -1215,6 +1218,32 @@ pixConverter:
             {
                 return (Bitmap)Bitmap.FromStream(ms);
             }
+        }
+
+        /// <summary>
+        /// Create cproxy
+        /// </summary>
+        /// <param name="value">proxy:username:password</param>
+        /// <param name="proxyType">ProxyType</param>
+        /// <returns></returns>
+        public CProxy CreateProxy(string value, ProxyType proxyType)
+        {
+            var proxyAddress = string.Empty;
+            var user = string.Empty;
+            var pass = string.Empty;
+            if (value.Contains(":"))
+            {
+                var prox = value.Split(':');
+                proxyAddress = prox[0];
+                try { user = prox[1]; } catch { }
+                try { pass = prox[2]; } catch { }
+            }
+            var proxy = new CProxy(proxyAddress, proxyType);
+            if (!string.IsNullOrEmpty(user))
+                proxy.Username = user;
+            if (!string.IsNullOrEmpty(pass))
+                proxy.Password = pass;
+            return proxy;
         }
     }
 }

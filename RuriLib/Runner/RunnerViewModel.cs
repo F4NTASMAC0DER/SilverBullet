@@ -193,7 +193,7 @@ namespace RuriLib.Runner
         public string WordlistName { get { return Wordlist == null ? "None" : Wordlist.Name; } }
 
         /// <summary>The size of the loaded Wordlist.</summary>
-        public int WordlistSize { get { return Wordlist == null ? 0 : Wordlist.Total; } }
+        public long WordlistSize { get { return Wordlist == null ? 0 : Wordlist.Total; } }
 
         /// <summary>The pool from which bots can get a proxy upon request.</summary>
         public ProxyPool ProxyPool { get; set; } = new ProxyPool(new List<CProxy>());
@@ -217,7 +217,7 @@ namespace RuriLib.Runner
         public DataPool DataPool { get; set; }
 
         /// <summary>The size of the DataPool.</summary>
-        public int DataSize
+        public long DataSize
         {
             get
             {
@@ -348,7 +348,7 @@ namespace RuriLib.Runner
                 if (Wordlist == null) return "Unknown time left";
                 var dataLeft = Wordlist.Total - StartingPoint - TestedCount;
                 if (CPM == 0) return "+inf";
-                int amountLeft = (dataLeft / CPM) * 60; // in seconds
+                long amountLeft = (dataLeft / CPM) * 60; // in seconds
                 var unitOfTime = "seconds";
 
                 if (amountLeft > 60) { amountLeft /= 60; unitOfTime = "minutes"; } // More than 60s -> convert to minutes

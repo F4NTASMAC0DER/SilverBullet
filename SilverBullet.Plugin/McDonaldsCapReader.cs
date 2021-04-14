@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Windows.Media;
 using ImageProcessor.Imaging.Helpers.Converters;
 using OpenCvSharp;
 using OpenCvSharp.Extensions;
@@ -22,7 +23,8 @@ namespace SilverBullet.Plugin
 
         public string Name => nameof(McDonaldsCapReader);
 
-        public string Color => "#FFFFA500";
+        public LinearGradientBrush LinearGradientBrush =>
+            new LinearGradientBrush(new GradientStopCollection() { new GradientStop(LinearGradientBrushExtensions.ColorConverter("#FFFFA500"), 0) });
 
         public bool LightForeground => false;
 

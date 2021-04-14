@@ -75,7 +75,18 @@ namespace RuriLib.ViewModels
                 removeDuplicatewordlist = value;
                 OnPropertyChanged();
             }
-        }    
+        }
+
+
+        private bool disableBotsListView;
+        /// <summary>
+        /// disable bots list view (runner)
+        /// </summary>
+        public bool DisableBotsListView
+        {
+            get => disableBotsListView;
+            set { disableBotsListView = value; OnPropertyChanged(); }
+        }
 
         /// <summary>
         /// Resets the properties to their default value.

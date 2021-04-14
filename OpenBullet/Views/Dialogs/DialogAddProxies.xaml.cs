@@ -1,8 +1,4 @@
-﻿using Extreme.Net;
-using Microsoft.Win32;
-using OpenBullet.Views;
-using OpenBullet.Views.Main;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,6 +6,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Extreme.Net;
+using Microsoft.Win32;
+using OpenBullet.Views.Main;
 
 namespace OpenBullet
 {

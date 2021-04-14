@@ -81,21 +81,18 @@
                 VerticalContentAlignment="Center"
                 Content="Backup the Database daily upon start"
                 IsChecked="{Binding BackupDB}" />
-            <DockPanel VerticalAlignment="Center">
-                <CheckBox
-                    VerticalContentAlignment="Center"
-                    Content="Auto Save Config On Stacker (min):"
-                    IsChecked="{Binding AutoSaveConfigOnStacker}" />
-                <xctk:IntegerUpDown
-                    Width="50"
-                    Height="25"
-                    Background="{DynamicResource BackgroundMain}"
-                    Foreground="White"
-                    IsEnabled="{Binding AutoSaveConfigOnStacker}"
-                    Minimum="1"
-                    Text="{Binding AutoSaveConfigTime}"
-                    TextAlignment="Center" />
-            </DockPanel>
+            <CheckBox
+                VerticalAlignment="Center"
+                VerticalContentAlignment="Center"
+                Content="Script Completion"
+                IsChecked="{Binding ScriptCompletion}"
+                IsEnabled="False" />
+            <CheckBox
+                Margin="0,-1,0,0"
+                VerticalAlignment="Center"
+                VerticalContentAlignment="Center"
+                Content="Auto Save Config On Stacker"
+                IsChecked="{Binding AutoSaveConfigOnStacker}" />
         </StackPanel>
 
         <StackPanel Grid.Column="1">

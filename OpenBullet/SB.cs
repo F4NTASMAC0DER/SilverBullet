@@ -11,7 +11,7 @@ namespace OpenBullet
 {
     public static class SB
     {
-        public static IApplication App => new OpenBulletApp()
+        public static IApplication App => new SilverBulletApp()
         {
             RunnerManager = RunnerManager,
             ProxyManager = ProxyManager,
@@ -24,10 +24,10 @@ namespace OpenBullet
             Alerter = Alerter
         };
 
-        public static string Version => "1.1.0";
+        public static string Version => "1.1.1";
 
         // Block Mappings (including Plugins)
-        public static List<(Type, Type, Color)> BlockMappings = new List<(Type, Type, Color)>();
+        public static List<(Type, Type, LinearGradientBrush)> BlockMappings = new List<(Type, Type, LinearGradientBrush)>();
 
         // Block Plugins
         // HACK: Find a better way to do this and a better place to put them
@@ -64,6 +64,5 @@ namespace OpenBullet
         public static readonly string pluginsFolder = @"Plugins";
         public static readonly string defaultProxySiteUrl = "https://google.com";
         public static readonly string defaultProxyKey = "title>Google";
-        public static readonly string updateUrl = "";
     }
 }

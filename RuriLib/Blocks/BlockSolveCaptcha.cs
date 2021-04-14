@@ -351,14 +351,16 @@ namespace RuriLib
             string errorMessage;
 
             Proxy proxy = data.UseProxies && UseProxy
-                ? proxy = new Proxy {
+                ? proxy = new Proxy
+                {
                     Host = data.Proxy.Host,
                     Port = int.Parse(data.Proxy.Port),
                     Type = (ProxyType)Enum.Parse(typeof(ProxyType), data.Proxy.Type.ToString()),
                     Username = data.Proxy.Username,
                     Password = data.Proxy.Password,
                     UserAgent = UserAgent,
-                    Cookies = data.Cookies.ToList().Concat(data.GlobalCookies.ToList()).Select(p => (p.Key, p.Value)).ToArray() }
+                    Cookies = data.Cookies.ToList().Concat(data.GlobalCookies.ToList()).Select(p => (p.Key, p.Value)).ToArray()
+                }
                 : null;
 
             if (!data.GlobalSettings.Captchas.BypassBalanceCheck)
@@ -379,12 +381,12 @@ namespace RuriLib
                         else throw;
                     }
                 }
-                catch (BadAuthenticationException ex) 
-                { 
+                catch (BadAuthenticationException ex)
+                {
                     data.Log(new LogEntry($"Bad credentials! {ex.Message}", Colors.Tomato));
                     return;
                 }
-                catch (Exception ex) 
+                catch (Exception ex)
                 {
                     data.Log(new LogEntry($"An error occurred! {ex.Message}", Colors.Tomato));
                 }
@@ -424,7 +426,7 @@ namespace RuriLib
             catch (NotSupportedException ex) { errorMessage = $"The currently selected service ({data.GlobalSettings.Captchas.CurrentService}) does not support this task! {ex.Message}"; }
             catch (TaskCreationException ex) { errorMessage = $"Could not create the captcha task! {ex.Message}"; }
             catch (TaskSolutionException ex) { errorMessage = $"Could not solve the captcha! {ex.Message}"; }
-            catch (Exception ex)             { errorMessage = $"An error occurred! {ex.Message}"; }
+            catch (Exception ex) { errorMessage = $"An error occurred! {ex.Message}"; }
 
             data.Log(new LogEntry(errorMessage, Colors.Tomato));
         }

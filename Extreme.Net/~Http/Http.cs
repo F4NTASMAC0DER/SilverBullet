@@ -50,7 +50,9 @@ namespace Extreme.Net
             { HttpHeader.Pragma, "Pragma" },
             { HttpHeader.Range, "Range" },
             { HttpHeader.Referer, "Referer" },
+            { HttpHeader.Origin, "Origin" },
             { HttpHeader.Upgrade, "Upgrade" },
+            { HttpHeader.UpgradeInsecureRequests, "Upgrade-Insecure-Requests" },
             { HttpHeader.UserAgent, "User-Agent" },
             { HttpHeader.Via, "Via" },
             { HttpHeader.Warning, "Warning" },
@@ -638,5 +640,30 @@ namespace Extreme.Net
         }
 
         #endregion
+
+        public static string ToQueryString(IEnumerable<KeyValuePair<string, string>> parameters, bool valuesUnescaped = false, bool keysUnescaped = false)
+        {
+            if (parameters == null)
+            {
+                throw new ArgumentNullException("parameters");
+            }
+            StringBuilder stringBuilder = new StringBuilder();
+            foreach (KeyValuePair<string, string> keyValuePair in parameters)
+            {
+                if (!string.IsNullOrEmpty(keyValuePair.Key))
+                {
+                    stringBuilder.Append(keysUnescaped ? keyValuePair.Key : Uri.EscapeDataString(keyValuePair.Key));
+                    stringBuilder.Append('=');
+                    stringBuilder.Append(valuesUnescaped ? keyValuePair.Value : Uri.EscapeDataString(keyValuePair.Value ?? string.Empty));
+                    stringBuilder.Append('&');
+                }
+            }
+            if (stringBuilder.Length != 0)
+            {
+                stringBuilder.Remove(stringBuilder.Length - 1, 1);
+            }
+            return stringBuilder.ToString();
+        }
+
     }
 }

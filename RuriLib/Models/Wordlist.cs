@@ -22,7 +22,7 @@ namespace RuriLib.Models
         public string Purpose { get; set; }
 
         /// <summary>The total number of data lines of the file.</summary>
-        public int Total { get; set; }
+        public long Total { get; set; }
 
         /// <summary>If true, the Wordlist does not reside on the disk.</summary>
         public bool Temporary { get; set; }

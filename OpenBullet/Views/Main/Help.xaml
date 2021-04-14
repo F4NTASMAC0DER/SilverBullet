@@ -45,7 +45,7 @@
                     <TextBlock>Release Notes</TextBlock>
                 </DockPanel>
             </Label>
-            <!--<Label
+            <Label
                 Name="checkForUpdateLabel"
                 FontWeight="Bold"
                 MouseLeftButtonUp="checkForUpdateLabel_MouseLeftButtonUp">
@@ -60,7 +60,7 @@
                         Stretch="Fill" />
                     <TextBlock>Check For Update</TextBlock>
                 </DockPanel>
-            </Label>-->
+            </Label>
         </DockPanel>
         <Frame
             x:Name="Main"

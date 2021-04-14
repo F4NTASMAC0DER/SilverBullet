@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using AngleSharp.Text;
+using Extreme.Net;
 using ImageProcessor.Imaging;
 using ImageProcessor.Imaging.MetaData;
 using Microsoft.Scripting.Utils;
@@ -12,6 +13,7 @@ using Microsoft.Win32;
 using OpenBullet.Models;
 using OpenBullet.Views.UserControls.Filters;
 using RuriLib;
+using RuriLib.Models;
 using Tesseract;
 
 namespace OpenBullet.Views.Main.Configs
@@ -39,6 +41,9 @@ namespace OpenBullet.Views.Main.Configs
             ProcImage.WaitOnLoad = true;
             LoadTessData();
             InitFilterControls();
+
+            foreach (string i in Enum.GetNames(typeof(ProxyType)))
+                if (i != "Chain") proxyTypeCombobox.Items.Add(i);
         }
 
         private void LoadTessData()
@@ -76,7 +81,12 @@ namespace OpenBullet.Views.Main.Configs
             try
             {
                 if (string.IsNullOrWhiteSpace(OcrUrl.Text)) return;
-                var bmp = blockOcr.GetOcrImage(false);
+                CProxy proxy = null;
+                if (chbProxy.IsChecked.GetValueOrDefault() && chbProxy.IsEnabled)
+                {
+                    proxy = blockOcr.CreateProxy(proxyTextbox.Text, proxyTypeCombobox.SelectedItem.ToString().ToEnum(ProxyType.Http));
+                }
+                var bmp = blockOcr.GetOcrImage(false, proxy);
                 OrigImage.Image = bmp;
                 ProcImage.Image = bmp.Clone() as Bitmap;
                 imageFromFile = false;
@@ -135,7 +145,7 @@ namespace OpenBullet.Views.Main.Configs
 
         private void chbisBase64_Click(object sender, RoutedEventArgs e)
         {
-            blockOcr.Base64 = chbisBase64.IsChecked.GetValueOrDefault();
+            proxyTextbox.IsEnabled = !(blockOcr.Base64 = chbisBase64.IsChecked.GetValueOrDefault()) && chbProxy.IsEnabled;
         }
 
         //Test OCR
@@ -200,9 +210,14 @@ namespace OpenBullet.Views.Main.Configs
             try
             {
                 Bitmap bmp;
+                CProxy proxy = null;
                 if (!imageFromFile)
                 {
-                    bmp = blockOcr.GetOcrImage(false);
+                    if (chbProxy.IsChecked.GetValueOrDefault() && chbProxy.IsEnabled)
+                    {
+                        proxy = blockOcr.CreateProxy(proxyTextbox.Text, proxyTypeCombobox.SelectedItem.ToString().ToEnum(ProxyType.Http));
+                    }
+                    bmp = blockOcr.GetOcrImage(false, proxy);
                 }
                 else
                 {

@@ -1,10 +1,6 @@
-﻿using Extreme.Net;
+﻿using System.Collections.Generic;
+using Extreme.Net;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RuriLib.Models
 {

@@ -29,6 +29,10 @@
                 VerticalContentAlignment="Center"
                 Content="Quit browser only on BAN or RETRY"
                 IsChecked="{Binding QuitOnBanRetry}" />
+            <CheckBox
+                VerticalContentAlignment="Center"
+                Content="Accept Insecure Certificates"
+                IsChecked="{Binding AcceptInsecureCertificates}" />
         </StackPanel>
         <StackPanel Grid.Column="1">
             <DockPanel Margin="5">

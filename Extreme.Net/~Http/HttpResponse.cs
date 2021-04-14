@@ -341,7 +341,7 @@ namespace Extreme.Net
         /// <summary>
         /// Возвращает значение, указывающие, загружено ли тело сообщения.
         /// </summary>
-        public bool MessageBodyLoaded { get; set; }
+        public bool MessageBodyLoaded { get; private set; }
 
         /// <summary>
         /// Возвращает значение, указывающие, успешно ли выполнен запрос (код ответа = 200 OK). 

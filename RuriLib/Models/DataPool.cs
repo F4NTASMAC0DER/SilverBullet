@@ -17,7 +17,7 @@ namespace RuriLib.Models
         public List<string[]> Sublists { get; set; }
 
         /// <summary>The total number of lines.</summary>
-        public int Size { get; set; }
+        public long Size { get; set; }
 
         /// <summary>
         /// Creates a DataPool given an IEnumerable and counts the amount of lines.

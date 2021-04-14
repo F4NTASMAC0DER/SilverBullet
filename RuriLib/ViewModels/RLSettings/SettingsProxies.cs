@@ -1,9 +1,9 @@
-﻿using Extreme.Net;
-using RuriLib.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using Extreme.Net;
+using RuriLib.Models;
 
 namespace RuriLib.ViewModels
 {

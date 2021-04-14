@@ -335,6 +335,10 @@
                             x:Name="aesPaddingCombobox"
                             SelectionChanged="aesPaddingCombobox_SelectionChanged" />
                     </DockPanel>
+                    <CheckBox
+                        Margin="0,12,0,0"
+                        Content="Hex Keys (Key &amp; IV)"
+                        IsChecked="{Binding HexKeys, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
             </TabItem>
             <TabItem x:Name="kdfTab">
@@ -435,6 +439,24 @@
                             x:Name="encFuncCombobox"
                             SelectedIndex="0"
                             SelectedItem="{Binding EncFunc, UpdateSourceTrigger=PropertyChanged}" />
+                    </DockPanel>
+                </StackPanel>
+            </TabItem>
+            <TabItem Name="Scrypt">
+                <StackPanel>
+                    <DockPanel>
+                        <Label Content="Method:" />
+                        <ComboBox
+                            Name="scryptMethods"
+                            SelectedIndex="0"
+                            SelectedItem="{Binding ScryptMeth, UpdateSourceTrigger=PropertyChanged}"
+                            SelectionChanged="scryptMethods_SelectionChanged" />
+                    </DockPanel>
+                    <DockPanel
+                        Name="dockPanelCompInput"
+                        Visibility="Collapsed">
+                        <Label Content="Hashed Password:" />
+                        <TextBox Text="{Binding ScryptHashedPassword}" />
                     </DockPanel>
                 </StackPanel>
             </TabItem>

@@ -45,7 +45,7 @@ namespace RuriLib.Interfaces
         /// <param name="progress">The delegate that gets called when the progress changes</param>
         /// <returns>An awaitable task.</returns>
         Task CheckAllAsync(IEnumerable<CProxy> proxies, CancellationToken cancellationToken,
-            Action<CheckResult<ProxyResult>> onResult = null, IProgress<float> progress = null);
+            Action<ProxyCheckResult<ProxyResult>> onResult = null, IProgress<float> progress = null);
 
         /// <summary>
         /// Checks a proxy asynchronously.

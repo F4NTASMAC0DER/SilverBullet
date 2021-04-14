@@ -1,6 +1,6 @@
-﻿using OpenBullet.Views.Main.Configs.OtherOptions;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Input;
+using OpenBullet.Views.Main.Configs.OtherOptions;
 
 namespace OpenBullet.Views.Main.Configs
 {
@@ -15,6 +15,7 @@ namespace OpenBullet.Views.Main.Configs
         public Inputs InputsPage = new Inputs();
         public Data DataPage = new Data();
         public Selenium SeleniumPage = new Selenium();
+        public Compile CompilePage = new Compile();
 
         public ConfigOtherOptions()
         {
@@ -60,14 +61,19 @@ namespace OpenBullet.Views.Main.Configs
             menuOptionSelected(menuOptionSelenium);
         }
 
+        private void menuOptionCompile_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Main.Content = CompilePage;
+            menuOptionSelected(sender);
+        }
+
         private void menuOptionSelected(object sender)
         {
-            foreach (var child in topMenu.Children)
+            foreach (Label child in topMenu.Children)
             {
                 try
                 {
-                    var c = (Label)child;
-                    c.Foreground = Utils.GetBrush("ForegroundMain");
+                    child.Foreground = Utils.GetBrush("ForegroundMain");
                 }
                 catch { }
             }

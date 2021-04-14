@@ -90,6 +90,11 @@
                 VerticalAlignment="Center"
                 Content="Remove Duplicate Wordlist"
                 IsChecked="{Binding RemoveDuplicateFromWordlist}" />
+            <CheckBox
+                Padding="0,5,0,8"
+                VerticalAlignment="Center"
+                Content="Disable Bots List View"
+                IsChecked="{Binding DisableBotsListView}" />
         </StackPanel>
 
     </Grid>

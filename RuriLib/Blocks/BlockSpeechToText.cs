@@ -1,15 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Speech.Recognition;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
-using Extreme.Net;
-using RuriLib.Functions.Requests;
-using RuriLib.LS;
+﻿using RuriLib.LS;
 
 namespace RuriLib
 {

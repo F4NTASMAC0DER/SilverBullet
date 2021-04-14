@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Windows.Media;
 
 namespace PluginFramework
 {
@@ -10,7 +6,10 @@ namespace PluginFramework
     {
         string Name { get; }
 
-        string Color { get; }
+        /// <summary>
+        /// Button background color
+        /// </summary>
+        LinearGradientBrush LinearGradientBrush { get; }
 
         bool LightForeground { get; }
     }

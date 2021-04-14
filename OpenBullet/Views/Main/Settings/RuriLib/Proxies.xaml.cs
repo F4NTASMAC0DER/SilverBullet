@@ -1,15 +1,14 @@
-﻿using Extreme.Net;
-using OpenBullet.Views.Main.Runner;
-using RuriLib.Models;
-using RuriLib.Runner;
-using RuriLib.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Extreme.Net;
+using RuriLib.Models;
+using RuriLib.Runner;
+using RuriLib.ViewModels;
 
 namespace OpenBullet.Views.Main.Settings.RL
 {

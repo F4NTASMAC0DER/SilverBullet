@@ -2,17 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
-using ICSharpCode.AvalonEdit.Highlighting;
+using System.Windows.Media.Animation;
+using System.Windows.Media.Effects;
 using PluginFramework;
 using RuriLib;
-using RuriLib.Models;
 
 namespace OpenBullet
 {
@@ -143,6 +140,52 @@ namespace OpenBullet
         public static uint ColorToUInt(this Color color)
         {
             return (uint)((color.A << 24) | (color.R << 16) | (color.G << 8) | (color.B << 0));
+        }
+
+        public static String ConvertToString(this Color c)
+        {
+            return c.R.ToString() + "," + c.G.ToString() + "," + c.B.ToString();
+        }
+    }
+
+    public static class AnimationExtensions
+    {
+        /// <summary>
+        /// Turning blur on
+        /// </summary>
+        public static void BlurApply(this UIElement element, double from, double to,
+            TimeSpan duration, bool autoReverse = false)
+        {
+            var storyboard = new Storyboard();
+            var animation = new DoubleAnimation
+            {
+                From = from,
+                To = to,
+                Duration = duration,
+                AutoReverse = autoReverse
+            };
+            var effect = new BlurEffect();
+            element.Effect = effect;
+            storyboard.Children.Add(animation);
+            Storyboard.SetTarget(storyboard, element.Effect);
+            Storyboard.SetTargetProperty(storyboard, new PropertyPath("Radius"));
+            storyboard.Begin();
+        }
+
+        /// <summary>
+        /// Turning blur off
+        /// </summary>
+        /// <param name="element">bluring element</param>
+        /// <param name="duration">blur animation duration</param>
+        public static void BlurDisable(this UIElement element, TimeSpan duration)
+        {
+            BlurEffect blur = element.Effect as BlurEffect;
+            if (blur == null || blur.Radius == 0)
+            {
+                return;
+            }
+            DoubleAnimation blurDisable = new DoubleAnimation(blur.Radius, 0, duration);
+            blur.BeginAnimation(BlurEffect.RadiusProperty, blurDisable);
         }
     }
 }

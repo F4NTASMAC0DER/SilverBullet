@@ -1,11 +1,10 @@
-﻿using OpenBullet.Views.Main.Configs;
-using RuriLib;
-using System;
-using System.Linq;
+﻿using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using OpenBullet.Views.Main.Configs;
+using RuriLib;
 
 namespace OpenBullet.Views.Dialogs
 {
@@ -22,17 +21,17 @@ namespace OpenBullet.Views.Dialogs
             Caller = caller;
 
             // Add rows to the grid
-            for(var i = 0; i < SB.BlockPlugins.Count; i += 3)
+            for (var i = 0; i < SB.BlockPlugins.Count; i += 3)
             {
                 pluginsGrid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
             }
 
             // Create the buttons and fill the grid
-            for(var i = 0; i < SB.BlockPlugins.Count; i++)
+            for (var i = 0; i < SB.BlockPlugins.Count; i++)
             {
                 var plugin = SB.BlockPlugins[i];
                 var button = new Button();
-                button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(plugin.Color));
+                button.Background = plugin.LinearGradientBrush;
                 if (plugin.LightForeground) button.Foreground = new SolidColorBrush(Colors.Gainsboro);
                 button.Content = plugin.Name;
                 button.SetValue(Grid.ColumnProperty, i % 3);

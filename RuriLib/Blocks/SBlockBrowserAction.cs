@@ -196,8 +196,8 @@ namespace RuriLib
             switch (action)
             {
                 case BrowserAction.Open:
-                    if(!string.IsNullOrEmpty(SUserAgent))
-                    data.ConfigSettings.CustomUserAgent = ReplaceValues(SUserAgent, data);
+                    if (!string.IsNullOrEmpty(SUserAgent))
+                        data.ConfigSettings.CustomUserAgent = ReplaceValues(SUserAgent, data);
                     OpenBrowser(data, replacedInput);
                     try { UpdateSeleniumData(data); } catch { }
                     break;
@@ -315,7 +315,7 @@ namespace RuriLib
                 case BrowserAction.DOMtoSOURCE:
                     data.ResponseSource = data.Driver.FindElement(By.TagName("body")).GetAttribute("innerHTML");
                     break;
-                    
+
                 case BrowserAction.GetCookies:
                     foreach (var cookie in data.Driver.Manage().Cookies.AllCookies)
                     {
@@ -397,6 +397,9 @@ namespace RuriLib
                             }
                             if (data.UseProxies) chromeop.AddArgument("--proxy-server=" + data.Proxy.Type.ToString().ToLower() + "://" + data.Proxy.Proxy);
 
+                            if (data.ConfigSettings.AcceptInsecureCertificates)
+                                chromeop.AcceptInsecureCertificates = true;
+
                             data.Driver = new ChromeDriver(chromeservice, chromeop);
                             if (!string.IsNullOrWhiteSpace(url))
                                 data.Driver.Url = url;
@@ -454,6 +457,8 @@ namespace RuriLib
                                         fireprofile.SetPreference("network.proxy.socks_version", 5);
                                 }
                             }
+                            if (data.ConfigSettings.AcceptInsecureCertificates)
+                                fireop.AcceptInsecureCertificates = true;
 
                             fireop.Profile = fireprofile;
                             data.Driver = new FirefoxDriver(fireservice, fireop, new TimeSpan(0, 1, 0));

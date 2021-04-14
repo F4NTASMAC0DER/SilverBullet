@@ -1,9 +1,4 @@
-﻿using Extreme.Net;
-using Microsoft.Win32;
-using OpenBullet.ViewModels;
-using RuriLib.Models;
-using RuriLib.Runner;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -14,8 +9,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Threading;
+using Extreme.Net;
+using Microsoft.Win32;
+using OpenBullet.ViewModels;
 using RuriLib;
+using RuriLib.Models;
+using RuriLib.Runner;
 
 namespace OpenBullet.Views.Main
 {
@@ -79,8 +78,10 @@ namespace OpenBullet.Views.Main
                         await Task.Run(async () =>
                         {
                             await vm.CheckAllAsync(items, cts.Token,
-                                new Action<CheckResult<ProxyResult>>(check =>
+                                new Action<ProxyCheckResult<ProxyResult>>(check =>
                                 {
+                                    if (cts.IsCancellationRequested) return;
+
                                     var result = check.result;
                                     var proxy = result.proxy;
 
@@ -146,7 +147,8 @@ namespace OpenBullet.Views.Main
                     break;
 
                 case WorkerStatus.Running:
-                    cts.Cancel();
+                    try { cts.Cancel(); } catch { }
+                    try { cts.Dispose(); } catch { }
                     break;
             }
         }

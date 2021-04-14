@@ -130,6 +130,10 @@ namespace RuriLib
         /// <summary>Whether to automatically generate an Accept-Encoding header.</summary>
         public bool AcceptEncoding { get { return acceptEncoding; } set { acceptEncoding = value; OnPropertyChanged(); } }
 
+        private bool allowEmptyHeaderValues = false;
+        /// <summary>Allows empty values for headers. </summary>
+        public bool AllowEmptyHeaderValues { get => allowEmptyHeaderValues; set { allowEmptyHeaderValues = value; OnPropertyChanged(); } }
+
         // Multipart
         private string multipartBoundary = "";
         /// <summary>The boundary that separates multipart contents.</summary>
@@ -153,6 +157,23 @@ namespace RuriLib
         private bool saveAsScreenshot = false;
         /// <summary>Whether to add the downloaded image to the default screenshot path.</summary>
         public bool SaveAsScreenshot { get { return saveAsScreenshot; } set { saveAsScreenshot = value; OnPropertyChanged(); } }
+
+        private Version protocolVersion = new Version(1, 1);
+        /// <summary>
+        /// Version HTTP-protocol, used in requests.
+        /// </summary>
+        public Version ProtocolVersion
+        {
+            get => protocolVersion;
+            set { protocolVersion = value; OnPropertyChanged(); }
+        }
+
+        public string[] ProtocolVersions => new[] {
+            "1.1",
+            "2.0",
+            "2.1"
+        };
+
         #endregion
 
         /// <summary>
@@ -250,6 +271,15 @@ namespace RuriLib
                         SecurityProtocol = LineParser.ParseEnum(ref input, "Security Protocol", typeof(SecurityProtocol));
                         break;
 
+                    case "PROTOVER":
+                        var ver = LineParser.ParseToken(ref input, TokenType.Parameter, false);
+                        var v1 = 1;
+                        var v2 = 1;
+                        try { v1 = int.Parse(ver.Split('.')[0]); } catch { }
+                        try { v2 = int.Parse(ver.Split('.')[1]); } catch { }
+                        ProtocolVersion = new Version(v1, v2);
+                        break;
+
                     default:
                         break;
                 }
@@ -304,6 +334,7 @@ namespace RuriLib
                 .Boolean(AutoRedirect, "AutoRedirect")
                 .Boolean(ReadResponseSource, "ReadResponseSource")
                 .Boolean(EncodeContent, "EncodeContent")
+                .Boolean(AllowEmptyHeaderValues, nameof(AllowEmptyHeaderValues))
                 .Token(RequestType, "RequestType")
                 .Indent();
 
@@ -368,6 +399,13 @@ namespace RuriLib
                     break;
             }
 
+            if (ProtocolVersion.ToString() != "1.1")
+            {
+                writer.Indent()
+                    .Token("PROTOVER")
+                    .Token(ProtocolVersion.Major + "." + ProtocolVersion.Minor, nameof(ProtocolVersion));
+            }
+
             if (SecurityProtocol != SecurityProtocol.SystemDefault)
             {
                 writer
@@ -420,7 +458,7 @@ namespace RuriLib
 
             // Setup
             var request = new Request();
-            request.Setup(data.GlobalSettings, securityProtocol, AutoRedirect, data.ConfigSettings.MaxRedirects, AcceptEncoding);
+            request.Setup(data.GlobalSettings, securityProtocol, AutoRedirect, data.ConfigSettings.MaxRedirects, AcceptEncoding, ProtocolVersion, AllowEmptyHeaderValues);
 
             var localUrl = ReplaceValues(Url, data);
             data.Log(new LogEntry($"Calling URL: {localUrl}", Colors.MediumTurquoise));
@@ -660,7 +698,7 @@ namespace RuriLib
             {
 
                 Request.HttpReqSetHeaders(request, CustomHeaders, AcceptEncoding);
-                response = request.Get(new Uri(Url));
+                response = request.TupleGet(new Uri(Url));
 
                 using (var reader = new StreamReader(response.Item2))
                 {
@@ -680,7 +718,7 @@ namespace RuriLib
 
                         request.Cookies = cookie;
                         Request.HttpReqSetHeaders(request, CustomHeaders, AcceptEncoding);
-                        response = request.Get(new Uri(Url));
+                        response = request.TupleGet(new Uri(Url));
                         using (var reader = new StreamReader(response.Item2))
                         {
                             source = reader.ReadToEnd();

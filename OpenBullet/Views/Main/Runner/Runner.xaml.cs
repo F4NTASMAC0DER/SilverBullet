@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using Extreme.Net;
@@ -73,18 +74,18 @@ namespace OpenBullet.Views.Main.Runner
             switch (runner.Master.Status)
             {
                 case WorkerStatus.Running:
-                    logBox.AppendText($"Started Running Config {runner.ConfigName} with Wordlist {runner.WordlistName} at {DateTime.Now}.{Environment.NewLine}",
-                        Utils.GetColor("ForegroundGood"));
+                    Dispatcher.Invoke(() => logBox.AppendText($"Started Running Config {runner.ConfigName} with Wordlist {runner.WordlistName} at {DateTime.Now}.{Environment.NewLine}",
+                          Utils.GetColor("ForegroundGood")));
                     break;
 
                 case WorkerStatus.Stopping:
-                    logBox.AppendText($"Sent Abort Request at {DateTime.Now}.{Environment.NewLine}",
-                        Utils.GetColor("ForegroundCustom"));
+                    Dispatcher.Invoke(() => logBox.AppendText($"Sent Abort Request at {DateTime.Now}.{Environment.NewLine}",
+                        Utils.GetColor("ForegroundCustom")));
                     break;
 
                 case WorkerStatus.Idle:
-                    logBox.AppendText($"Aborted Runner at {DateTime.Now}.{Environment.NewLine}",
-                        Utils.GetColor("ForegroundBad"));
+                    Dispatcher.Invoke(() => logBox.AppendText($"Aborted Runner at {DateTime.Now}.{Environment.NewLine}",
+                        Utils.GetColor("ForegroundBad")));
                     break;
             }
         }
@@ -179,7 +180,11 @@ namespace OpenBullet.Views.Main.Runner
             {
                 case WorkerStatus.Idle:
                     SaveRecord();
-                    startButtonLabel.Text = "START"; startButtonIcon.Kind = PackIconMaterialKind.PlayCircleOutline; ;
+                    Dispatcher.Invoke(() =>
+                    {
+                        startButtonLabel.Text = "START";
+                        startButtonIcon.Kind = PackIconMaterialKind.PlayCircleOutline;
+                    });
                     break;
             }
         }
@@ -232,6 +237,8 @@ namespace OpenBullet.Views.Main.Runner
                     ServicePointManager.DefaultConnectionLimit = 10000; // This sets the default connection limit for requests on the whole application
                     startButtonLabel.Text = "STOP";
                     startButtonIcon.Kind = PackIconMaterialKind.StopCircleOutline;
+                    if (SB.Settings.RLSettings.General.DisableBotsListView) botsListView.ItemsSource = null;
+                    else botsListView.SetBinding(ItemsControl.ItemsSourceProperty, new Binding() { Source = vm.Bots });
                     vm.Start();
                     break;
 

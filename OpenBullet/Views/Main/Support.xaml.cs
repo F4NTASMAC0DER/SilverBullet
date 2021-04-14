@@ -39,7 +39,7 @@ namespace OpenBullet.Views.Main
                 {
                     using (var wc = new WebClient())
                     {
-                        data = wc.DownloadString("https://c-cracking.org/ApplicationVeri/SilverBullet/support.json");
+                        data = wc.DownloadString("https://raw.githubusercontent.com/mohamm4dx/SilverBullet/master/OpenBullet/Supporters.json");
                     }
                 }).ContinueWith(_ =>
                {

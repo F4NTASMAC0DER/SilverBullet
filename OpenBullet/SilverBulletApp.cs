@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace OpenBullet
 {
-    public struct OpenBulletApp : IApplication
+    public struct SilverBulletApp : IApplication
     {
         public IRunnerManager RunnerManager { get; set; }
         public IProxyManager ProxyManager { get; set; }

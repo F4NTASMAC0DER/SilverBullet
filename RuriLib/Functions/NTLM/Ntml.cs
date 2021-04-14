@@ -3,7 +3,7 @@
     /// <summary>
     /// NTLM Hash
     /// </summary>
-    public static class Ntml
+    public static class Ntlm
     {
         /*
         source:

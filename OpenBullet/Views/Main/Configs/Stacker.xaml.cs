@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -28,6 +29,7 @@ using Microsoft.Scripting.Utils;
 using OpenBullet.CefBrowser;
 using OpenBullet.Editor.Search;
 using OpenBullet.ViewModels;
+using OpenBullet.Views.CustomMessageBox;
 using OpenBullet.Views.Dialogs;
 using RuriLib;
 using RuriLib.LS;
@@ -46,18 +48,17 @@ namespace OpenBullet.Views.Main.Configs
         private Stopwatch timer;
         private StackerViewModel vm = null;
         private AbortableBackgroundWorker debugger = new AbortableBackgroundWorker();
-        XmlNodeList syntaxHelperItems;
+        XmlNodeList syntaxHelperItems, scriptCompletion;
         TextEditor toolTipEditor;
         CompletionWindow completionWindow;
         private ToolTip toolTip;
-        private Task taskSwitchView = null;
+        private Task taskSwitchView = null, startCompileTask = null;
         private LoliScriptCompletionData.BlockParameters blockParameters;
         public delegate void SaveConfigEventHandler(object sender, EventArgs e);
         public event SaveConfigEventHandler SaveConfig;
         BrushConverter bc = new BrushConverter();
         SearchTextEditor searchTextEditor;
         OcrEngine _ocrEngine;
-        private Timer autoSaveConfigTimer;
 
         protected virtual void OnSaveConfig()
         {
@@ -152,6 +153,16 @@ namespace OpenBullet.Views.Main.Configs
 
                 // Only bind the keydown event if the XML was successfully loaded
                 loliScriptEditor.KeyDown += loliScriptEditor_KeyDown;
+                loliScriptEditor.KeyUp += LoliScriptEditor_KeyUp;
+            }
+            catch { }
+
+            try
+            {
+                doc.Load("ScriptCompletion.xml");
+                scriptCompletion = doc.DocumentElement
+                    .SelectSingleNode("/Keywords")
+                    .ChildNodes;
             }
             catch { }
 
@@ -215,6 +226,19 @@ namespace OpenBullet.Views.Main.Configs
 
             //Any CefSharp references have to be in another method with NonInlining
             // attribute so the assembly rolver has time to do it's thing.
+            vm.Stack.CollectionChanged += Stack_CollectionChanged;
+        }
+
+        private void Stack_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (StackerBlockViewModel newBlock in e.NewItems)
+                {
+                    newBlock.Page.LostFocus += delegate { AutoSaveConfig(); };
+                }
+            }
+            AutoSaveConfig();
         }
 
         private void TextArea_KeyDown(object sender, KeyEventArgs e)
@@ -432,6 +456,7 @@ namespace OpenBullet.Views.Main.Configs
         #region Debugger
         private void startDebuggerButton_Click(object sender, RoutedEventArgs e)
         {
+            AutoSaveConfig();
             switch (debugger.Status)
             {
                 case WorkerStatus.Idle:
@@ -510,12 +535,24 @@ namespace OpenBullet.Views.Main.Configs
             CProxy proxy = null;
             if (vm.TestProxy.StartsWith("(")) // Parse in advanced mode
             {
-                try { proxy = (new CProxy()).Parse(vm.TestProxy); }
+                try { proxy = new CProxy().Parse(vm.TestProxy); }
                 catch { SB.Logger.LogError(Components.Stacker, "Invalid Proxy Syntax", true); }
             }
             else // Parse in standard mode
             {
-                proxy = new CProxy(vm.TestProxy, vm.ProxyType);
+                var proxyAddress = string.Empty;
+                var user = string.Empty;
+                var pass = string.Empty;
+                if (vm.TestProxy.Contains(":"))
+                {
+                    var prox = vm.TestProxy.Split(':');
+                    proxyAddress = prox[0] + ":" + prox[1];
+                    try { user = prox[2]; } catch { }
+                    try { pass = prox[3]; } catch { }
+                }
+                proxy = new CProxy(proxyAddress, vm.ProxyType);
+                proxy.Username = user;
+                proxy.Password = pass;
             }
 
             // Initialize BotData and Reset LS
@@ -1015,10 +1052,24 @@ namespace OpenBullet.Views.Main.Configs
 
             try
             {
+                if (vm.View != StackerView.LoliScript)
+                {
+                    AutoSaveConfig();
+                }
                 taskSwitchView?.Dispose();
                 if (sender is Button)
                 {
-                    taskSwitchView = Task.Run(action);
+                    stackerTabControl.BlurApply(0, 5, TimeSpan.FromSeconds(0.1));
+                    stackerTabControl.IsEnabled = false;
+                    taskSwitchView = Task.Run(action)
+                    .ContinueWith(_ =>
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            stackerTabControl.BlurDisable(TimeSpan.FromSeconds(0.1));
+                            stackerTabControl.IsEnabled = true;
+                        });
+                    });
                 }
                 else
                 {
@@ -1027,13 +1078,18 @@ namespace OpenBullet.Views.Main.Configs
                     taskSwitchView.Dispose();
                 }
             }
-            catch { }
+            catch
+            {
+                stackerTabControl.IsEnabled = true;
+                stackerTabControl.BlurDisable(TimeSpan.FromSeconds(0.1));
+            }
         }
 
         private void loliScriptEditor_LostFocus(object sender, RoutedEventArgs e)
         {
             vm.LS.Script = loliScriptEditor.Text;
             toolTip.IsOpen = false;
+            AutoSaveConfig();
         }
 
         private void loliScriptEditor_KeyDown(object sender, KeyEventArgs e)
@@ -1049,6 +1105,13 @@ namespace OpenBullet.Views.Main.Configs
                 {
                     Button_Click(null, null);
                 }
+            }
+
+            if (SB.SBSettings.General.AutoSaveConfigOnStacker &&
+                vm.LS.Script != loliScriptEditor.Text)
+            {
+                vm.LS.Script = loliScriptEditor.Text;
+                OnSaveConfig();
             }
 
             if (SB.SBSettings.General.DisableSyntaxHelper) return;
@@ -1087,23 +1150,25 @@ namespace OpenBullet.Views.Main.Configs
                 if (node == null) return;
 
                 toolTipEditor.Text = node.InnerText;
-                if (!vm.DisableToolTip)
-                {
-                    toolTip.Visibility = Visibility.Visible;
-                    toolTip.IsOpen = true;
-                }
-                else
-                {
-                    toolTipEditor.Text = string.Empty;
-                    toolTip.Visibility = Visibility.Collapsed;
-                    loliScriptEditor.ToolTip = null;
-                }
             }
             else
             {
                 toolTip.IsOpen = false;
             }
+        }
 
+        private void LoliScriptEditor_KeyUp(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                if (SB.SBSettings.General.AutoSaveConfigOnStacker &&
+                    vm.LS.Script != loliScriptEditor.Text)
+                {
+                    vm.LS.Script = loliScriptEditor.Text;
+                    OnSaveConfig();
+                }
+            }
+            catch { }
         }
 
         private void openDocButton_Click(object sender, RoutedEventArgs e)
@@ -1283,35 +1348,10 @@ namespace OpenBullet.Views.Main.Configs
             catch { }
         }
 
-        private void AutoSaveConfig()
-        {
-            try
-            {
-                if (!SB.SBSettings.General.AutoSaveConfigOnStacker)
-                {
-                    try { autoSaveConfigTimer.Dispose(); } catch { }
-                    try { autoSaveConfigTimer = null; } catch { }
-                    return;
-                }
-                if (Dispatcher.Invoke(() => SB.MainWindow.Main.Content.GetType() == typeof(ConfigsSection)))
-                    Dispatcher.Invoke(() => OnSaveConfig());
-            }
-            catch { }
-        }
-
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             try
             {
-                if (SB.SBSettings.General.AutoSaveConfigOnStacker && autoSaveConfigTimer == null)
-                {
-                    autoSaveConfigTimer = new Timer((_) => AutoSaveConfig(), null, TimeSpan.Zero, TimeSpan.FromMinutes(SB.SBSettings.General.AutoSaveConfigTime));
-                }
-                else
-                {
-                    autoSaveConfigTimer?.Dispose();
-                    autoSaveConfigTimer = null;
-                }
             }
             catch { }
         }
@@ -1327,6 +1367,124 @@ namespace OpenBullet.Views.Main.Configs
             {
                 SB.Logger.LogError(Components.Stacker, ex.Message, true);
             }
+        }
+
+        private void loliScriptEditor_TextChanged(object sender, EventArgs e)
+        {
+            AutoSaveConfig();
+        }
+
+        private void Compile_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                stackerTabControl.BlurApply(0, 5, TimeSpan.FromSeconds(0.1));
+                stackerTabControl.IsEnabled = false;
+                try { startCompileTask?.Dispose(); } catch { }
+                startCompileTask = Task.Run(StartCompile)
+                .ContinueWith(_ =>
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        stackerTabControl.BlurDisable(TimeSpan.FromSeconds(0.1));
+                        stackerTabControl.IsEnabled = true;
+                    });
+                });
+            }
+            catch (Exception ex)
+            {
+                CustomMsgBox.ShowError(ex.Message);
+            }
+        }
+
+        private void StartCompile()
+        {
+            var currentConfig = SB.MainWindow.ConfigsPage.CurrentConfig;
+            if (string.IsNullOrWhiteSpace(currentConfig.Config.Script))
+            {
+                Dispatcher.Invoke(() => CustomMsgBox.ShowError("Script is empty!!"));
+                return;
+            }
+            if (currentConfig.Config.BlocksAmount == 0)
+            {
+                Dispatcher.Invoke(() => CustomMsgBox.ShowError("Blocks amount is zero!!"));
+                return;
+            }
+            var settings = currentConfig.Config.Settings;
+            var configName = Path.GetFileNameWithoutExtension(currentConfig.FileName);
+            var dirCompile = "Compiled";
+            if (!Directory.Exists(dirCompile)) Directory.CreateDirectory(dirCompile);
+            if (!Directory.Exists(dirCompile + "\\bin")) Directory.CreateDirectory(dirCompile + "\\bin");
+            using (var compiler = new ScriptCompiler()
+            {
+                Output = $"{dirCompile}\\bin\\{configName}.exe",
+                Title = settings.Title,
+                IconPath = settings.IconPath,
+                Message = settings.Message,
+                MessageColor = settings.MessageColor.ConvertToString(),
+                AuthorColor = settings.AuthorColor.ConvertToString(),
+                BotsColor = settings.BotsColor.ConvertToString(),
+                CPMColor = settings.CPMColor.ConvertToString(),
+                CustomColor = settings.CustomColor.ConvertToString(),
+                CustomInputColor = settings.CustomInputColor.ConvertToString(),
+                FailsColor = settings.FailsColor.ConvertToString(),
+                HitsColor = settings.HitsColor.ConvertToString(),
+                OcrRateColor = settings.OcrRateColor.ConvertToString(),
+                ProgressColor = settings.ProgressColor.ConvertToString(),
+                ProxiesColor = settings.ProxiesColor.ConvertToString(),
+                RetriesColor = settings.RetriesColor.ConvertToString(),
+                ToCheckColor = settings.ToCheckColor.ConvertToString(),
+                WordlistColor = settings.WordlistColor.ConvertToString(),
+                Config = IOManager.SerializeConfig(currentConfig.Config)
+            })
+            {
+                compiler.AddOption("/optimize");
+                compiler.AddReferences(new[]
+                {
+                        "System.dll",
+                        "System.Drawing.dll",
+                        "System.Core.dll",
+                        "mscorlib.dll",
+                        "System.Linq.dll",
+                        "System.Collections.dll",
+                 });
+
+                //compiler.AddReferences(Directory.GetFiles(@"E:\Projects\Desktop\SilverBullet\OpenBulletCLI\bin\Release\bin", "*.dll"));
+                compiler.AddReferences(Directory.GetFiles(@"bin", "*.dll")
+                     .Where(d => !d.Contains("MahApps.Metro") &&
+                     !d.Contains("Xceed.") &&
+                     !d.Contains("MaterialDesign") &&
+                     !d.Contains("WPFToolkit") &&
+                     !d.Contains("ControlzEx.dll") &&
+                     !d.Contains("ICSharpCode.AvalonEdit") &&
+                     !d.Contains("CefSharp.Wpf"))
+                     .ToArray());
+                var result = compiler.GetResult(compiler.Execute());
+                if (result.Item2)
+                {
+                    Dispatcher.Invoke(() => CustomMsgBox.ShowError(result.Item1));
+                    return;
+                }
+                compiler.CopyReferences();
+                compiler.CopySettings();
+                compiler.CreateRunner(configName, currentConfig.Config);
+                Dispatcher.Invoke(() => CustomMsgBox.Show(result.Item1));
+            }
+        }
+
+        public void AutoSaveConfig()
+        {
+            Task.Run(() =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    if (SB.MainWindow.ConfigsPage.ConfigManagerPage.CheckSaved()) return;
+                    if (SB.SBSettings.General.AutoSaveConfigOnStacker)
+                    {
+                        OnSaveConfig();
+                    }
+                });
+            });
         }
     }
 }

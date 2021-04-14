@@ -1,12 +1,4 @@
-﻿using Extreme.Net;
-using LiteDB;
-using Newtonsoft.Json.Linq;
-using OpenBullet.Repositories;
-using RuriLib.Interfaces;
-using RuriLib.Models;
-using RuriLib.Models.Stats;
-using RuriLib.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
@@ -14,6 +6,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Extreme.Net;
+using Newtonsoft.Json.Linq;
+using OpenBullet.Repositories;
+using RuriLib.Interfaces;
+using RuriLib.Models;
+using RuriLib.Models.Stats;
+using RuriLib.ViewModels;
 
 namespace OpenBullet.ViewModels
 {
@@ -199,8 +198,9 @@ namespace OpenBullet.ViewModels
 
         public static readonly int maximumBots = 200;
 
-        public async Task CheckAllAsync(IEnumerable<CProxy> proxies, CancellationToken cancellationToken, Action<CheckResult<ProxyResult>> onResult = null, IProgress<float> progress = null)
+        public async Task CheckAllAsync(IEnumerable<CProxy> proxies, CancellationToken cancellationToken, Action<ProxyCheckResult<ProxyResult>> onResult = null, IProgress<float> progress = null)
         {
+            if (cancellationToken.IsCancellationRequested) return;
             using (var ss = new SemaphoreSlim(BotsAmount, BotsAmount))
             {
                 var total = proxies.Count();
@@ -212,7 +212,7 @@ namespace OpenBullet.ViewModels
                     // Wait for the semaphore
                     await ss.WaitAsync();
 
-                    CheckResult<ProxyResult> checkResult = new CheckResult<ProxyResult>();
+                    ProxyCheckResult<ProxyResult> checkResult = new ProxyCheckResult<ProxyResult>();
                     ProxyResult proxyResult = new ProxyResult();
                     proxyResult.proxy = proxy;
                     
@@ -220,12 +220,12 @@ namespace OpenBullet.ViewModels
                     try
                     {
                         proxyResult = await CheckProxy(proxy);
-                        checkResult = new CheckResult<ProxyResult>(true, proxyResult);
+                        checkResult = new ProxyCheckResult<ProxyResult>(true, proxyResult);
                     }
                     // Catch and log any errors
                     catch (Exception ex)
                     {
-                        checkResult = new CheckResult<ProxyResult>(false, proxyResult, ex.Message);
+                        checkResult = new ProxyCheckResult<ProxyResult>(false, proxyResult, ex.Message);
                     }
                     // Report the progress and release the semaphore slot
                     finally

@@ -71,6 +71,11 @@ namespace OpenBullet.Views.StackerBlocks
                 encFuncCombobox.Items.Add(e);
             }
 
+            foreach (var e in Enum.GetNames(typeof(ScryptMethods)))
+            {
+                scryptMethods.Items.Add(e);
+            }
+
             aesPaddingCombobox.SelectedIndex = (int)vm.AesPadding - 1;
 
             dictionaryRTB.AppendText(vm.GetDictionary());
@@ -167,6 +172,10 @@ namespace OpenBullet.Views.StackerBlocks
                     functionTabControl.SelectedIndex = 19;
                     break;
 
+                case BlockFunction.Function.Scrypt:
+                    functionTabControl.SelectedIndex = 20;
+                    break;
+
             }
         }
 
@@ -213,7 +222,8 @@ namespace OpenBullet.Views.StackerBlocks
             { "AESEncrypt", "Encrypts data with AES. All parameters must be provided as base64 strings. Uses SHA-256 to get a 256 bit key" },
             { "AESDecrypt", "Decrypts data with AES. All parameters must be provided as base64 strings. Uses SHA-256 to get a 256 bit key" },
             { "PBKDF2PKCS5", "Generates a key based on a password. The salt, if provided, must be a base64 string" },
-            { "Ntlm", "Generates NTLM hash" }
+            { "Ntlm", "Generates NTLM hash" },
+            { "Scrypt", "Scrypt encoder" }
         };
 
         private void dictionaryRTB_TextChanged(object sender, TextChangedEventArgs e)
@@ -259,6 +269,17 @@ namespace OpenBullet.Views.StackerBlocks
         private void SetItemToComboBox()
         {
             dateToUnixTimeCombobox.SelectedIndex = (int)vm.UnixTimeType;
+        }
+
+        private void scryptMethods_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                dockPanelCompInput.Visibility = scryptMethods.SelectedItem.ToString() == nameof(ScryptMethods.Compare) ?
+                    System.Windows.Visibility.Visible :
+                    System.Windows.Visibility.Collapsed;
+            }
+            catch { }
         }
     }
 }

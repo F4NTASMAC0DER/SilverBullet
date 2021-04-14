@@ -6,6 +6,7 @@ using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
 using HashLib;
+using Scrypt;
 
 namespace RuriLib.Functions.Crypto
 {
@@ -287,7 +288,7 @@ namespace RuriLib.Functions.Crypto
             var resultantArray = new byte[input.Length / 2];
             for (var i = 0; i < resultantArray.Length; i++)
             {
-                resultantArray[i] = System.Convert.ToByte(input.Substring(i * 2, 2), 16);
+                resultantArray[i] = Convert.ToByte(input.Substring(i * 2, 2), 16);
             }
             return resultantArray;
         }
@@ -342,7 +343,7 @@ namespace RuriLib.Functions.Crypto
 
             return Convert.ToBase64String(RSA.Decrypt(Convert.FromBase64String(dataToDecrypt), doOAEPPadding));
         }
-        
+
         /// <summary>
         /// Encrypts a string using RSA.
         /// </summary>
@@ -355,7 +356,8 @@ namespace RuriLib.Functions.Crypto
         {
             return RSAEncrypt(
                 data,
-                new RSAParameters { 
+                new RSAParameters
+                {
                     Modulus = Encoding.UTF8.GetBytes(n),
                     Exponent = Encoding.UTF8.GetBytes(e)
                 },
@@ -487,10 +489,10 @@ namespace RuriLib.Functions.Crypto
         /// <param name="mode">The cipher mode</param>
         /// <param name="padding">The padding mode</param>
         /// <returns>The AES-encrypted string encoded as base64</returns>
-        public static string AESEncrypt(string data, string key, string iv = "", CipherMode mode = CipherMode.CBC, PaddingMode padding = PaddingMode.None)
+        public static string AESEncrypt(string data, string key, string iv = "", CipherMode mode = CipherMode.CBC, PaddingMode padding = PaddingMode.None, bool hexKeys = false)
         {
             string encData = null;
-            byte[][] keys = ConvertKeys(key, iv);
+            byte[][] keys = ConvertKeys(key, iv, hexKeys);
 
             encData = EncryptStringToBytes_Aes(data, keys[0], keys[1], mode, padding);
 
@@ -506,19 +508,36 @@ namespace RuriLib.Functions.Crypto
         /// <param name="mode">The cipher mode</param>
         /// <param name="padding">The padding mode</param>
         /// <returns>The plaintext string</returns>
-        public static string AESDecrypt(string data, string key, string iv = "", CipherMode mode = CipherMode.CBC, PaddingMode padding = PaddingMode.None)
+        public static string AESDecrypt(string data, string key, string iv = "", CipherMode mode = CipherMode.CBC, PaddingMode padding = PaddingMode.None, bool hexKeys = false)
         {
             string decData = null;
-            byte[][] keys = ConvertKeys(key, iv);
+            byte[][] keys = ConvertKeys(key, iv, hexKeys);
 
             decData = DecryptStringFromBytes_Aes(data, keys[0], keys[1], mode, padding);
 
             return decData;
         }
 
-        private static byte[][] ConvertKeys(string key, string iv)
+        private static byte[][] ConvertKeys(string key, string iv, bool hexKeys)
         {
             byte[][] result = new byte[2][];
+
+            if (hexKeys)
+            {
+                result[0] = key.FromHex();
+
+                if (string.IsNullOrEmpty(iv))
+                {
+                    result[1] = key.FromHex();
+                    Array.Resize(ref result[1], 16);
+                }
+                else
+                {
+                    result[1] = iv.FromHex();
+                }
+
+                return result;
+            }
 
             result[0] = Convert.FromBase64String(key);
 
@@ -546,7 +565,7 @@ namespace RuriLib.Functions.Crypto
 
             byte[] encrypted;
 
-            using (AesManaged aesAlg = new AesManaged())
+            using (RijndaelManaged aesAlg = new RijndaelManaged())
             {
                 aesAlg.KeySize = 256;
                 aesAlg.BlockSize = 128;
@@ -611,6 +630,34 @@ namespace RuriLib.Functions.Crypto
             }
             return plaintext;
         }
+        #endregion
+
+        #region Scrypt
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static string ScryptEncoder(string input)
+        {
+            return new ScryptEncoder().Encode(input);
+        }
+
+        public static bool ScryptCompare(string input, string hashedPassword)
+        {
+            try
+            {
+                return new ScryptEncoder().Compare(input, hashedPassword);
+            }
+            catch { return false; }
+        }
+
+        public static bool ScryptIsValid(string hashedPassword)
+        {
+            return new ScryptEncoder().IsValid(hashedPassword);
+        }
+
         #endregion
     }
 }

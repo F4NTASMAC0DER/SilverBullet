@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Windows.Media;
 using Extreme.Net;
 using OpenQA.Selenium.Remote;
@@ -149,7 +150,7 @@ namespace RuriLib
         public VariableList GlobalVariables { get; set; }
 
         /// <summary>The global cookies shared between all the Bots. They are set in the local cookie jar at the start of the check.</summary>
-        public Dictionary<string, string> GlobalCookies { get; set; }
+        public CookieDictionary GlobalCookies { get; set; }
 
         // Log
         /// <summary>The detailed log of the last block that was run.</summary>

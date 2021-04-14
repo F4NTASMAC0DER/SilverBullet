@@ -1,7 +1,7 @@
-﻿using Extreme.Net;
-using RuriLib.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Extreme.Net;
+using RuriLib.ViewModels;
 
 namespace RuriLib.Models
 {

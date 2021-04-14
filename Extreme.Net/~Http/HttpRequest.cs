@@ -8,10 +8,10 @@ using System.Net.Security;
 using System.Net.Sockets;
 using System.Security;
 using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Extreme.Net
 {
@@ -167,11 +167,10 @@ namespace Extreme.Net
             #endregion
         }
 
-
         /// <summary>
         /// Version HTTP-protocol, used in requests.
         /// </summary>
-        public static readonly Version ProtocolVersion = new Version(1, 1);
+        public Version ProtocolVersion { get; set; } = new Version(1, 1);
 
 
         #region Статические поля (закрытые)
@@ -184,7 +183,7 @@ namespace Extreme.Net
             //"Content-Type",
             //"Connection",
             "Proxy-Connection",
-            //"Host"
+            "Host"
         };
 
         #endregion
@@ -253,6 +252,8 @@ namespace Extreme.Net
         private long _bytesReceived;
         private long _totalBytesReceived;
         private bool _canReportBytesReceived;
+        private bool _tempAllowAutoRedirect;
+        private bool _tempIgnoreProtocolErrors;
 
         private EventHandler<UploadProgressChangedEventArgs> _uploadProgressChangedHandler;
         private EventHandler<DownloadProgressChangedEventArgs> _downloadProgressChangedHandler;
@@ -309,6 +310,8 @@ namespace Extreme.Net
         /// </summary>
         public Uri Address { get; private set; }
 
+        public bool UseRawAddress { get; set; }
+
         /// <summary>
         /// Возвращает последний ответ от HTTP-сервера, полученный данным экземпляром класса.
         /// </summary>
@@ -338,6 +341,11 @@ namespace Extreme.Net
         /// <value>Значение по умолчанию — <see langword="null"/>. Если установлено значение по умолчанию, то используется метод, который принимает все сертификаты SSL.</value>
         public RemoteCertificateValidationCallback SslCertificateValidatorCallback;
 
+        /// <summary>
+        /// Allows empty values for headers.
+        /// </summary>
+        public bool AllowEmptyHeaderValues { get; set; }
+
         #region Поведение
 
         /// <summary>
@@ -345,6 +353,27 @@ namespace Extreme.Net
         /// </summary>
         /// <value>Значение по умолчанию — <see langword="true"/>.</value>
         public bool AllowAutoRedirect { get; set; }
+
+        public bool ManualMode
+        {
+            get
+            {
+                return !this.AllowAutoRedirect && this.IgnoreProtocolErrors;
+            }
+            set
+            {
+                if (value)
+                {
+                    this._tempAllowAutoRedirect = this.AllowAutoRedirect;
+                    this._tempIgnoreProtocolErrors = this.IgnoreProtocolErrors;
+                    this.AllowAutoRedirect = false;
+                    this.IgnoreProtocolErrors = true;
+                    return;
+                }
+                this.AllowAutoRedirect = this._tempAllowAutoRedirect;
+                this.IgnoreProtocolErrors = this._tempIgnoreProtocolErrors;
+            }
+        }
 
         /// <summary>
         /// Возвращает или задает максимальное количество последовательных переадресаций.
@@ -575,6 +604,8 @@ namespace Extreme.Net
         /// <remarks>Если значение равно <see langword="true"/>, то дополнительно отправляется заголовок 'Accept-Encoding: gzip, deflate'.</remarks>
         public bool EnableEncodingContent { get; set; }
 
+        public bool AbsoluteUrlInStartingLine { get; set; }
+
         /// <summary>
         /// Возвращает или задаёт имя пользователя для базовой авторизации на HTTP-сервере.
         /// </summary>
@@ -648,6 +679,9 @@ namespace Extreme.Net
 
         #endregion
 
+        public bool UseCookies { get; set; } = true;
+
+        public bool UseProxyConnectionHeader { get; set; } = true;
 
         #region Свойства (внутренние)
 
@@ -676,7 +710,6 @@ namespace Extreme.Net
         }
 
         #endregion
-
 
         private MultipartContent AddedMultipartData
         {
@@ -934,15 +967,15 @@ namespace Extreme.Net
                 _temporaryUrlParams = urlParams;
             }
 
-            var respo = Raw(HttpMethod.GET, address);
-            return respo;
+            return Raw(HttpMethod.GET, address);
         }
 
-        public Tuple<HttpResponse, MemoryStream> Get(Uri address)
+        public Tuple<HttpResponse, MemoryStream> TupleGet(Uri address)
         {
             var respo = Raw(HttpMethod.GET, address);
             return new Tuple<HttpResponse, MemoryStream>(respo, respo.ToMemoryStream());
         }
+
 
         /// <summary>
         /// Отправляет GET-запрос HTTP-серверу.
@@ -2095,6 +2128,20 @@ namespace Extreme.Net
             return this;
         }
 
+        public HttpRequest AddHeaderIfNotExists(HttpHeader header, string value)
+        {
+            if (!this.ContainsHeader(header) && !ContainsTemporaryHeader(header))
+            {
+                this.AddHeader(header, value);
+            }
+            return this;
+        }
+
+        public HttpRequest AddXmlHttpRequestHeader()
+        {
+            return this.AddHeader("X-Requested-With", "XMLHttpRequest");
+        }
+
         /// <summary>
         /// Добавляет временный HTTP-заголовок запроса. Такой заголовок перекрывает заголовок установленный через индексатор.
         /// </summary>
@@ -2132,7 +2179,7 @@ namespace Extreme.Net
                 throw new ArgumentNullException("value");
             }
 
-            if (value.Length == 0)
+            if (value.Length == 0 && !AllowEmptyHeaderValues)
             {
                 throw ExceptionHelper.EmptyString("value");
             }
@@ -2153,6 +2200,20 @@ namespace Extreme.Net
             _temporaryHeaders[name] = value;
 
             return this;
+        }
+
+        public void ClearCookies()
+        {
+            Cookies = new CookieDictionary();
+        }
+
+        public Uri BuildUriBasedOnBaseAddress(string relativeOrAbsoluteAddress)
+        {
+            if (!(this.BaseAddress != null) || !relativeOrAbsoluteAddress.StartsWith("/"))
+            {
+                return new Uri(relativeOrAbsoluteAddress);
+            }
+            return new Uri(this.BaseAddress, relativeOrAbsoluteAddress);
         }
 
         /// <summary>
@@ -2244,6 +2305,24 @@ namespace Extreme.Net
             return ContainsHeader(Http.Headers[header]);
         }
 
+        public bool ContainsTemporaryHeader(string headerName)
+        {
+            if (headerName == null)
+            {
+                throw new ArgumentNullException("headerName");
+            }
+            if (headerName.Length == 0)
+            {
+                throw ExceptionHelper.EmptyString("headerName");
+            }
+            return _temporaryHeaders.ContainsKey(headerName);
+        }
+
+        public bool ContainsTemporaryHeader(HttpHeader header)
+        {
+            return this.ContainsTemporaryHeader(Http.Headers[header]);
+        }
+
         /// <summary>
         /// Возвращает перечисляемую коллекцию HTTP-заголовков.
         /// </summary>
@@ -2320,7 +2399,7 @@ namespace Extreme.Net
         private void Init()
         {
             KeepAlive = true;
-            AllowAutoRedirect = true;
+            _tempAllowAutoRedirect = AllowAutoRedirect = true;
             EnableEncodingContent = true;
 
             _response = new HttpResponse(this);
@@ -2738,7 +2817,18 @@ namespace Extreme.Net
                         ? new SslStream(ClientNetworkStream, false, Http.AcceptAllCertificationsCallback)
                         : new SslStream(ClientNetworkStream, false, SslCertificateValidatorCallback);
 
-                    sslStream.AuthenticateAsClient(address.Host, new X509CertificateCollection(), SslProtocols, false);
+                    try
+                    {
+                        sslStream.AuthenticateAsClient(address.Host, new X509CertificateCollection(), SslProtocols, false);
+                    }
+                    catch
+                    {
+                        if (SslProtocols == SslProtocols.None)
+                        {
+                            SslProtocols = SslProtocols.Tls12;
+                            sslStream.AuthenticateAsClient(address.Host, new X509CertificateCollection(), SslProtocols, false);
+                        }
+                    }
                     _connectionCommonStream = sslStream;
                 }
                 catch (Exception ex)
@@ -2778,15 +2868,39 @@ namespace Extreme.Net
 
         #endregion
 
+        private static string ParseOriginalUrlRelativeQuery(string url)
+        {
+            int num = -1;
+            while (true)
+            {
+                num = url.IndexOf('/', num + 1);
+                if (num == -1)
+                {
+                    break;
+                }
+                if (num == url.Length - 1)
+                {
+                    return "/";
+                }
+                if (url[num + 1] != '/')
+                {
+                    return url.Substring(num, url.Length - num);
+                }
+                num++;
+            }
+            return url;
+        }
+
         #region Формирование данных запроса
 
         private string GenerateStartingLine(HttpMethod method)
         {
             // Fix by Igor Vacil'ev: sometimes proxies returns 404 when used full path.
-            string query = _currentProxy != null && _currentProxy.Type == ProxyType.Http &&
-                (_currentProxy.AbsoluteUriInStartingLine || Address.Scheme == "http")
-                ? Address.AbsoluteUri
-                : Address.PathAndQuery;
+            string query = ((_currentProxy != null && _currentProxy.Type == ProxyType.Http &&
+                _currentProxy.AbsoluteUriInStartingLine) || AbsoluteUrlInStartingLine) ?
+                (!UseRawAddress ? Address.AbsoluteUri : Address.OriginalString) :
+                (!UseRawAddress ? Address.PathAndQuery
+                : HttpRequest.ParseOriginalUrlRelativeQuery(Address.OriginalString));
 
             return $"{method} {query} HTTP/{ProtocolVersion}\r\n";
         }
@@ -2838,6 +2952,10 @@ namespace Extreme.Net
 
             if (httpProxy != null)
             {
+                if (this.UseProxyConnectionHeader)
+                {
+                    headers["Proxy-Connection"] = (KeepAlive ? "keep-alive" : "close");
+                }
                 if (!string.IsNullOrEmpty(httpProxy.Username) ||
                     !string.IsNullOrEmpty(httpProxy.Password))
                 {

@@ -1,5 +1,4 @@
-﻿using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 
 namespace OpenBullet.Views.Main
 {
@@ -10,11 +9,13 @@ namespace OpenBullet.Views.Main
     {
         AboutPage aboutPage;
         ReleaseNotesPage releaseNotesPage;
+        public CheckUpdatePage CheckUpdatePage;
         public Help()
         {
             InitializeComponent();
             aboutPage = new AboutPage();
             releaseNotesPage = new ReleaseNotesPage();
+            CheckUpdatePage = new CheckUpdatePage();
             Main.Content = aboutPage;
             menuOptionSelected(aboutLabel);
         }
@@ -55,31 +56,10 @@ namespace OpenBullet.Views.Main
             menuOptionSelected(sender);
         }
 
-        private void checkForUpdateLabel_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        public void checkForUpdateLabel_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            try
-            {
-                var result = CheckUpdate.Run(SB.updateUrl);
-                if (result.Update)
-                {
-                    var notesWindow = new NotesWindow()
-                    {
-                        DontShowMainWindow = true,
-                        SBUrl = result.Url,
-                    };
-                    notesWindow.titleLabel.Content += " " + result.Version;
-                    for (var i = 0; i < result.Notes.Count; i++)
-                    {
-                        notesWindow.richTextBox.AppendText(result.Notes[i].Note + "\n");
-                    }
-                    notesWindow.Show();
-                }
-                else
-                {
-                    MessageBox.Show("there are currently no updates available", "SilverBullet", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-            }
-            catch { }
+            Main.Content = CheckUpdatePage;
+            menuOptionSelected(checkForUpdateLabel);
         }
     }
 }

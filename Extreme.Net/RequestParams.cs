@@ -8,6 +8,33 @@ namespace Extreme.Net
     /// </summary>
     public class RequestParams : List<KeyValuePair<string,string>>
     {
+        public readonly bool ValuesUnescaped;
+
+        public readonly bool KeysUnescaped;
+
+        public RequestParams(bool valuesUnescaped = false, bool keysUnescaped = false)
+        {
+            ValuesUnescaped = valuesUnescaped;
+            KeysUnescaped = keysUnescaped;
+        }
+
+        public RequestParams(Dictionary<string, string> values, bool valuesUnescaped = false, bool keysUnescaped = false) : this(valuesUnescaped, keysUnescaped)
+        {
+            foreach (KeyValuePair<string, string> keyValuePair in values)
+            {
+                this[keyValuePair.Key] = keyValuePair.Value;
+            }
+        }
+
+
+        public string Query
+        {
+            get
+            {
+                return Http.ToQueryString(this, this.ValuesUnescaped, this.KeysUnescaped);
+            }
+        }
+
         /// <summary>
         /// Задаёт новый параметр запроса.
         /// </summary>

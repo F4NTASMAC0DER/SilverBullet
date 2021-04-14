@@ -71,39 +71,39 @@ namespace OpenBullet
                 return;
             }
             cancellationToken.Token.ThrowIfCancellationRequested();
-            var result = CheckUpdate.Run(SB.updateUrl);
-            showMainWindow = !result.Update;
-            if (result.Update)
-            {
-                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (ThreadStart)delegate
-                {
-                    var notesWindow = new NotesWindow()
-                    {
-                        MainWindow = mainWindow,
-                        SBUrl = result.Url,
-                    };
-                    notesWindow.titleLabel.Content += " " + result.Version;
-                    for (var i = 0; i < result.Notes.Count; i++)
-                    {
-                        notesWindow.richTextBox.AppendText(result.Notes[i].Note + "\n");
-                    }
-                    notesWindow.Show();
-                    Close();
-                });
-            }
-            else
-            {
-                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (ThreadStart)delegate
-                {
-                    if (notesWindow == null)
-                    {
-                        Hide();
-                        mainWindow = new MainWindow();
-                        mainWindow.Show();
-                        Close();
-                    }
-                });
-            }
+            //var result = CheckUpdate.Run<SBUpdate>();
+          //  showMainWindow = !result.Update;
+            //if (false)
+            //{
+            //    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (ThreadStart)delegate
+            //    {
+            //        var notesWindow = new NotesWindow()
+            //        {
+            //            MainWindow = mainWindow,
+            //          //  SBUrl = result.Url,
+            //        };
+            //        notesWindow.titleLabel.Content += " " + result.Version;
+            //      /*  for (var i = 0; i < result.Notes.Count; i++)
+            //        {
+            //            notesWindow.richTextBox.AppendText(result.Notes[i].Note + "\n");
+            //        }*/
+            //        notesWindow.Show();
+            //        Close();
+            //    });
+            //}
+            //else
+            //{
+            //    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (ThreadStart)delegate
+            //    {
+            //        if (notesWindow == null)
+            //        {
+            //            Hide();
+            //            mainWindow = new MainWindow();
+            //            mainWindow.Show();
+            //            Close();
+            //        }
+            //    });
+            //}
         }
 
         private void CheckBox_Click(object sender, RoutedEventArgs e)
