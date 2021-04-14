@@ -1,0 +1,43 @@
+{
+  "Version": "1.1.1",
+  "Available": "True",
+  "Message": "",
+  "DownloadUrl": "",
+  "ReleaseNotes": [
+    {
+      "Note": "added test 1"
+    },
+    {
+      "Note": "added test 2"
+    }
+  ],
+  "Donate": [
+    {
+      "Address": "BTC: 1CpMVXXyiBymhVg8if3Dev6qPyogmc2U4H"
+    },
+    {
+      "Address": "ETH: 0x1Fd175Cd03AC39463Cf6830d1a1720328202756d"
+    },
+    {
+      "Address": "BCH: "
+    },
+    {
+      "Address": "BNB: "
+    },
+    {
+      "Address": "ETC: "
+    },
+    {
+      "Address": "LTC: "
+    },
+    {
+      "Address": "USDT: "
+    },
+    {
+      "Address": "XRP: "
+    },
+    {
+      "Address": "TRX: "
+    }
+  ]
+}
