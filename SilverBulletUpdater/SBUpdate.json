@@ -1,6 +1,6 @@
 {
   "Version": "1.1.1",
-  "Available": "True",
+  "Available": "False",
   "Message": "",
   "DownloadUrl": "",
   "ReleaseNotes": [
@@ -19,25 +19,25 @@
       "Address": "ETH: 0x1Fd175Cd03AC39463Cf6830d1a1720328202756d"
     },
     {
-      "Address": "BCH: "
+      "Address": "BCH: 1CpMVXXyiBymhVg8if3Dev6qPyogmc2U4H"
     },
     {
-      "Address": "BNB: "
+      "Address": "BNB: bnb18ajcdmv3c6w08sk8ayv75ks87y2w4hghntcxvd | Memo: 415696018"
     },
     {
-      "Address": "ETC: "
+      "Address": "DOG: DM2U6s5yXpwk2QaC5H9QvA7dPG7TLrQxQZ"
     },
     {
-      "Address": "LTC: "
+      "Address": "LTC: LLmENBKDfUQb2c8KQMw9pUaFPrMzR1sDgy"
     },
     {
-      "Address": "USDT: "
+      "Address": "USDT: 0x1Fd175Cd03AC39463Cf6830d1a1720328202756d"
     },
     {
-      "Address": "XRP: "
+      "Address": "XRP: rJtRzs2dLFLjHyXS5TS6vEMTqrDRU5yTj1 | Tag: 309201165"
     },
     {
-      "Address": "TRX: "
+      "Address": "TRX: TMqjT3d7C4TRUiqWHiH3JnyWWHNWU89Jai"
     }
   ]
 }
