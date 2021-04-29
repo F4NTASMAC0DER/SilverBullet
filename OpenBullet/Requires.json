@@ -5,7 +5,7 @@
     "Name":"Fix CefSharp Error",
     "Color":"#3cc779",
     "ToolTip":"Download and install C++ 2015+ Redistributable x86/x64",
-    "Width":"400",
-    "Height":"350"
+    "Width":"380",
+    "Height":"240"
   } 
 ]
