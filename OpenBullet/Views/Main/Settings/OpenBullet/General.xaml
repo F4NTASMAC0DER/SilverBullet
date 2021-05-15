@@ -75,7 +75,7 @@
                 VerticalAlignment="Center"
                 VerticalContentAlignment="Center"
                 Content="Send Debugger Log To Notepad++"
-                IsChecked="{Binding EnableSendDebuggerLogToNotepadPlus}" />
+                IsChecked="{Binding SendDebuggerLogToNotepadPlus}" />
             <CheckBox
                 VerticalAlignment="Center"
                 VerticalContentAlignment="Center"
