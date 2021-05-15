@@ -25,7 +25,11 @@ namespace RuriLib.LS
             DELETE,
 
             /// <summary>Moves the mouse in a selenium-driven browser.</summary>
-            MOUSEACTION
+            MOUSEACTION,
+
+            STOP,
+
+            ForceStop
         }
 
         /// <summary>
@@ -73,6 +77,20 @@ namespace RuriLib.LS
 
                 case CommandName.MOUSEACTION:
                     return MouseActionParser.Parse(input, data);
+
+                case CommandName.STOP:
+                    return new Action(() =>
+                    {
+                        data.Worker?.CancelAsync();
+                        data.Log(new LogEntry("Stoped!", Colors.OrangeRed));
+                    });
+
+                case CommandName.ForceStop:
+                    return new Action(() =>
+                    {
+                        data.Worker?.Abort();
+                        data.Log(new LogEntry("Force Stoped!", Colors.OrangeRed));
+                    });
 
                 default:
                     throw new ArgumentException($"Invalid identifier '{identifier}'");

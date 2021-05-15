@@ -43,7 +43,7 @@ namespace OpenBullet
 
         public void OnUnhandledException(Exception ex, string @event)
         {
-            File.AppendAllText(SB.logFile, $"[FATAL][{@event}] UHANDLED EXCEPTION{Environment.NewLine}{ex.ToString()}");
+            File.AppendAllText(SB.logFile, $"[FATAL][{@event}] UHANDLED EXCEPTION{Environment.NewLine}{ex}");
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]

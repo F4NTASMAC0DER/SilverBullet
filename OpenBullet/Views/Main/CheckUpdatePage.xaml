@@ -44,10 +44,21 @@
             <Label
                 Content="DownloadUrl:"
                 Foreground="{DynamicResource ForegroundMain}" />
-            <TextBox
-                Margin="4,0,4,0"
-                IsReadOnly="True"
-                Text="{Binding DownloadUrl}" />
+            <Grid Margin="4,0,4,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox
+                    IsReadOnly="True"
+                    Text="{Binding DownloadUrl}" />
+                <Button
+                    Name="runUpdaterButton"
+                    Grid.Column="1"
+                    Click="RunUpdater_Click"
+                    Content="Run Updater"
+                    IsEnabled="False" />
+            </Grid>
         </StackPanel>
         <Label
             Grid.Row="4"

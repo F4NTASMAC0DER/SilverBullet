@@ -538,7 +538,7 @@ namespace RuriLib.Runner
             usageTimer = new Timer((c) =>
             {
                 if (ShouldStop()) return;
-                try { Usage = RuriLib.Models.Usage.Get()?.ToString(); } catch { }
+                try { Usage = Models.Usage.Get()?.ToString(); } catch { }
             }, null, TimeSpan.Zero, TimeSpan.FromSeconds(0.8));
 
             // Ask for the inputs
@@ -849,7 +849,8 @@ GETPROXY:
                     {
                         BotsAmount = BotsAmount,
                         OcrEngine = ocrEngine,
-                        JsEngine = jsEngine
+                        JsEngine = jsEngine,
+                        Worker = Master
                     };
                 }
                 botData.Driver = bot.Driver;

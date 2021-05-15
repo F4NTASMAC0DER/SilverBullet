@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,6 +18,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using MaterialDesignThemes.Wpf;
 using OpenBullet.Plugins;
 using OpenBullet.ViewModels;
 using OpenBullet.Views.Main;
@@ -53,11 +55,13 @@ namespace OpenBullet
         public Help AboutPage { get; set; }
         public Rectangle Bounds { get; private set; }
 
-        public Support SupportPage { get; private set; }
+        public SilverZone SilverZonePage { get; private set; }
 
         System.Windows.Point _startPosition;
         bool _isResizing = false,
             _canQuit;
+
+        Timer silverZoneTimer;
 
         public MainWindow()
         {
@@ -75,7 +79,7 @@ namespace OpenBullet
             {
                 Task.Run(() =>
             {
-                var update = CheckUpdate.Run<Release>("https://api.github.com/repos/mohamm4dx/SilverBullet/releases/latest");
+                var update = CheckUpdate.Run<LatestRelease>("https://api.github.com/repos/mohamm4dx/SilverBullet/releases/latest");
                 Dispatcher.Invoke(() => updateButton.Visibility = update.Available ? Visibility.Visible : Visibility.Collapsed);
             });
             }
@@ -113,16 +117,16 @@ namespace OpenBullet
 
                 if (vcInstalledVersion.Length == 0)
                 {
-                    SB.Logger.LogError(Components.Main, "Visual C++ Redistributable 2015+ Not Installed\nInstall vc_redist.x64 AND vc_redist.x86\nDl Link: microsoft.com/en-us/download/details.aspx?id=48145");
+                    SB.Logger.LogError(Components.Main, "Visual C++ Redistributable 2015+ Not Installed\nInstall vc_redist.x64 AND vc_redist.x86\nDl Link: microsoft.com/en-us/download/details.aspx?id=48145\nGo to Help tab and then to Requirements tab", true);
                 }
 
                 else if (!vcInstalledVersion.Any(v => v.Contains("x86")))
                 {
-                    SB.Logger.LogError(Components.Main, "Visual C++ Redistributable 2015+ (x86) Not Installed\nDl Link: microsoft.com/en-us/download/details.aspx?id=48145");
+                    SB.Logger.LogError(Components.Main, "Visual C++ Redistributable 2015+ (x86) Not Installed\nDl Link: microsoft.com/en-us/download/details.aspx?id=48145\nGo to Help tab and then to Requirements tab", true);
                 }
                 else if (!vcInstalledVersion.Any(v => v.Contains("x64")))
                 {
-                    SB.Logger.LogError(Components.Main, "Visual C++ Redistributable 2015+ (x64) Not Installed\nDl Link: microsoft.com/en-us/download/details.aspx?id=48145");
+                    SB.Logger.LogError(Components.Main, "Visual C++ Redistributable 2015+ (x64) Not Installed\nDl Link: microsoft.com/en-us/download/details.aspx?id=48145\nGo to Help tab and then to Requirements tab", true);
                 }
             }
             catch
@@ -167,15 +171,15 @@ namespace OpenBullet
 
             if (!File.Exists(SB.obSettingsFile))
             {
-                MessageBox.Show("OpenBullet Settings file not found, generating a default one");
-                SB.Logger.LogWarning(Components.Main, "OpenBullet Settings file not found, generating a default one");
+                MessageBox.Show("SilverBullet Settings file not found, generating a default one");
+                SB.Logger.LogWarning(Components.Main, "SilverBullet Settings file not found, generating a default one");
                 SBIOManager.SaveSettings(SB.obSettingsFile, SB.SBSettings);
-                SB.Logger.LogInfo(Components.Main, $"Created the default OpenBullet Settings file {SB.obSettingsFile}");
+                SB.Logger.LogInfo(Components.Main, $"Created the default SilverBullet Settings file {SB.obSettingsFile}");
             }
             else
             {
                 SB.SBSettings = SBIOManager.LoadSettings(SB.obSettingsFile);
-                SB.Logger.LogInfo(Components.Main, "Loaded the existing OpenBullet Settings file");
+                SB.Logger.LogInfo(Components.Main, "Loaded the existing SilverBullet Settings file");
             }
 
             // If there is no DB backup or if it's more than 1 day old, back up the DB
@@ -205,7 +209,7 @@ namespace OpenBullet
             Topmost = SB.SBSettings.General.AlwaysOnTop;
 
             // Load Plugins
-            (IEnumerable<PluginControl>, IEnumerable<IBlockPlugin>) plugins;
+            (IEnumerable<PluginControl>, IEnumerable<IBlockPlugin>, IEnumerable<string>) plugins;
             //(plugins, blockPlugins)
             try
             {
@@ -218,6 +222,7 @@ namespace OpenBullet
                 throw;
             }
             SB.BlockPlugins = plugins.Item2.ToList();
+            SB.PluginNames = plugins.Item3;
 
             // Set mappings
             SB.BlockMappings = new List<(Type, Type, LinearGradientBrush)>()
@@ -252,9 +257,9 @@ namespace OpenBullet
                     BlockParser.BlockMappings.Add(plugin.Name, plugin.GetType());
                     SB.Logger.LogInfo(Components.Main, $"Initialized {plugin.Name} block plugin");
                 }
-                catch
+                catch (Exception ex)
                 {
-                    SB.Logger.LogError(Components.Main, $"The color {plugin.LinearGradientBrush.GradientStops[0].Color} in block plugin {plugin.Name} is invalid", true);
+                    SB.Logger.LogError(Components.Main, $"{ex.Message}\n{plugin.Name}.dll", true);
                     Environment.Exit(0);
                 }
             }
@@ -293,7 +298,7 @@ namespace OpenBullet
             PluginsPage = new PluginsSection(plugins.Item1);
             SB.Logger.LogInfo(Components.Main, "Initialized Plugins");
             AboutPage = new Help();
-            SupportPage = new Support();
+            SilverZonePage = new SilverZone();
 
             menuOptionRunner_Click(this, null);
 
@@ -431,10 +436,10 @@ namespace OpenBullet
             menuOptionSelected(menuOptionAbout);
         }
 
-        private void menuOptionSupport_Click(object sender, RoutedEventArgs e)
+        private void menuOptioSilverZone_Click(object sender, RoutedEventArgs e)
         {
-            Main.Content = SupportPage;
-            menuOptionSelected(sender);
+            Main.Content = SilverZonePage;
+            menuOptionSelected(menuOptionSilverZone);
         }
 
         private void UpdateButton_Click(object sender, RoutedEventArgs e)
@@ -453,8 +458,16 @@ namespace OpenBullet
             {
                 try
                 {
-                    var c = (Button)child;
-                    c.Foreground = Utils.GetBrush("ForegroundMain");
+                    Button option;
+                    if (child is Badged badged)
+                    {
+                        option = badged.Content as Button;
+                    }
+                    else
+                    {
+                        option = (Button)child;
+                    }
+                    option.Foreground = Utils.GetBrush("ForegroundMain");
                 }
                 catch { }
             }
@@ -505,7 +518,10 @@ namespace OpenBullet
         private void quitButton_Click(object sender, RoutedEventArgs e)
         {
             if (CheckOnQuit())
+            {
+                try { NotepadPlusExtensions.Close(); } catch { }
                 Environment.Exit(0);
+            }
         }
 
         private void quitButton_MouseEnter(object sender, MouseEventArgs e)
@@ -748,8 +764,19 @@ namespace OpenBullet
 
         private void Window_SourceInitialized(object sender, EventArgs e)
         {
-            // Call for resizing effects
-            //_hwndSource = (HwndSource)PresentationSource.FromVisual(this);
+            try
+            {
+                silverZoneTimer = new Timer(_ =>
+                {
+                    try
+                    {
+                        var badge = SilverZonePage.GetBadge();
+                        Dispatcher.Invoke(() => silverZoneBadged.Badge = badge > 99 ? "99+" : badge.ToString());
+                    }
+                    catch { }
+                }, null, TimeSpan.Zero, TimeSpan.FromMinutes(30));
+            }
+            catch { }
         }
 
         private HwndSource _hwndSource;

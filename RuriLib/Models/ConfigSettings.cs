@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reflection;
 using System.Windows.Media;
 using Newtonsoft.Json;
 using RuriLib.Models;
@@ -243,6 +241,13 @@ namespace RuriLib
             set { iconPath = value; OnPropertyChanged(); }
         }
 
+        private string licenseSource;
+        public string LicenseSource
+        {
+            get => licenseSource;
+            set { licenseSource = value; OnPropertyChanged(); }
+        }
+
         private string message;
         /// <summary>
         /// Compiler message
@@ -261,6 +266,16 @@ namespace RuriLib
         {
             get => messageColor;
             set { messageColor = value; OnPropertyChanged(); }
+        }
+
+        private string hitInfoFormat = "[{hit.Type}][{hit.Proxy}] {hit.Data} - [{hit.CapturedString}]";
+        /// <summary>
+        /// hit information output format
+        /// </summary>
+        public string HitInfoFormat
+        {
+            get => hitInfoFormat;
+            set { hitInfoFormat = value; OnPropertyChanged(); }
         }
 
         private Color authorColor = Color.FromRgb(255, 178, 102);

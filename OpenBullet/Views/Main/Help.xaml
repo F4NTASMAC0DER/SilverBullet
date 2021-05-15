@@ -32,7 +32,8 @@
             <Label
                 Name="releaseNotesLabel"
                 FontWeight="Bold"
-                MouseLeftButtonUp="Label_MouseLeftButtonUp_1">
+                MouseLeftButtonUp="Label_MouseLeftButtonUp_1"
+                Visibility="Collapsed">
                 <DockPanel>
                     <Path
                         Width="14"
@@ -59,6 +60,17 @@
                         Fill="{Binding ElementName=checkForUpdateLabel, Path=Foreground}"
                         Stretch="Fill" />
                     <TextBlock>Check For Update</TextBlock>
+                </DockPanel>
+            </Label>
+            <Label
+                Name="requiresLabel"
+                FontWeight="Bold"
+                MouseLeftButtonUp="requiresLabel_MouseLeftButtonUp">
+                <DockPanel>
+                    <iconPacks:PackIconFontAwesome
+                        VerticalAlignment="Center"
+                        Kind="AsteriskSolid" />
+                    <TextBlock Margin="3,0,0,0">Requirements</TextBlock>
                 </DockPanel>
             </Label>
         </DockPanel>

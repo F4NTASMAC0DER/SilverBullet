@@ -10,7 +10,7 @@
     Title="Silver Bullet"
     Width="800"
     Height="620"
-    MinWidth="880"
+    MinWidth="888"
     MinHeight="620"
     Margin="0,0,0,0"
     AllowsTransparency="False"
@@ -95,8 +95,8 @@
                     HorizontalAlignment="Right"
                     Background="Transparent"
                     BorderBrush="#FFFFB12A"
-                    Foreground="#FFFFB12A"
                     Click="UpdateButton_Click"
+                    Foreground="#FFFFB12A"
                     Style="{StaticResource MaterialDesignRaisedButton}"
                     Visibility="Collapsed">
                     <Grid>
@@ -318,15 +318,29 @@
                         <TextBlock Margin="3,0,0,0">Help</TextBlock>
                     </DockPanel>
                 </Button>
-                <Button
-                    x:Name="menuOptionSupport"
-                    Margin="0,0,0,0"
-                    Click="menuOptionSupport_Click">
-                    <DockPanel Margin="-4,0,0,0">
-                        <iconPacks:PackIconFontAwesome Kind="EllipsisVSolid" />
-                        <TextBlock Margin="0,0,0,0">Supporters</TextBlock>
-                    </DockPanel>
-                </Button>
+                <materialDesign:Badged
+                    Name="silverZoneBadged"
+                    Margin="0,2,-4,0"
+                    BadgeBackground="{Binding ElementName=menuOptionSilverZone, Path=Background}"
+                    BadgeForeground="DarkOrange"
+                    BadgePlacementMode="Top">
+                    <Button
+                        x:Name="menuOptionSilverZone"
+                        Margin="0,-2,0,0"
+                        Click="menuOptioSilverZone_Click">
+                        <DockPanel>
+                            <Path
+                                Width="16"
+                                Height="18.5"
+                                Margin="0,0,3,0"
+                                VerticalAlignment="Center"
+                                Data="M19.367,18.102L18,14h-1.5l0.833,4H2.667L3.5,14H2l-1.368,4.102C0.285,19.146,0.9,20,2,20h16  C19.1,20,19.715,19.146,19.367,18.102z M15,5c0-2.761-2.238-5-5-5S5,2.239,5,5c0,4.775,5,10,5,10S15,9.775,15,5z M7.3,5.06  c0-1.491,1.208-2.699,2.7-2.699s2.7,1.208,2.7,2.699c0,1.492-1.209,2.7-2.7,2.7S7.3,6.551,7.3,5.06z"
+                                Fill="{Binding ElementName=menuOptionSilverZone, Path=Foreground}"
+                                Stretch="Fill" />
+                            <TextBlock Margin="0,1,0,0">Silver Zone</TextBlock>
+                        </DockPanel>
+                    </Button>
+                </materialDesign:Badged>
             </StackPanel>
 
             <Grid

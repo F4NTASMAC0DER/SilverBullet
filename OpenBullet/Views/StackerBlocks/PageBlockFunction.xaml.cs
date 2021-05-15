@@ -73,8 +73,19 @@ namespace OpenBullet.Views.StackerBlocks
 
             foreach (var e in Enum.GetNames(typeof(ScryptMethods)))
             {
-                scryptMethods.Items.Add(e);
+                if (e == nameof(ScryptMethods.Encode))
+                {
+                    scryptMethods.Items.Add(e);
+                    break;
+                }
             }
+
+            foreach (var e in Enum.GetNames(typeof(BCryptMethods)))
+            {
+                bcryptMethods.Items.Add(e);
+            }
+
+            bcryptMethods.SelectedIndex = (int)vm.BCryptMeth;
 
             aesPaddingCombobox.SelectedIndex = (int)vm.AesPadding - 1;
 
@@ -172,8 +183,12 @@ namespace OpenBullet.Views.StackerBlocks
                     functionTabControl.SelectedIndex = 19;
                     break;
 
-                case BlockFunction.Function.Scrypt:
+                case BlockFunction.Function.SCrypt:
                     functionTabControl.SelectedIndex = 20;
+                    break;
+
+                case BlockFunction.Function.BCrypt:
+                    functionTabControl.SelectedIndex = 21;
                     break;
 
             }
@@ -275,9 +290,45 @@ namespace OpenBullet.Views.StackerBlocks
         {
             try
             {
-                dockPanelCompInput.Visibility = scryptMethods.SelectedItem.ToString() == nameof(ScryptMethods.Compare) ?
-                    System.Windows.Visibility.Visible :
-                    System.Windows.Visibility.Collapsed;
+                switch (scryptMethods.SelectedIndex)
+                {
+                    case 0://ScryptMethods.Encode
+                        dockPanelCompInput.Visibility = System.Windows.Visibility.Collapsed;
+                        stackPanelEncode.Visibility = System.Windows.Visibility.Visible;
+                        break;
+                    case 1:// ScryptMethods.Compare
+                        stackPanelEncode.Visibility = System.Windows.Visibility.Collapsed;
+                        dockPanelCompInput.Visibility = System.Windows.Visibility.Visible;
+                        break;
+                    default:
+                        stackPanelEncode.Visibility = System.Windows.Visibility.Collapsed;
+                        dockPanelCompInput.Visibility = System.Windows.Visibility.Collapsed;
+                        break;
+                }
+            }
+            catch { }
+        }
+
+        private void bcryptMethods_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                switch (bcryptMethods.SelectedIndex)
+                {
+                    case 0://BCryptMethods.Encode
+                        dockPanelVerifyInput.Visibility = System.Windows.Visibility.Collapsed;
+                        dockPanelBcryptSalt.Visibility = System.Windows.Visibility.Visible;
+                        break;
+                    case 2://BCryptMethods.Verify
+                        dockPanelBcryptSalt.Visibility = System.Windows.Visibility.Collapsed;
+                        dockPanelVerifyInput.Visibility = System.Windows.Visibility.Visible;
+                        break;
+
+                    default:
+                        dockPanelBcryptSalt.Visibility = System.Windows.Visibility.Collapsed;
+                        dockPanelVerifyInput.Visibility = System.Windows.Visibility.Collapsed;
+                        break;
+                }
             }
             catch { }
         }

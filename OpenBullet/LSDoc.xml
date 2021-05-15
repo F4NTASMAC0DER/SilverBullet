@@ -505,11 +505,11 @@ The BEGIN SCRIPT statement will mark an area of the script where the commands wi
 The OUTPUTS literal can contain a comma-separated list of variable names that you want to extract from the script's scope and declare inside OB as strings or lists.
 It is useful to mention that your normal variables will be automatically declared inside the script as strings / lists of strings / dictionaries (if their name is allowed by that language's standards).
 Available languages:
-JavaScript
+JavaScript (Engines: Jint,Noesis) 
 IronPython
 
 Syntax:
-BEGIN SCRIPT LANGUAGE
+BEGIN SCRIPT LANGUAGE ENGINE
 [script here]
 END SCRIPT -> VARS "OUTPUTS"
 

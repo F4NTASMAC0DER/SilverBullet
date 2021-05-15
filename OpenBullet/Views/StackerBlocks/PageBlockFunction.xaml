@@ -3,9 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:OpenBullet.Views.StackerBlocks"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:ruriLib="clr-namespace:RuriLib;assembly=RuriLib"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     Title="PageBlockFunction"
@@ -452,11 +450,90 @@
                             SelectedItem="{Binding ScryptMeth, UpdateSourceTrigger=PropertyChanged}"
                             SelectionChanged="scryptMethods_SelectionChanged" />
                     </DockPanel>
+                    <StackPanel Name="stackPanelEncode">
+                        <DockPanel>
+                            <Label Content="Salt:" />
+                            <TextBox Text="{Binding ScryptSalt}" />
+                        </DockPanel>
+                        <DockPanel Margin="0,5,0,0">
+                            <Label Content="Cost:" />
+                            <xctk:IntegerUpDown
+                                Width="100"
+                                Margin="54,0,0,0"
+                                HorizontalAlignment="Left"
+                                Background="Transparent"
+                                Foreground="{DynamicResource ForegroundMain}"
+                                Minimum="1"
+                                Value="{Binding ScryptCost}" />
+                        </DockPanel>
+                        <DockPanel Margin="0,5,0,0">
+                            <Label Content="Block Size:" />
+                            <xctk:IntegerUpDown
+                                Width="100"
+                                Margin="25,0,0,0"
+                                HorizontalAlignment="Left"
+                                Background="Transparent"
+                                Foreground="{DynamicResource ForegroundMain}"
+                                Minimum="1"
+                                Value="{Binding ScryptBlockSize}" />
+                        </DockPanel>
+                        <DockPanel Margin="0,5,0,0">
+                            <Label Content="Output Length:" />
+                            <xctk:IntegerUpDown
+                                Width="100"
+                                HorizontalAlignment="Left"
+                                Background="Transparent"
+                                Foreground="{DynamicResource ForegroundMain}"
+                                Minimum="1"
+                                Value="{Binding ScryptOutputLength}" />
+                        </DockPanel>
+                        <CheckBox
+                            Padding="0"
+                            VerticalContentAlignment="Center"
+                            Content="Base64 Output"
+                            IsChecked="{Binding Base64Output}" />
+                    </StackPanel>
                     <DockPanel
                         Name="dockPanelCompInput"
                         Visibility="Collapsed">
                         <Label Content="Hashed Password:" />
                         <TextBox Text="{Binding ScryptHashedPassword}" />
+                    </DockPanel>
+                </StackPanel>
+            </TabItem>
+            <TabItem Name="Bcrypt">
+                <StackPanel>
+                    <DockPanel>
+                        <Label Content="Method:" />
+                        <ComboBox
+                            Name="bcryptMethods"
+                            SelectedIndex="0"
+                            SelectedItem="{Binding BCryptMeth, UpdateSourceTrigger=PropertyChanged}"
+                            SelectionChanged="bcryptMethods_SelectionChanged" />
+                    </DockPanel>
+                    <DockPanel
+                        Name="dockPanelBcryptSalt"
+                        Visibility="Collapsed">
+                        <Label Content="Salt:" />
+                        <TextBox Text="{Binding BCryptSalt}" />
+                    </DockPanel>
+                    <DockPanel
+                        Name="dockPanelWorkFactorInput"
+                        Visibility="Collapsed">
+                        <CheckBox
+                            Padding="0"
+                            VerticalContentAlignment="Center"
+                            Content="WorkFactor: "
+                            IsChecked="{Binding UseWorkFactor, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox
+                            IsEnabled="{Binding UseWorkFactor}"
+                            Text="{Binding BCryptWorkFactor}" />
+                    </DockPanel>
+                    <DockPanel
+                        Name="dockPanelVerifyInput"
+                        Visibility="Collapsed">
+                        <Label Content="Hashed Password:" />
+                        <TextBox Text="{Binding BCryptHashedPassword}" />
                     </DockPanel>
                 </StackPanel>
             </TabItem>

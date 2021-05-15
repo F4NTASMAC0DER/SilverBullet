@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using System.Windows.Media;
 using Extreme.Net;
 using OpenQA.Selenium.Remote;
 using RuriLib.Models;
+using RuriLib.Runner;
 using RuriLib.SB.JS;
 using RuriLib.ViewModels;
 using SilverBullet.Tesseract;
@@ -168,6 +168,8 @@ namespace RuriLib
         /// JavaScript context
         /// </summary>
         public JsEngine JsEngine { get; set; }
+
+        public AbortableBackgroundWorker Worker { get; set; }
 
         /// <summary>
         /// Creates a BotData object given some parameters.

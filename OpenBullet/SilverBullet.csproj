@@ -96,6 +96,9 @@
     <Reference Include="ControlzEx, Version=5.0.0.0, Culture=neutral, PublicKeyToken=69f1c32f803d307e, processorArchitecture=MSIL">
       <HintPath>..\packages\ControlzEx.5.0.0\lib\net462\ControlzEx.dll</HintPath>
     </Reference>
+    <Reference Include="CryptSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CryptSharpStandard.1.0.0\lib\netstandard2.0\CryptSharp.dll</HintPath>
+    </Reference>
     <Reference Include="GalaSoft.MvvmLight, Version=5.4.1.0, Culture=neutral, PublicKeyToken=e7570ab207bcb616, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\GalaSoft.MvvmLight.dll</HintPath>
     </Reference>
@@ -119,6 +122,9 @@
     </Reference>
     <Reference Include="IronPython.Wpf, Version=2.7.11.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
       <HintPath>..\packages\IronPython.2.7.11\lib\net45\IronPython.Wpf.dll</HintPath>
+    </Reference>
+    <Reference Include="Jint, Version=0.0.0.0, Culture=neutral, PublicKeyToken=2e92ba9c8d81157f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Jint.2.11.58\lib\net451\Jint.dll</HintPath>
     </Reference>
     <Reference Include="LiteDB, Version=4.1.4.0, Culture=neutral, PublicKeyToken=4ee40123013c9f27, processorArchitecture=MSIL">
       <HintPath>..\packages\LiteDB.4.1.4\lib\net40\LiteDB.dll</HintPath>
@@ -333,6 +339,7 @@
     <Compile Include="Converters\KeychainBrushConverter.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Models\ControlText.cs" />
+    <Compile Include="Models\SBRelease.cs" />
     <Compile Include="Models\Source.cs" />
     <Compile Include="NotesWindow.xaml.cs">
       <DependentUpon>NotesWindow.xaml</DependentUpon>
@@ -349,6 +356,7 @@
     <Compile Include="Plugins\IControl.cs" />
     <Compile Include="Plugins\Loader.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="ViewModels\SilverZoneViewModel.cs" />
     <Compile Include="Views\CustomMessageBox\CustomMsgBox.cs" />
     <Compile Include="Views\CustomMessageBox\CustomMsgBoxWindow.xaml.cs">
       <DependentUpon>CustomMsgBoxWindow.xaml</DependentUpon>
@@ -398,20 +406,29 @@
     <Compile Include="Views\Main\ReleaseNotesPage.xaml.cs">
       <DependentUpon>ReleaseNotesPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Main\RequiresPage.xaml.cs">
+      <DependentUpon>RequiresPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Main\Settings\RuriLib\CefSharp.xaml.cs">
       <DependentUpon>CefSharp.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Main\Settings\RuriLib\Ocr.xaml.cs">
       <DependentUpon>Ocr.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Main\Support.xaml.cs">
-      <DependentUpon>Support.xaml</DependentUpon>
+    <Compile Include="Views\Main\SilverZone.xaml.cs">
+      <DependentUpon>SilverZone.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Supporters.xaml.cs">
+      <DependentUpon>Supporters.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Main\Tools\TessDataDownloads.xaml.cs">
       <DependentUpon>TessDataDownloads.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Main\Tools\WordlistTools.xaml.cs">
       <DependentUpon>WordlistTools.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\VerifiedMarket.xaml.cs">
+      <DependentUpon>VerifiedMarket.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\StackerBlocks\PageBlockOcr.xaml.cs">
       <DependentUpon>PageBlockOcr.xaml</DependentUpon>
@@ -499,6 +516,9 @@
     </Compile>
     <Compile Include="Views\UserControls\UserControlInfoText.xaml.cs">
       <DependentUpon>UserControlInfoText.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\UserControlMarket.xaml.cs">
+      <DependentUpon>UserControlMarket.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UserControls\UserControlSupport.xaml.cs">
       <DependentUpon>UserControlSupport.xaml</DependentUpon>
@@ -836,6 +856,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Main\RequiresPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Main\RunnerManager.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -927,7 +951,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Main\Support.xaml">
+    <Page Include="Views\Main\SilverZone.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Main\Supporters.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -940,6 +968,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Main\Tools\WordlistTools.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Main\VerifiedMarket.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1160,6 +1192,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\UserControls\UserControlInfoText.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UserControls\UserControlMarket.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

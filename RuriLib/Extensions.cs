@@ -185,6 +185,20 @@ namespace RuriLib
             return new string(bytes.Select(Convert.ToChar).ToArray());
         }
 
+        public static string GetUntilOrEmpty(this string text, string stopAt)
+        {
+            if (!String.IsNullOrWhiteSpace(text))
+            {
+                int charLocation = text.IndexOf(stopAt, StringComparison.Ordinal);
+
+                if (charLocation > 0)
+                {
+                    return text.Substring(0, charLocation);
+                }
+            }
+
+            return String.Empty;
+        }
     }
 
     /// <summary>
@@ -555,6 +569,19 @@ namespace RuriLib
     }
 
     /// <summary>
+    /// Extension methods for Directory
+    /// </summary>
+    public static class DirExtensions
+    {
+        public static string[] GetFiles(string sourceFolder, string filters, SearchOption searchOption)
+        {
+            return filters.Split('|')
+                .SelectMany(f => Directory.GetFiles(sourceFolder, f, searchOption))
+                .ToArray();
+        }
+    }
+
+    /// <summary>
     /// Extension methods for object
     /// </summary>
     public static class ObjectExtensions
@@ -791,6 +818,69 @@ namespace RuriLib
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Extension methods for notepad++
+    /// </summary>
+    public static class NotepadPlusExtensions
+    {
+        [DllImport("User32.dll")]
+        static extern int SendMessageW(IntPtr hWnd, int uMsg, int wParam, string lParam);
+
+        [DllImport("user32.dll", EntryPoint = "FindWindowEx")]
+        public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
+
+        private static IntPtr notepadPlus;
+
+        private static Process notepadPlusProc;
+
+        public static void ShowText(string text)
+        {
+            var npp = Start();
+            if (npp != null && (notepadPlus = npp.MainWindowHandle) != IntPtr.Zero)
+            {
+                var handle = FindWindowEx(notepadPlus, new IntPtr(0), "Scintilla", null);
+
+                SendMessageW(handle, 0x00C2, 0, text);
+                //0x00B1 -> select all
+            }
+        }
+
+        public static void Clear()
+        {
+            if (notepadPlus == null && notepadPlus != IntPtr.Zero)
+            {
+                Process npp;
+                if ((npp = Start()) == null)
+                    return;
+                notepadPlus = npp.MainWindowHandle;
+            }
+            var handle = FindWindowEx(notepadPlus, new IntPtr(0), "Scintilla", null);
+            SendMessageW(handle, 0x000C, 0, string.Empty);
+        }
+
+        private static Process Start()
+        {
+            if (notepadPlusProc == null || notepadPlusProc.HasExited || notepadPlusProc?.MainWindowHandle == IntPtr.Zero)
+            {
+                ProcessStartInfo processStart = new ProcessStartInfo("notepad++")
+                {
+                    WindowStyle = ProcessWindowStyle.Minimized,
+                    Arguments = "-multiInst -nosession"
+                };
+
+                notepadPlusProc = Process.Start(processStart);
+                notepadPlusProc.WaitForInputIdle();
+            }
+            return notepadPlusProc;
+        }
+
+        public static void Close()
+        {
+            try { notepadPlusProc?.Kill(); } catch { }
+        }
+
     }
 
     public static class LinearGradientBrushExtensions

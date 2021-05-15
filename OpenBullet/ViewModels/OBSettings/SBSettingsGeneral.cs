@@ -32,6 +32,10 @@ namespace OpenBullet.ViewModels
         public bool AutoCreateRunner { get { return autoCreateRunner; } set { autoCreateRunner = value; OnPropertyChanged(); } }
         private bool persistDebuggerLog = false;
         public bool PersistDebuggerLog { get { return persistDebuggerLog; } set { persistDebuggerLog = value; OnPropertyChanged(); } }
+        private bool disableDebuggerLog = false;
+        public bool DisableDebuggerLog { get { return disableDebuggerLog; } set { disableDebuggerLog = value; OnPropertyChanged(); } }
+        private bool sendDebuggerLogToNotepadPlus = false;
+        public bool SendDebuggerLogToNotepadPlus { get { return sendDebuggerLogToNotepadPlus; } set { sendDebuggerLogToNotepadPlus = value; OnPropertyChanged(); } }
         private bool disableSyntaxHelper = false;
         public bool DisableSyntaxHelper { get { return disableSyntaxHelper; } set { disableSyntaxHelper = value; OnPropertyChanged(); } }
         private bool displayCapturesLast = false;

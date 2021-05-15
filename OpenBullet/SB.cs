@@ -1,11 +1,11 @@
-﻿using OpenBullet.ViewModels;
-using PluginFramework;
-using RuriLib;
-using RuriLib.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
+using OpenBullet.ViewModels;
+using PluginFramework;
+using RuriLib;
+using RuriLib.Interfaces;
 
 namespace OpenBullet
 {
@@ -24,7 +24,9 @@ namespace OpenBullet
             Alerter = Alerter
         };
 
-        public static string Version => "1.1.1";
+        public const string Version = "1.1.2";
+
+        public const string CompilerVersion = "1.1";
 
         // Block Mappings (including Plugins)
         public static List<(Type, Type, LinearGradientBrush)> BlockMappings = new List<(Type, Type, LinearGradientBrush)>();
@@ -33,6 +35,8 @@ namespace OpenBullet
         // HACK: Find a better way to do this and a better place to put them
         public static List<IBlockPlugin> BlockPlugins;
         public static IEnumerable<BlockBase> BlockPluginsAsBase => BlockPlugins.Cast<BlockBase>();
+
+        public static IEnumerable<string> PluginNames;
 
         // Windows
         // TODO: Remove these from here, everything should only depend on the ViewModels not on the Views!

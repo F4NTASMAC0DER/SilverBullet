@@ -91,7 +91,7 @@ namespace OpenBullet.Views.Main.Tools
                 {
                     foreach (Match line in lang.Matches(siteResponse))
                     {
-                        var val = line.Groups[1].Value;
+                        var val = line.Groups[1].Value.Split('"').First();
                         Dispatcher.BeginInvoke(DispatcherPriority.Normal, (ThreadStart)delegate
                         {
                             LanguageList.Items.Add($"{Path.GetFileNameWithoutExtension(val)} ({Path.GetExtension(val).Split('.')[1]})");
@@ -111,6 +111,7 @@ namespace OpenBullet.Views.Main.Tools
 
         public async Task DownloadLanguage(int i, string language)
         {
+            language = language.Split('(').First().Trim();
             language += ".traineddata";
             loadSite.DownloadProgressChanged += LoadSite_DownloadProgressChanged;
             await loadSite.DownloadFileTaskAsync(new Uri("https://github.com/tesseract-ocr/tessdata/raw/3.04.00/" + language), AppDomain.CurrentDomain.BaseDirectory + "/tessdata/" + language);

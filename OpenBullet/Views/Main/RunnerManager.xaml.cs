@@ -1,11 +1,14 @@
-﻿using OpenBullet.ViewModels;
-using RuriLib.Runner;
-using System;
+﻿using System;
 using System.Linq;
+using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using OpenBullet.Models;
+using OpenBullet.ViewModels;
+using RuriLib;
+using RuriLib.Runner;
 
 namespace OpenBullet.Views.Main
 {
@@ -33,7 +36,46 @@ namespace OpenBullet.Views.Main
             Loaded += delegate
             {
                 if (vm.RunnersCollection.Count > 0)
+                {
                     helpMessageLabel.Visibility = Visibility.Collapsed;
+                    dlCount.Visibility = Visibility.Collapsed;
+                    mostDownloads.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    dlCount.Visibility = Visibility.Collapsed;
+                    mostDownloads.Visibility = Visibility.Collapsed;
+                    var json = string.Empty;
+                    try
+                    {
+                        using (var client = new WebClient())
+                        {
+                            client.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:87.0) Gecko/20100101 Firefox/87.0");
+                            json = client.DownloadString("https://api.github.com/repos/mohamm4dx/SilverBullet/releases");
+                            var sbReleases = IOManager.DeserializeObject<SBRelease[]>(json);
+                            if (sbReleases?.Length > 0)
+                            {
+                                var currentRelease = sbReleases.FirstOrDefault(r => r.Ver.ToString() == SB.Version);
+                                var mostDlRelease = sbReleases.OrderByDescending(r => r.Assets[0].download_count).FirstOrDefault();
+                                if (currentRelease != null)
+                                {
+                                    dlCount.Visibility = Visibility.Visible;
+                                    dlCount.Text = $"Download Count From Github: {currentRelease.Assets[0].download_count}";
+                                    if (mostDlRelease.Assets[0].download_count == currentRelease.Assets[0].download_count)
+                                    {
+                                        mostDownloads.Text = "Most Downloads For This Version";
+                                    }
+                                    else
+                                    {
+                                        mostDownloads.Text = $"Most Downloads For {mostDlRelease.Ver} Version is {mostDlRelease.Assets[0].download_count} Downloads";
+                                    }
+                                    mostDownloads.Visibility = Visibility.Visible;
+                                }
+                            }
+                        }
+                    }
+                    catch { }
+                }
             };
         }
 

@@ -137,7 +137,7 @@ namespace RuriLib
         /// <returns>A Config object</returns>
         public static Config LoadConfig(string fileName, bool liloX = false)
         {
-            if (liloX) { return DeserializeConfigX(File.ReadAllText(fileName)); }
+            if (liloX) { return LoadConfigX(fileName); }
             return DeserializeConfig(File.ReadAllText(fileName));
         }
 

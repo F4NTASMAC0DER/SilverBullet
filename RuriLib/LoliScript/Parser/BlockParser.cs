@@ -26,7 +26,7 @@ namespace RuriLib.LS
             { "REQUEST", typeof(BlockRequest) },
             { "TCP", typeof(BlockTCP) },
             { "OCR", typeof(BlockOcr) },
-            //{ "WS", typeof(BlockWebSocket) },
+            { "WS", typeof(BlockWebSocket) },
             { "UTILITY", typeof(BlockUtility) },
             { "BROWSERACTION", typeof(SBlockBrowserAction) },
             { "ELEMENTACTION", typeof(SBlockElementAction) },

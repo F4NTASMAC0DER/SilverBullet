@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,6 +20,9 @@ namespace OpenBullet.Views.Main
             InitializeComponent();
         }
 
+        [DllImport("user32.dll")]
+        static extern bool SetForegroundWindow(IntPtr hWnd);
+
         private void CheckForUpdate_Click(object sender, RoutedEventArgs e)
         {
             Task.Run(() => CheckForUpdate());
@@ -29,12 +35,13 @@ namespace OpenBullet.Views.Main
                 Dispatcher.Invoke(() => richTextBox.Document.Blocks.Clear());
                 Dispatcher.Invoke(() => richTextBoxDonate.Document.Blocks.Clear());
                 var result = CheckUpdate.Run<SBUpdate>();
-                var releasesLatest = CheckUpdate.Run<Release>("https://api.github.com/repos/mohamm4dx/SilverBullet/releases/latest");
+                var releasesLatest = CheckUpdate.Run<LatestRelease>("https://api.github.com/repos/mohamm4dx/SilverBullet/releases/latest");
                 if (releasesLatest.Assets != null && releasesLatest.Assets.Length > 0)
                 {
                     result.DownloadUrl = releasesLatest.Assets.First().Browser_Download_Url;
                 }
                 result.Available = releasesLatest.Available;
+                Dispatcher.Invoke(() => runUpdaterButton.IsEnabled = result.Available);
                 releasesLatest.Body.Split('\n')
                     .ToList().ForEach(re =>
                     {
@@ -90,6 +97,29 @@ namespace OpenBullet.Views.Main
                 paragraph.SetResourceReference(Paragraph.ForegroundProperty, "ForegroundMain");
                 paragraph.Inlines.Add(new Run(par));
                 richTextBox.Document.Blocks.Add(paragraph);
+            }
+        }
+
+        private void RunUpdater_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Process updater = null;
+                if ((updater = Process.GetProcessesByName("SilverBulletUpdater").FirstOrDefault()) == null)
+                {
+                    Process.Start("Updater\\SilverBulletUpdater.exe");
+                }
+                else
+                {
+                    if (!updater.HasExited)
+                    {
+                        SetForegroundWindow(updater.MainWindowHandle);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                CustomMsgBox.ShowError(ex.Message);
             }
         }
     }

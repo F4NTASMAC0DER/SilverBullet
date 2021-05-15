@@ -22,17 +22,17 @@
                 Foreground="{DynamicResource ForegroundMain}"
                 TextWrapping="Wrap">
                 <Italic>OpenBullet</Italic>
-                is a webtesting suite that can be used for<Bold>scraping</Bold>
-                and<Bold>parsing</Bold>
-                data, automated<Bold>pentesting</Bold>
-                , selenium<Bold>unit testing</Bold>
+                is a webtesting suite that can be used for <Bold>scraping</Bold>
+                and <Bold>parsing</Bold>
+                data, automated <Bold>pentesting</Bold>
+                , selenium <Bold>unit testing</Bold>
                 and much more..<LineBreak /><LineBreak />
-                <Span Foreground="{DynamicResource ForegroundBad}"><Bold>IT IS ILLEGAL</Bold>
+                <Span Foreground="{DynamicResource ForegroundBad}"> <Bold>IT IS ILLEGAL</Bold>
                     to use this program to perform (D)DoS or credential stuffing attacks on sites you don't own!</Span>
                 <LineBreak />
                 <LineBreak /><Span Foreground="{DynamicResource ForegroundGood}"><Bold FontSize="14.5">FIXED And Updated by MOHAMMAD</Bold></Span><LineBreak /><LineBreak />
                 Special thanks to these:<LineBreak /><LineBreak />
-                •<Span Foreground="{DynamicResource ForegroundCustom}">AlirezaCR</Span><LineBreak />
+                • <Span Foreground="{DynamicResource ForegroundCustom}">AlirezaCR</Span><LineBreak />
                 • Mohammad20000<LineBreak />
                 • CY3ER<LineBreak />
                 • Mohammad Salatin<LineBreak />
@@ -41,13 +41,14 @@
                 • UkUnknown<LineBreak />
                 • Ruri(Made Openbullet)<LineBreak />
                 • its5Q<LineBreak />
-                <LineBreak />
+                • Dank Professor<LineBreak />
+                • COLDUCTION<LineBreak />
                 <LineBreak />
                 <Span Foreground="LightBlue">
-                    This<Bold Foreground="LightSteelBlue">
+                    This <Bold Foreground="LightSteelBlue">
                         OpenBullet
                     </Bold>
-                    is a mod version with more features and customization. It is free</Span><LineBreak /><LineBreak />
+                    is a mod version with more features and customization. It is free</Span><LineBreak />
             </TextBlock>
 
         </StackPanel>

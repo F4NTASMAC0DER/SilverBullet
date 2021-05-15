@@ -345,17 +345,26 @@ namespace RuriLib
             Pix ocr = null;
             var output = new List<string>();
 
-            if (!Directory.Exists(@".\tessdata"))
+            var tessdataPath = @".\tessdata";
+
+            if (!Directory.Exists(tessdataPath))
             {
-                throw new DirectoryNotFoundException("tessdata not found!");
+                if (!Directory.Exists(@"..\tessdata"))
+                {
+                    throw new DirectoryNotFoundException("tessdata not found!");
+                }
+                else
+                {
+                    tessdataPath = @"..\tessdata";
+                }
             }
 
-            if (!File.Exists($@".\tessdata\{OcrLang}.traineddata"))
+            if (!File.Exists($@"{tessdataPath}\{OcrLang}.traineddata"))
             {
                 throw new FileNotFoundException($"Language '{OcrLang}' not found!");
             }
 
-            using (var tesseract = new TesseractEngine(@".\tessdata", OcrLang, engineMode))
+            using (var tesseract = new TesseractEngine(tessdataPath, OcrLang, engineMode))
             {
                 tesseract.SetVariable("tessedit_char_whitelist", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ+-*/=");
                 tesseract.SetVariable("tessedit_unrej_any_wd", true);

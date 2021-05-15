@@ -41,6 +41,9 @@
     <Reference Include="AngleSharp, Version=0.14.0.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
       <HintPath>..\packages\AngleSharp.0.14.0\lib\net472\AngleSharp.dll</HintPath>
     </Reference>
+    <Reference Include="BCrypt.Net, Version=0.1.4141.31969, Culture=neutral, PublicKeyToken=f3bc8f8c31beeb49, processorArchitecture=MSIL">
+      <HintPath>..\packages\BCrypt.Net.0.1.0\lib\net35\BCrypt.Net.dll</HintPath>
+    </Reference>
     <Reference Include="CaptchaSharp, Version=1.0.6.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CaptchaSharp.1.0.6\lib\netstandard2.0\CaptchaSharp.dll</HintPath>
     </Reference>
@@ -49,6 +52,9 @@
     </Reference>
     <Reference Include="CloudflareSolverRe">
       <HintPath>..\CloudflareSolverRe.dll</HintPath>
+    </Reference>
+    <Reference Include="CryptSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CryptSharpStandard.1.0.0\lib\netstandard2.0\CryptSharp.dll</HintPath>
     </Reference>
     <Reference Include="Esprima, Version=1.0.1270.0, Culture=neutral, PublicKeyToken=2e92ba9c8d81157f, processorArchitecture=MSIL">
       <HintPath>..\packages\Esprima.1.0.1270\lib\net461\Esprima.dll</HintPath>
@@ -78,8 +84,7 @@
       <HintPath>..\packages\IronPython.2.7.11\lib\net45\IronPython.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="Jint, Version=0.0.0.0, Culture=neutral, PublicKeyToken=2e92ba9c8d81157f, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\OpenBullet\bin\Release\bin\Jint.dll</HintPath>
+      <HintPath>..\packages\Jint.2.11.58\lib\net451\Jint.dll</HintPath>
     </Reference>
     <Reference Include="LiteDB, Version=4.1.4.0, Culture=neutral, PublicKeyToken=4ee40123013c9f27, processorArchitecture=MSIL">
       <HintPath>..\packages\LiteDB.4.1.4\lib\net40\LiteDB.dll</HintPath>
@@ -363,12 +368,14 @@
     <Compile Include="LoliScript\Writer\BlockWriter.cs" />
     <Compile Include="Models\CaptchaFilter.cs" />
     <Compile Include="Models\CheckResult.cs" />
+    <Compile Include="Models\Market.cs" />
     <Compile Include="Models\ProxyCheckResult.cs" />
     <Compile Include="Models\DataPool.cs" />
     <Compile Include="Models\ImageFilter.cs" />
     <Compile Include="Models\MultiRunInput.cs" />
     <Compile Include="Models\Persistable.cs" />
     <Compile Include="Models\ProxyResult.cs" />
+    <Compile Include="Models\Requires.cs" />
     <Compile Include="Models\RunnerSessionData.cs" />
     <Compile Include="Models\Stats\ProxyManagerStats.cs" />
     <Compile Include="Models\ProxyPool.cs" />
@@ -377,7 +384,7 @@
     <Compile Include="Models\Stats\RunnerStatsProxies.cs" />
     <Compile Include="Models\Stats\RunnerStatsData.cs" />
     <Compile Include="Models\SubWordlist.cs" />
-    <Compile Include="Models\Supporters.cs" />
+    <Compile Include="Models\SupportersModel.cs" />
     <Compile Include="Models\WebhookFormat.cs" />
     <Compile Include="Runner\AbortableBackgroundWorker.cs">
       <SubType>Component</SubType>
@@ -450,6 +457,10 @@
     <ProjectReference Include="..\Extreme.Net\Extreme.Net.csproj">
       <Project>{5d25d06e-0d35-42ef-bba2-d5de6e06cd04}</Project>
       <Name>Extreme.Net</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PluginFramework\PluginFramework.csproj">
+      <Project>{E1DD89D0-EC1D-4849-A2B6-ADB261DFA3CE}</Project>
+      <Name>PluginFramework</Name>
     </ProjectReference>
     <ProjectReference Include="..\SilverBullet.ImageProcessor\SilverBullet.ImageProcessor.csproj">
       <Project>{0a8b141b-e5f3-4f7f-ba88-183668361b42}</Project>

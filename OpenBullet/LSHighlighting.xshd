@@ -149,6 +149,8 @@
       <Word>SET</Word>
       <Word>DELETE</Word>
       <Word>MOUSEACTION</Word>
+      <Word>STOP</Word>
+      <Word>ForceStop</Word>
       <Word>JavaScript</Word>
     </Keywords>
 

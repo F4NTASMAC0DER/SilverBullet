@@ -10,12 +10,15 @@ namespace OpenBullet.Views.Main
         AboutPage aboutPage;
         ReleaseNotesPage releaseNotesPage;
         public CheckUpdatePage CheckUpdatePage;
+        RequiresPage requiresPage;
+
         public Help()
         {
             InitializeComponent();
             aboutPage = new AboutPage();
             releaseNotesPage = new ReleaseNotesPage();
             CheckUpdatePage = new CheckUpdatePage();
+            requiresPage = new RequiresPage();
             Main.Content = aboutPage;
             menuOptionSelected(aboutLabel);
         }
@@ -60,6 +63,12 @@ namespace OpenBullet.Views.Main
         {
             Main.Content = CheckUpdatePage;
             menuOptionSelected(checkForUpdateLabel);
+        }
+
+        private void requiresLabel_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Main.Content = requiresPage;
+            menuOptionSelected(requiresLabel);
         }
     }
 }

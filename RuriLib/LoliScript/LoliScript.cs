@@ -77,7 +77,7 @@ namespace RuriLib.LS
         private string otherScript = "";
         private ScriptingLanguage language = ScriptingLanguage.JavaScript;
 
-        private string jsFilePath;
+        private string jsFilePath, jsEngine;
 
         /// <summary>The current line being processed.</summary>
         public string CurrentLine { get; set; } = "";
@@ -373,6 +373,10 @@ TAKELINE:
                                 case "SCRIPT":
                                     language = (ScriptingLanguage)LineParser.ParseEnum(ref cfLine, "LANGUAGE", typeof(ScriptingLanguage));
 
+                                    if (LineParser.Lookahead(ref cfLine) == TokenType.Parameter)
+                                    {
+                                        try { jsEngine = LineParser.ParseToken(ref cfLine, TokenType.Parameter, false); } catch { jsEngine = string.Empty; }
+                                    }
                                     try { jsFilePath = LineParser.ParseLiteral(ref cfLine, "PATH"); } catch { jsFilePath = string.Empty; }
 
                                     int end = 0;
@@ -516,33 +520,107 @@ TAKELINE:
                 {
                     case ScriptingLanguage.JavaScript:
 
-                        var taskExecuteJs = Task.Run(() =>
+                        switch (jsEngine.ToLower())
                         {
-                            object jsRetValue = null;
-                            bool disposeEngine = false;
+                            case "jint":
+                                InvokeJint();
+                                break;
+                            case "noesis":
+                                InvokeNoesis();
+                                break;
+                            default:
+                                InvokeJint();
+                                break;
+                        }
 
-                            JavascriptContext context = null;
-
-                            if (disposeEngine = data.JsEngine == null)
+                        void InvokeNoesis()
+                        {
+                            var taskExecuteJs = Task.Run(() =>
                             {
-                                context = new JavascriptContext();
-                                JsEngine.SetParameter(context, data);
+                                object jsRetValue = null;
+                                bool disposeEngine = false;
+
+                                JavascriptContext context = null;
+
+                                if (disposeEngine = data.JsEngine == null)
+                                {
+                                    context = new JavascriptContext();
+                                    JsEngine.SetParameter(context, data);
+                                }
+                                else
+                                    context = data.JsEngine.GetOrCreateEngine(data);
+
+                                // Execute JS
+                                try
+                                {
+                                    jsRetValue = context.Run(script);
+                                }
+                                catch (JavascriptException ex)
+                                {
+                                    throw new Exception($"Executing js error {ex.Message}\nline: {ex.Line}\nStart column:{ex.StartColumn}");
+                                }
+
+                                // Print results to log
+                                data.Log(new LogEntry($"DEBUG LOG: {sw}", Colors.White));
+
+                                // Get variables out
+                                data.Log(new LogEntry($"Parsing {outVarList.Count} variables", Colors.White));
+                                foreach (var name in outVarList)
+                                {
+                                    try
+                                    {
+                                        //Add it to the variables and print info
+                                        var value = context.GetParameter(name);
+                                        var isArray = value.GetType().IsArray || value is string[] || value.GetType().Name.Contains("Dictionary");
+                                        if (isArray) try { data.Variables.Set(new CVar(name, CVar.VarType.List, (List<string>)value)); } catch (Exception ex) { data.Log(new LogEntry("[SET VARS] ERROR: " + ex.Message, Colors.Yellow)); }
+                                        else data.Variables.Set(new CVar(name, CVar.VarType.Single, value.ToString()));
+
+                                        data.Log(new LogEntry($"SET VARIABLE {name} WITH VALUE {value}", Colors.Yellow));
+                                    }
+                                    catch { data.Log(new LogEntry($"COULD NOT FIND VARIABLE {name}", Colors.Tomato)); }
+                                }
+                                if (disposeEngine)
+                                    context.Dispose();
+
+                                //Print other info
+                                if (jsRetValue != null && !jsRetValue.GetType().Name.Contains("Dictionary"))
+                                {
+                                    data.Log(new LogEntry($"Return value: {jsRetValue}", Colors.White));
+                                }
+                            });
+                            taskExecuteJs.Wait();
+                            taskExecuteJs.Dispose();
+                        }
+
+                        void InvokeJint()
+                        {
+                            // Redefine log() function
+                            var jsEngine = new Jint.Engine().SetValue("log", new Action<object>(Console.WriteLine));
+
+                            // Add in all the variables
+                            foreach (var variable in data.Variables.All)
+                            {
+                                try
+                                {
+                                    switch (variable.Type)
+                                    {
+                                        case CVar.VarType.List:
+                                            jsEngine.SetValue(variable.Name, (variable.Value as List<string>).ToArray());
+                                            break;
+
+                                        default:
+                                            jsEngine.SetValue(variable.Name, variable.Value.ToString());
+                                            break;
+                                    }
+                                }
+                                catch { }
                             }
-                            else
-                                context = data.JsEngine.GetOrCreateEngine(data);
 
                             // Execute JS
-                            try
-                            {
-                                jsRetValue = context.Run(script);
-                            }
-                            catch (JavascriptException ex)
-                            {
-                                throw new Exception($"Executing js error {ex.Message}\nline: {ex.Line}\nStart column:{ex.StartColumn}");
-                            }
+                            jsEngine.Execute(script);
 
                             // Print results to log
-                            data.Log(new LogEntry($"DEBUG LOG: {sw}", Colors.White));
+                            data.Log(new LogEntry($"DEBUG LOG: {sw.ToString()}", Colors.White));
 
                             // Get variables out
                             data.Log(new LogEntry($"Parsing {outVarList.Count} variables", Colors.White));
@@ -550,27 +628,20 @@ TAKELINE:
                             {
                                 try
                                 {
-                                    //Add it to the variables and print info
-                                    var value = context.GetParameter(name);
-                                    var isArray = value.GetType().IsArray || value is string[] || value.GetType().Name.Contains("Dictionary");
-                                    if (isArray) try { data.Variables.Set(new CVar(name, CVar.VarType.List, (List<string>)value)); } catch (Exception ex) { data.Log(new LogEntry("[SET VARS] ERROR: " + ex.Message, Colors.Yellow)); }
+                                    // Add it to the variables and print info
+                                    var value = jsEngine.Global.GetProperty(name).Value;
+                                    var isArray = value.IsArray();
+                                    if (isArray) data.Variables.Set(new CVar(name, CVar.VarType.List, value.TryCast<List<string>>()));
                                     else data.Variables.Set(new CVar(name, CVar.VarType.Single, value.ToString()));
-
-                                    data.Log(new LogEntry($"SET VARIABLE {name} WITH VALUE {value}", Colors.Yellow));
+                                    data.Log(new LogEntry($"SET VARIABLE {name} WITH VALUE {value.ToString()}", Colors.Yellow));
                                 }
                                 catch { data.Log(new LogEntry($"COULD NOT FIND VARIABLE {name}", Colors.Tomato)); }
                             }
-                            if (disposeEngine)
-                                context.Dispose();
 
-                            //Print other info
-                            if (jsRetValue != null && !jsRetValue.GetType().Name.Contains("Dictionary"))
-                            {
-                                data.Log(new LogEntry($"Return value: {jsRetValue}", Colors.White));
-                            }
-                        });
-                        taskExecuteJs.Wait();
-                        taskExecuteJs.Dispose();
+                            // Print other info
+                            if (jsEngine.GetCompletionValue() != null)
+                                data.Log(new LogEntry($"Completion value: {jsEngine.GetCompletionValue()}", Colors.White));
+                        }
 
                         break;
 

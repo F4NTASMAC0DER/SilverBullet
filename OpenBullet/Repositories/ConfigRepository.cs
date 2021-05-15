@@ -65,6 +65,12 @@ namespace OpenBullet.Repositories
                         Path.GetFileNameWithoutExtension(file),
                         defaultCategory,
                         IOManager.LoadConfig(file, loliX)));
+                    if (loliX)
+                    {
+                        var info = new FileInfo($"Configs\\{Path.GetFileName(file)}");
+                        IOManager.SaveConfig(configs.Last().Config, $"Configs\\{Path.GetFileNameWithoutExtension(file)}.svb");
+                        info.Delete();
+                    }
                     loliX = false;
                 }
                 catch { loliX = false; }

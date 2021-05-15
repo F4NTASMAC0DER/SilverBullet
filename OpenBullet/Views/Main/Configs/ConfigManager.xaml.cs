@@ -379,6 +379,12 @@ namespace OpenBullet.Views.Main.Configs
                     }
                 }
                 File.Copy(path, $"Configs\\{Path.GetFileName(path)}", false);
+                if (confExtension != ".loliX")
+                {
+                    var info = new FileInfo($"Configs\\{Path.GetFileName(path)}");
+                    if (info.Exists)
+                        info.MoveTo(Path.Combine(info.Directory.FullName, Path.GetFileNameWithoutExtension(info.Name) + ".svb"));
+                }
                 rescanConfigsButton_Click(null, null);
             }
         }
@@ -431,7 +437,7 @@ namespace OpenBullet.Views.Main.Configs
                             var loc = locations[i];
 
                             if ((loc.EndsWith(".svb") || loc.EndsWith(".loli") ||
-                            loc.EndsWith(".anom")||loc.EndsWith(".loliX")) && File.Exists(loc))
+                            loc.EndsWith(".anom") || loc.EndsWith(".loliX")) && File.Exists(loc))
                             {
                                 Dispatcher.Invoke(() => PasteConfig(loc));
                             }

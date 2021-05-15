@@ -13,8 +13,8 @@
 
     <Grid Margin="0,7,0,0">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width=".9*" />
+            <ColumnDefinition Width=".64*" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
@@ -69,6 +69,16 @@
             <CheckBox
                 VerticalAlignment="Center"
                 VerticalContentAlignment="Center"
+                Content="Disable Debugger Log"
+                IsChecked="{Binding DisableDebuggerLog}" />
+            <CheckBox
+                VerticalAlignment="Center"
+                VerticalContentAlignment="Center"
+                Content="Send Debugger Log To Notepad++"
+                IsChecked="{Binding EnableSendDebuggerLogToNotepadPlus}" />
+            <CheckBox
+                VerticalAlignment="Center"
+                VerticalContentAlignment="Center"
                 Content="Disable Syntax Helper"
                 IsChecked="{Binding DisableSyntaxHelper}" />
             <CheckBox
@@ -81,6 +91,9 @@
                 VerticalContentAlignment="Center"
                 Content="Backup the Database daily upon start"
                 IsChecked="{Binding BackupDB}" />
+        </StackPanel>
+
+        <StackPanel Grid.Column="1">
             <CheckBox
                 VerticalAlignment="Center"
                 VerticalContentAlignment="Center"
@@ -95,7 +108,9 @@
                 IsChecked="{Binding AutoSaveConfigOnStacker}" />
         </StackPanel>
 
-        <StackPanel Grid.Column="1">
+        <StackPanel
+            Grid.Column="2"
+            Margin="0,0,10,0">
             <DockPanel Margin="5">
                 <Label Content="Default Author:" />
                 <TextBox Text="{Binding DefaultAuthor}" />

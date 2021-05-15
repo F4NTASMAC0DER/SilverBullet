@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -22,6 +21,7 @@ namespace OpenBullet.Views.Main.Configs.OtherOptions
             DataContext = vm;
             vm.Title = Path.GetFileNameWithoutExtension(SB.MainWindow.ConfigsPage.CurrentConfig.FileName);
             vm.IconPath = "Icon\\svbfile.ico";
+            compilerVersion.Content = SB.CompilerVersion;
 
             SetColors();
 
@@ -84,6 +84,31 @@ namespace OpenBullet.Views.Main.Configs.OtherOptions
         private void Message_TextChanged(object sender, TextChangedEventArgs e)
         {
             vm.Message = (sender as TextBox).Text;
+        }
+
+        private void HitInfoFormatTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            hitInfoFormatHint.Visibility = (sender as TextBox).Text.Length == 0 ?
+                Visibility.Visible : Visibility.Hidden;
+        }
+
+        private void SelectLicSource_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var dialog = new OpenFileDialog()
+                {
+                    Filter = "License Source (*.cs)|*.cs|License Source (*.txt)|*.txt"
+                };
+                if (dialog.ShowDialog() == true)
+                {
+                    if (Path.GetExtension(dialog.FileName) == ".cs")
+                    {
+                        vm.LicenseSource = dialog.FileName;
+                    }
+                }
+            }
+            catch { }
         }
     }
 }

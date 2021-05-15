@@ -234,7 +234,10 @@ namespace RuriLib
             Ntlm,
 
             /// <summary>Encrypts a string with Scrypt.</summary>
-            Scrypt,
+            SCrypt,
+
+            /// <summary>Encrypts a string with Bcrypt.</summary>
+            BCrypt,
         }
 
         /// <summary>
@@ -270,6 +273,18 @@ namespace RuriLib
             Compare,
             /// <summary>Checks if the given hash is a valid scrypt hash</summary>
             IsValid
+        }
+
+        /// <summary>
+        /// BCrypt methods
+        /// </summary>
+        public enum BCryptMethods
+        {
+            /// <summary>Hash a password using the bcrypt scheme</summary>
+            Encode,
+            GenerateSalt,
+            /// <summary>Verify a password against a hashed password.</summary>
+            Verify,
         }
 
         #region General Properties
@@ -532,6 +547,44 @@ namespace RuriLib
             set { scryptMeth = value; OnPropertyChanged(); }
         }
 
+        private string scryptSalt = "";
+        public string ScryptSalt
+        {
+            get { return scryptSalt; }
+            set { scryptSalt = value; OnPropertyChanged(); }
+        }
+
+        private int scryptCost = 1024;
+        public int ScryptCost
+        {
+            get { return scryptCost; }
+            set { scryptCost = value; OnPropertyChanged(); }
+        }
+
+        private int scryptBlockSize = 1;
+        public int ScryptBlockSize
+        {
+            get { return scryptBlockSize; }
+            set { scryptBlockSize = value; OnPropertyChanged(); }
+        }
+
+        private int scryptOutputLength = 16;
+        public int ScryptOutputLength
+        {
+            get { return scryptOutputLength; }
+            set { scryptOutputLength = value; OnPropertyChanged(); }
+        }
+
+        private bool scryptBase64Output = false;
+        /// <summary>
+        /// Encode scrypt output to base64
+        /// </summary>
+        public bool Base64Output
+        {
+            get { return scryptBase64Output; }
+            set { scryptBase64Output = value; OnPropertyChanged(); }
+        }
+
         private string scryptHashedPassword;
         /// <summary>
         /// hashed password with scrypt
@@ -545,6 +598,69 @@ namespace RuriLib
                 OnPropertyChanged();
             }
         }
+
+        private BCryptMethods bcryptMeth;
+        /// <summary>
+        /// BCrypt method
+        /// </summary>
+        public BCryptMethods BCryptMeth
+        {
+            get { return bcryptMeth; }
+            set { bcryptMeth = value; OnPropertyChanged(); }
+        }
+
+        private string bcryptHashedPassword = "";
+        /// <summary>
+        /// hashed password with bcrypt
+        /// </summary>
+        public string BCryptHashedPassword
+        {
+            get { return bcryptHashedPassword; }
+            set
+            {
+                bcryptHashedPassword = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int bcryptWorkFactor;
+
+        public int BCryptWorkFactor
+        {
+            get { return bcryptWorkFactor; }
+            set
+            {
+                bcryptWorkFactor = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string bcryptSalt = "";
+
+        public string BCryptSalt
+        {
+            get { return bcryptSalt; }
+            set
+            {
+                bcryptSalt = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool useBCryptWorkFactor;
+        /// <summary>
+        /// bcrypt work factor
+        /// </summary>
+        public bool UseWorkFactor
+        {
+            get { return useBCryptWorkFactor; }
+            set
+            {
+                useBCryptWorkFactor = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         #endregion
 
@@ -748,12 +864,46 @@ namespace RuriLib
                     EncFunc = LineParser.ParseEnum(ref input, "Encoding Methods", typeof(EncodingMethods));
                     break;
 
-                case Function.Scrypt:
+                case Function.SCrypt:
                     ScryptMeth = LineParser.ParseEnum(ref input, "Scrypt Methods", typeof(ScryptMethods));
+
+                    if (ScryptMeth == ScryptMethods.Encode)
+                    {
+                        ScryptSalt = LineParser.ParseLiteral(ref input, "Scrypt salt");
+                        ScryptCost = LineParser.ParseInt(ref input, "Scrypt cost");
+                        ScryptBlockSize = LineParser.ParseInt(ref input, "Scrypt block size");
+                        ScryptOutputLength = LineParser.ParseInt(ref input, "Scrypt Output Length");
+
+                        if (LineParser.Lookahead(ref input) == TokenType.Boolean)
+                        {
+                            LineParser.SetBool(ref input, this);
+                        }
+                    }
+
                     if (ScryptMeth == ScryptMethods.Compare)
                     {
                         ScryptHashedPassword = LineParser.ParseLiteral(ref input, "Hashed Password");
                     }
+                    break;
+
+                case Function.BCrypt:
+                    BCryptMeth = LineParser.ParseEnum(ref input, "BCrypt Methods", typeof(BCryptMethods));
+
+                    BCryptSalt = LineParser.ParseLiteral(ref input, "Salt");
+
+                    while (LineParser.Lookahead(ref input) == TokenType.Boolean)
+                        LineParser.SetBool(ref input, this);
+
+                    if (UseWorkFactor)
+                    {
+                        BCryptWorkFactor = LineParser.ParseInt(ref input, "BCrypt Work Factor");
+                    }
+
+                    if (BCryptMeth == BCryptMethods.Verify)
+                    {
+                        BCryptHashedPassword = LineParser.ParseLiteral(ref input, "Hashed Password");
+                    }
+
                     break;
 
                 default:
@@ -940,14 +1090,40 @@ namespace RuriLib
                         .Token(EncFunc);
                     break;
 
-                case Function.Scrypt:
+                case Function.SCrypt:
                     writer.Token(ScryptMeth);
-                    if (ScryptMeth == ScryptMethods.Compare)
+
+                    if (ScryptMeth == ScryptMethods.Encode)
+                    {
+                        writer.Literal(ScryptSalt)
+                            .Integer(ScryptCost)
+                            .Integer(ScryptBlockSize)
+                            .Integer(ScryptOutputLength);
+                        if (Base64Output)
+                        {
+                            writer.Boolean(Base64Output, "Base64Output");
+                        }
+                    }
+
+                    else if (ScryptMeth == ScryptMethods.Compare)
                     {
                         writer.Literal(ScryptHashedPassword);
                     }
                     break;
 
+                case Function.BCrypt:
+                    writer.Token(BCryptMeth)
+                        .Literal(BCryptSalt);
+                    if (UseWorkFactor)
+                    {
+                        writer.Boolean(UseWorkFactor, nameof(UseWorkFactor))
+                           .Integer(BCryptWorkFactor, nameof(BCryptWorkFactor));
+                    }
+                    if (BCryptMeth == BCryptMethods.Verify)
+                    {
+                        writer.Literal(BCryptHashedPassword);
+                    }
+                    break;
             }
 
             writer
@@ -1391,11 +1567,11 @@ namespace RuriLib
                         outputString = Ntlm.Generate(ReplaceValues(localInputString, data));
                         break;
 
-                    case Function.Scrypt:
+                    case Function.SCrypt:
                         switch (scryptMeth)
                         {
                             case ScryptMethods.Encode:
-                                outputString = Crypto.ScryptEncoder(ReplaceValues(localInputString, data));
+                                outputString = Crypto.ScryptEncoder(ReplaceValues(localInputString, data), ScryptSalt, ScryptCost, ScryptBlockSize, 1, ScryptOutputLength, Base64Output);
                                 break;
                             case ScryptMethods.Compare:
                                 outputString = Crypto.ScryptCompare(ReplaceValues(localInputString, data), ReplaceValues(ScryptHashedPassword, data))
@@ -1409,6 +1585,29 @@ namespace RuriLib
                                 break;
                         }
                         break;
+
+                    case Function.BCrypt:
+                        switch (BCryptMeth)
+                        {
+                            case BCryptMethods.Encode:
+                                if (UseWorkFactor) outputString = Crypto.BcryptEncoder(ReplaceValues(localInputString, data), BCryptWorkFactor, BCryptSalt);
+                                else outputString = Crypto.BcryptEncoder(ReplaceValues(localInputString, data), null, BCryptSalt);
+                                break;
+                            case BCryptMethods.GenerateSalt:
+                                if (UseWorkFactor)
+                                    outputString = Crypto.BcryptGenerateSalt(BCryptWorkFactor);
+                                else outputString = Crypto.BcryptGenerateSalt(null);
+                                break;
+                            case BCryptMethods.Verify:
+                                outputString = Crypto.BcryptVerify(ReplaceValues(localInputString, data), ReplaceValues(BCryptHashedPassword, data))
+                                    .ToString();
+                                break;
+                            default:
+                                break;
+                        }
+
+                        break;
+
                 }
 
                 data.Log(new LogEntry(string.Format("Executed function {0} on input {1} with outcome {2}", functionType, localInputString, outputString), Colors.GreenYellow));

@@ -1,6 +1,6 @@
 ﻿namespace RuriLib.Models
 {
-    public class Supporters
+    public class SupportersModel
     {
         public string Logo { get; set; }
 

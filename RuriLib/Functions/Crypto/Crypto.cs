@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
+using CryptSharp.Utility;
 using HashLib;
 using Scrypt;
 
@@ -634,14 +635,35 @@ namespace RuriLib.Functions.Crypto
 
         #region Scrypt
 
+        private static readonly RandomNumberGenerator _saltGenerator = new RNGCryptoServiceProvider();
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public static string ScryptEncoder(string input)
+        public static string ScryptEncoder(string input, string salt = "", int cost = 1024, int blockSize = 1, int parallel = 1, int outputLength = 16, bool base64Output = false)
         {
-            return new ScryptEncoder().Encode(input);
+            byte[] sBytes = null;
+            if (string.IsNullOrWhiteSpace(salt))
+            {
+                byte[] array = new byte[32];
+                _saltGenerator.GetBytes(array);
+                sBytes = array;
+            }
+
+            byte[] iBytes = Encoding.UTF8.GetBytes(input);
+            if (sBytes == null)
+            {
+                sBytes = Encoding.UTF8.GetBytes(salt);
+            }
+            byte[] output = SCrypt.ComputeDerivedKey(iBytes, sBytes, cost, blockSize, parallel, null, outputLength);
+
+            if (!base64Output)
+            {
+                return BitConverter.ToString(output).Replace("-", "").ToLower();
+            }
+            return Convert.ToBase64String(output);
         }
 
         public static bool ScryptCompare(string input, string hashedPassword)
@@ -659,5 +681,31 @@ namespace RuriLib.Functions.Crypto
         }
 
         #endregion
+
+        #region Bcrypt
+
+        public static string BcryptEncoder(string input, int? workFactor, string salt = "")
+        {
+            if (workFactor.HasValue && string.IsNullOrEmpty(salt))
+                return BCrypt.Net.BCrypt.HashPassword(input, workFactor.Value);
+            else if (!workFactor.HasValue && !string.IsNullOrEmpty(salt))
+                return BCrypt.Net.BCrypt.HashPassword(input, salt);
+            return BCrypt.Net.BCrypt.HashPassword(input);
+        }
+
+        public static bool BcryptVerify(string input, string hash)
+        {
+            return BCrypt.Net.BCrypt.Verify(input, hash);
+        }
+
+        public static string BcryptGenerateSalt(int? workFactor)
+        {
+            if (!workFactor.HasValue)
+                return BCrypt.Net.BCrypt.GenerateSalt();
+            return BCrypt.Net.BCrypt.GenerateSalt(workFactor.Value);
+        }
+
+        #endregion
+
     }
 }

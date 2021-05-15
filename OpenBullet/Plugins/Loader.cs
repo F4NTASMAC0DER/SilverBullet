@@ -1,12 +1,12 @@
-﻿using OpenBullet.Views.UserControls;
-using PluginFramework;
-using RuriLib;
-using RuriLib.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using OpenBullet.Views.UserControls;
+using PluginFramework;
+using RuriLib;
+using RuriLib.ViewModels;
 
 namespace OpenBullet.Plugins
 {
@@ -17,10 +17,11 @@ namespace OpenBullet.Plugins
         /// </summary>
         /// <param name="folder">The folder where plugins are located</param>
         /// <returns>A tuple with the collection of plugin controls and block plugin controls.</returns>
-        public static (IEnumerable<PluginControl>, IEnumerable<IBlockPlugin>) LoadPlugins(string folder)
+        public static (IEnumerable<PluginControl>, IEnumerable<IBlockPlugin>, IEnumerable<string>) LoadPlugins(string folder)
         {
             var plugins = new List<PluginControl>();
             var blockPlugins = new List<IBlockPlugin>();
+            var pluginNames = new List<string>();
 
             foreach (var dll in Directory.GetFiles(folder, "*.dll"))
             {
@@ -42,19 +43,21 @@ namespace OpenBullet.Plugins
                     // If it implements the IPlugin interface
                     if (type.GetInterface(nameof(IPlugin)) == typeof(IPlugin))
                     {
-                        plugins.Add(new PluginControl(type, SB.App, 
+                        pluginNames.Add(asm.GetName().Name);
+                        plugins.Add(new PluginControl(type, SB.App,
                             type.GetTypeInfo().IsSubclassOf(typeof(ViewModelBase))));
                     }
                     // If it implements the IBlockPlugin interface and derives from BlockBase
-                    else if (type.GetInterface(nameof(IBlockPlugin)) == typeof(IBlockPlugin) 
+                    else if (type.GetInterface(nameof(IBlockPlugin)) == typeof(IBlockPlugin)
                         && type.GetTypeInfo().IsSubclassOf(typeof(BlockBase)))
                     {
                         blockPlugins.Add(Activator.CreateInstance(type) as IBlockPlugin);
+                        pluginNames.Add(asm.GetName().Name);
                     }
                 }
             }
 
-            return (plugins, blockPlugins);
+            return (plugins, blockPlugins, pluginNames);
         }
 
         /// <summary>
