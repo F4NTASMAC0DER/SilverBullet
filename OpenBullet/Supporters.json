@@ -10,5 +10,11 @@
     "Address":"https://siberdeyiz.com/",
     "Name":"Siberdeyiz.com",
     "Color":"#720E10"
-  }
+  },
+  {
+    "Logo":"https://crax.pro/styles/default/xenforo/logobg3.png",
+    "Address":"https://crax.pro/index.php?configs/",
+    "Name":"Crax.pro (Configs)",
+    "Color":"#3E1C66"
+  },
 ]
