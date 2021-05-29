@@ -372,7 +372,7 @@ namespace RuriLib.Runner
         public void SetConfig(Config config, bool setRecommended)
         {
             Config = config;
-            if (setRecommended) BotsAmount = Clamp(config.Settings.SuggestedBots, 1, 200);
+            if (setRecommended) BotsAmount = Clamp(config.Settings.SuggestedBots, 1, 400);
             OnPropertyChanged("ConfigName");
             RaiseConfigChanged();
         }
