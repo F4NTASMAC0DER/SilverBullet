@@ -89,19 +89,16 @@ namespace RuriLib
             /// <summary>Converts all lowercase characters in a string to uppercase.</summary>
             ToUppercase,
 
-            /// <summary>
-            /// Find and extract a letter from a string
-            /// </summary>
+            /// <summary>Capitalizes the input string (the first letter becomes uppercase, the rest lowercase).</summary>
+            Capitalize,
+
+            /// <summary>Find and extract a letter from a string</summary>
             ToLetter,
 
-            /// <summary>
-            /// Find and extract a number from a string
-            /// </summary>
+            /// <summary>Find and extract a number from a string</summary>
             ToDigit,
 
-            /// <summary>
-            /// Find and extract a letter Or digit from a string
-            /// </summary>
+            /// <summary>Find and extract a letter Or digit from a string</summary>
             ToLetterOrDigit,
 
             /// <summary>Convert integers to written numbers</summary>
@@ -188,13 +185,10 @@ namespace RuriLib
             /// <summary>Retrieves the character at a given index in the input string.</summary>
             CharAt,
 
-            /// <summary>
-            ///Splits a string into substrings based on the strings in an array. You can specify
-            ///whether the substrings include empty array elements.
-            /// </summary>
+            /// <summary>Splits a string into substrings based on the strings in an array. You can specify whether the substrings include empty array elements.</summary>
             Split,
 
-            ///<summary></summary>
+            /// <summary>Removes a given amount of characters from the string starting from the given index. </summary>
             Remove,
 
             /// <summary>Gets a substring of the input.</summary>
@@ -1249,6 +1243,13 @@ namespace RuriLib
 
                     case Function.ToUppercase:
                         outputString = localInputString.ToUpper();
+                        break;
+
+                    case Function.Capitalize:
+                        if (localInputString.Length > 0)
+                            outputString = localInputString[0].ToString().ToUpper() + localInputString.ToLower();
+                        else
+                            outputString = localInputString;
                         break;
 
                     case Function.Replace:

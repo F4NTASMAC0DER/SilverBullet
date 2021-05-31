@@ -72,6 +72,12 @@ namespace RuriLib
         /// <summary>Concatenates two lists into a longer list variable.</summary>
         Concat,
 
+        /// <summary>Gets elements that are present in both input lists.</summary>
+        Intersection,
+
+        /// <summary>Gets elements that differ between two lists.</summary>
+        Difference,
+
         /// <summary>Zips two lists into a new list variable where the elements are joined two by two.</summary>
         Zip,
 
@@ -94,7 +100,9 @@ namespace RuriLib
         Random,
 
         /// <summary>Randomizes the order of elements in a list.</summary>
-        Shuffle
+        Shuffle,
+
+        
     }
 
     /// <summary>
@@ -341,6 +349,8 @@ namespace RuriLib
                         case ListAction.Concat:
                         case ListAction.Zip:
                         case ListAction.Map:
+                        case ListAction.Intersection:
+                        case ListAction.Difference:
                             SecondListName = LineParser.ParseLiteral(ref input, "Second List Name");
                             break;
 
@@ -473,6 +483,8 @@ namespace RuriLib
                         case ListAction.Concat:
                         case ListAction.Zip:
                         case ListAction.Map:
+                        case ListAction.Intersection:
+                        case ListAction.Difference:
                             writer
                                 .Literal(SecondListName);
                             break;
@@ -618,6 +630,14 @@ namespace RuriLib
 
                             case ListAction.Concat:
                                 data.Variables.Set(new CVar(variableName, list.Concat(list2).ToList(), isCapture));
+                                break;
+
+                            case ListAction.Intersection:
+                                data.Variables.Set(new CVar(variableName, list.Intersect(list2).ToList(), isCapture));
+                                break;
+
+                            case ListAction.Difference:
+                                data.Variables.Set(new CVar(variableName, list.Except(list2).ToList(), isCapture));
                                 break;
 
                             case ListAction.Zip:

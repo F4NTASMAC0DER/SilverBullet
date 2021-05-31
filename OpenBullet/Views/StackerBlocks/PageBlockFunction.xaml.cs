@@ -238,7 +238,24 @@ namespace OpenBullet.Views.StackerBlocks
             { "AESDecrypt", "Decrypts data with AES. All parameters must be provided as base64 strings. Uses SHA-256 to get a 256 bit key" },
             { "PBKDF2PKCS5", "Generates a key based on a password. The salt, if provided, must be a base64 string" },
             { "Ntlm", "Generates NTLM hash" },
-            { "Scrypt", "Scrypt encoder" }
+            { "CurrentDate", "Gets current date in format dd.mm.yyyy" },
+            { "CurrentTime", "Gets current time in format hh:mm" },
+            { "DayOfWeek", "Get the current day of week in English" },
+            { "CurrentDay", "Get the current day number" },
+            { "CurrentMonth", "Get the current month number (without leading zero)" },
+            { "CurrentYear", "Get the current year number" },
+            { "ToLetter", "Find and extract all letters from a string" },
+            { "ToLetter", "Find and extract all digits from a string" },
+            { "ToLetterOrDigit", "Find and extract all letters and digits from a string" },
+            { "NumberToWords", "Converts a number to english words (1 = one, 103 = one hundred and three)" },
+            { "WordsToNumber", "Converts numbers written in english back to its numerical representation." },
+            { "Abs", "Gets the modulus of a number" },
+            { "Split", "Splits a string into substrings based on the strings in an array. You can specify whether the substrings include empty array elements." },
+            { "Remove", "Removes a given amount of characters from the string starting from the given index. " },
+            { "ReverseString", "Reverses the input string." },
+            { "SCrypt", "Hashes the input string using SCrypt with specified options." },
+            { "BCrypt", "Hashes the input string using BCrypt with specified options." },
+            { "Capitalize", "Capitalizes the input string (the first letter becomes uppercase, the rest lowercase)." }
         };
 
         private void dictionaryRTB_TextChanged(object sender, TextChangedEventArgs e)
