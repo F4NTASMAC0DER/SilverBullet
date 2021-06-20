@@ -12,9 +12,15 @@
     "Color":"#720E10"
   },
   {
-    "Logo":"https://crax.pro/styles/default/xenforo/logobg3.png",
-    "Address":"https://crax.pro/index.php?configs/",
+    "Logo":"https://i.ibb.co/kMTtWhS/logobg3.png",
+    "Address":"https://crax.pro/index.php?resources/configs/",
     "Name":"Crax.pro (Configs)",
     "Color":"#3E1C66"
   },
+  {
+     "Logo":"https://cdn.discordapp.com/attachments/847497499069775924/848149145947996160/IMG_20210529_140835.jpg",
+     "Address":"https://discord.gg/3bn7ySwe3k",
+     "Name":"Fuk Proxy",
+     "Color":"#5865F2"
+  }
 ]
